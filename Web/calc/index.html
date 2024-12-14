@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>calculator</title>
+        <link rel="stylesheet" href="style.css">
+        <script src="/program.js"></script>
+    </head>
+
+    <body>
+        <div class="moving-text">
+            <marquee behavior="" direction="left">project on java scientific calculator. brought to you by group 5 by
+                the following: ibekwe emmanuel, obodoaguu sarah, ojeli chidubem, nnolim chukwuebuka and uzodinma kamsi.
+                please enjoy and stay blessed</marquee>
+        </div>
+
+
+        <div class="calculator-body">
+            <div class="screen">
+                <div class="field1" id="screen"></div>
+                <div class="field2">
+                    <div class="action" id="action"></div>
+                    <div class="answer" id="answer"></div>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button class="btn" onclick="one()">1</button>
+                <button class="btn" onclick="two()">2</button>
+                <button class="btn" onclick="three()">3</button>
+                <button class="btn" onclick="four()">4</button>
+                <button class="btn" onclick="five()">5</button>
+                <button class="btn" onclick="six()">6</button>
+                <button class="btn" onclick="seven()">7</button>
+                <button class="btn" onclick="eight()">8</button>
+                <button class="btn" onclick="nine()">9</button>
+                <button class="btn" onclick="zero()">0</button>
+                <button class="btn" onclick="point()">.</button>
+                <button class="btn" onclick="exponential()">e</button>
+                <button class="btn" onclick="plus()">+</button>
+                <button class="btn" onclick="minus()">-</button>
+                <button class="btn" onclick="divide()">/</button>
+                <button class="btn" onclick="times()">*</button>
+                <button class="btn" onclick="percent()">%</button>
+                <button class="btn" onclick="cube()">x^3</button>
+                <button class="btn" onclick="square()">x^2</button>
+                <button class="btn" onclick="root()">sqrt</button>
+                <button class="btn" onclick="cRoot()">cbrt</button>
+                <button class="btn" onclick="sine()">sine</button>
+                <button class="btn" onclick="cos()">cos</button>
+                <button class="btn" onclick="tan()">tan</button>
+                <button class="btn" onclick="log()">log</button>
+                <button class="btn btn1" onclick="anti()">A/Log</button>
+                <!-- <button class="btn" onclick="del()">Ce</button> -->
+                <button class="btn" onclick="equal()">=</button>
+
+            </div>
+
+
+        </div>
+
+        <div class="invisiText" id="invisiText"></div>
+        <script src="./program.js"></script>
+    </body>
+
+</html>

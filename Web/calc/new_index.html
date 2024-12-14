@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Scientific Calculator</title>
+        <!-- Link to external CSS for styling -->
+        <link rel="stylesheet" href="new_style.css">
+        <!-- JavaScript file for functionality -->
+        <script defer src="new_program.js"></script>
+    </head>
+
+    <body>
+
+        <div class="calculator">
+            <div class="calculator-display">
+                <!-- Screen area for displaying the input and output -->
+                <div id="screen"></div>
+                <div id="answer"></div>
+            </div>
+
+            <div class="calculator-buttons">
+                <!-- Buttons for the calculator -->
+                <button onclick="clearScreen()">AC</button>
+                <button onclick="percent()">%</button>
+                <button onclick="insert('/')">÷</button>
+                <button onclick="insert('*')">×</button>
+
+                <button onclick="insert('7')">7</button>
+                <button onclick="insert('8')">8</button>
+                <button onclick="insert('9')">9</button>
+                <button onclick="insert('-')">−</button>
+
+                <button onclick="insert('4')">4</button>
+                <button onclick="insert('5')">5</button>
+                <button onclick="insert('6')">6</button>
+                <button onclick="insert('+')">+</button>
+
+                <button onclick="insert('1')">1</button>
+                <button onclick="insert('2')">2</button>
+                <button onclick="insert('3')">3</button>
+                <button onclick="calculate()">=</button>
+
+                <button onclick="insert('0')">0</button>
+                <button onclick="insert('.')">.</button>
+                <button onclick="cos()">cos</button>
+                <button onclick="sin()">sin</button>
+                <button onclick="tan()">tan</button>
+            </div>
+        </div>
+
+    </body>
+
+</html>

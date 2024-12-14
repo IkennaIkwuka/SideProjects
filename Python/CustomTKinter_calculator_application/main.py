@@ -13,7 +13,7 @@ class CustomTkinter(tk.Canvas):
 
     def create_button(self, x, y, text, command=None):
         button = tk.Button(self, text=text, bg=self.button_bg, activebackground=self.button_active_bg,
-                           fg=self.button_fg, font=self.font, relief="flat", command=command)
+                    fg=self.button_fg, font=self.font, relief="flat", command=command)
         button.place(x=x, y=y, width=50, height=50)
 
 

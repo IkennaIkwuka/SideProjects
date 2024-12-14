@@ -5,6 +5,7 @@ from tkinter import filedialog
 
 class Actions:
     def __init__(self) -> None:
+        """ Constructor """
         pass
 
     def submit_button(self):
@@ -18,7 +19,7 @@ class Actions:
         self.df = pd.DataFrame(self.dict)
         # file = filedialog 
 
-    def L_essentials(self):
+    def l_essentials(self):
         essentials = tk.Tk()
         essentials.eval("tk::PlaceWindow . center")
         #
