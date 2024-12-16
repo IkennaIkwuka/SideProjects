@@ -27,7 +27,6 @@ Changes being made:
         Created modules for CRUD operations and utility operations
 """
 
-
 # %%
 # Logic function
 class app_logic:
