@@ -20,12 +20,8 @@ What to achieve:
 8. Additional functionality: 
     mark tasks as completed (TO-DO)
     Add functionality to see date/time of task creation.
-
-Changes being made:
-    12/15/2024: 
-        Adding classes to implement Object Oriented Programming (OOP)
-        Created modules for CRUD operations and utility operations
 """
+
 
 # %%
 # Logic function
