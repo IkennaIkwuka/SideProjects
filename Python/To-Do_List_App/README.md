@@ -1,6 +1,6 @@
-(Beginner)
 # To-Do List Application:
-    Create a simple command-line to-do list application where users can add, remove, and mark tasks as done.
+
+### **`A simple command-line to-do list application where users can add, remove, and mark tasks as done.`**
 
 What to achieve:
 
