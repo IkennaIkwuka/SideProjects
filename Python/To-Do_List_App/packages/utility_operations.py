@@ -1,4 +1,7 @@
 # %%
+from operator import index
+
+
 TASK_FILE_NAME = "Tasks list.txt"
 
 
@@ -77,25 +80,26 @@ def save_to_file(task_list: list):
     #         print(i)
 
 
-def display_and_ask_options():
+def ask_options():
     while True:
-        # Displays options
-        print("\nTo-Do List App by Ikenna Nicholas Ikwuka")
-        print("1. Add tasks")
-        print("2. View tasks")
-        print("3. Update tasks")
-        print("4. Delete tasks")
-        print("5. Quit\n")
-
         # Validate user input and implements error handling.
         try:
             choice = int(input("What do you want to do?: "))
 
             if choice not in range(1, 6):  # Checks input in range of 1 ~ 5
-                print("Invalid Input. Input a value from range 1 ~ 5")
+                print("\nInvalid Input. Input a value from range 1 ~ 5")
             else:
                 break
         # Throw raised error or any unchecked errors
         except ValueError:  # Catches and displays ValueError for invalid types.
-            print("Invalid Input. Input a number")
+            print("\nInvalid Input. Input a number")
     return choice
+
+
+def ask_for_index(func_action: str):
+    while True:
+        try:
+            index = int(input(f"What task would you like to {func_action}: ")) - 1
+            return index
+        except ValueError:
+            print("\nInvalid, input number")
