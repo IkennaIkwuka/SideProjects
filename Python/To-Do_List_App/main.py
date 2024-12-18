@@ -11,11 +11,11 @@ class ToDoListApp:
             self.task_list["Description"],
         )
 
-    def add_tasks(self):
+    def add_tasks(self) -> None:
         # TODO: implement a way to split the error message so that each input is checked at its time of creation.
         while True:
-            task_input_title = input("Title: ")
-            task_input_description = input("Description: ")
+            task_input_title: str = input("Title: ")
+            task_input_description: str = input("Description: ")
 
             if not task_input_title:
                 print("\nTitle cannot be empty.")
@@ -28,7 +28,7 @@ class ToDoListApp:
                 self.view_tasks()
                 break
 
-    def view_tasks(self):
+    def view_tasks(self) -> bool:
         print("")
         if len(self.TITLE) == 0:
             print("You dont have any tasks, create some.\n")
@@ -40,14 +40,14 @@ class ToDoListApp:
                 print(f"{index}.\tTitle: {title}\n\tDescription: {description}\n")
             return True
 
-    def update_tasks(self):
+    def update_tasks(self) -> None:
         if self.view_tasks():
-            index = ult_ops.ask_for_index("update")
+            index: int = ult_ops.ask_for_index("update")
 
             if 0 <= index < len(self.TITLE):
                 while True:
-                    new_task_input_title = input("New title: ")
-                    new_task_input_description = input("New description: ")
+                    new_task_input_title: str = input("New title: ")
+                    new_task_input_description: str = input("New description: ")
 
                     if not new_task_input_title:
                         print("\nTitle cannot be empty.")
@@ -61,9 +61,9 @@ class ToDoListApp:
             else:
                 print("\nCannot find task")
 
-    def remove_tasks(self):
+    def remove_tasks(self) -> None:
         if self.view_tasks():
-            index = ult_ops.ask_for_index("remove")
+            index: int = ult_ops.ask_for_index("remove")
 
             if 0 <= index < len(self.TITLE):
                 self.TITLE.pop(index)
@@ -74,7 +74,7 @@ class ToDoListApp:
                 print("\nCannot find task")
 
 
-def main():
+def main() -> None:
     app = ToDoListApp()
 
     while True:
@@ -87,7 +87,7 @@ def main():
         print("5. Quit\n")
 
         # Loop to take input and catch errors
-        choice = ult_ops.ask_options()
+        choice: int = ult_ops.ask_options()
         match choice:
             case 1:
                 if len(app.TITLE) == 10:
