@@ -19,15 +19,25 @@ class Utility:
 
     def ask_for_index(self, action: str, list_length: int, func):
         while True:
-            try:
-                func()
-                index = int(input(f"What task would you like to {action}: ")) - 1
+            func()
+            index = input(f"What task would you like to {action} or 'Q' to quit: ")
+
+            if index.isalpha():
+                index = index[0].upper()
+                if index == "Q":
+                    return index
+                else:
+                    print(f"\nPlease type 'Q' if you want to quit and not '{index}'\n")
+            elif index.isdigit():
+                index = int(index) - 1
                 if 0 <= index < list_length:
                     return index
                 else:
-                    print("\nCannot find task")
-            except ValueError:
-                print("\nInvalid, input number")
+                    print(f"\nPlease choose a valid index for task and not '{index}'\n")
+            else:
+                print(
+                    f"Invalid input. Please choose a valid task you would like to {action} or 'Q' to quit and not {index}\n"
+                )
 
 
 class App:
@@ -40,22 +50,24 @@ class App:
             self.task_list["Description"],
         )
 
+        # Instance of Utility class
         self.utility = Utility()
 
     def add_tasks(self) -> None:
         if len(self.TITLE) == 10:
             print("You've reached the limit, you cant create anymore tasks.\n")
             return None
-        while True:
-            task_input_title: str = input("Title: ")
-            task_input_description: str = input("Description: ")
 
-            if not task_input_title:
+        while True:
+            task_input_title: str = input("Title: ").strip()
+            task_input_description: str = input("Description: ").strip()
+
+            if not (task_input_title and task_input_description):
+                print("Title and Description cannot be empty")
+            elif not task_input_title:
                 print("\nTitle cannot be empty.")
             elif not task_input_description:
                 print("\nDescription cannot be empty")
-            elif not (task_input_title and task_input_description):
-                print("Title and Description cannot be empty")
             else:
                 self.TITLE.append(task_input_title)
                 self.DESCRIPTION.append(task_input_description)
@@ -68,30 +80,34 @@ class App:
             print("You dont have any tasks, create some.\n")
             return None
 
-        for index, (title, description) in enumerate(
+        for index, (title, desc) in enumerate(
             zip(self.TITLE, self.DESCRIPTION), start=1
         ):
-            print(f"\n{index}.\tTitle: {title}\n\tDescription: {description}\n")
+            print(f"\n{index}.\tTitle: {title}\n\tDescription: {desc}\n")
 
     def update_tasks(self) -> None:
         if len(self.TITLE) == 0:
             print("You dont have any tasks to update, create some\n")
             return None
 
-        index: int = self.utility.ask_for_index(
-            "update", len(self.TITLE), self.view_tasks
-        )
+        index = self.utility.ask_for_index("update", len(self.TITLE), self.view_tasks)
+
+        if index == "Q":
+            print("Closing update tasks")
+            return None
+        else:
+            index = int(index)
 
         while True:
-            new_task_input_title: str = input("New Title: ")
-            new_task_input_description: str = input("New Description: ")
+            new_task_input_title: str = input("New Title: ").strip()
+            new_task_input_description: str = input("New Description: ").strip()
 
-            if not new_task_input_title:
+            if not (new_task_input_title and new_task_input_description):
+                print("Title and Description cannot be empty")
+            elif not new_task_input_title:
                 print("\nTitle cannot be empty.")
             elif not new_task_input_description:
                 print("\nDescription cannot be empty")
-            elif not (new_task_input_title and new_task_input_description):
-                print("Title and Description cannot be empty")
             else:
                 self.TITLE[index] = new_task_input_title
                 self.DESCRIPTION[index] = new_task_input_description
@@ -104,17 +120,24 @@ class App:
             print("You dont have any task to remove, create some.")
             return None
 
-        index: int = self.utility.ask_for_index(
-            "remove", len(self.TITLE), self.view_tasks
-        )
+        index = self.utility.ask_for_index("update", len(self.TITLE), self.view_tasks)
 
-        self.TITLE.pop(index)
-        self.DESCRIPTION.pop(index)
-        print("\nTask deleted successfully")
-        self.view_tasks()
+        if index == "Q":
+            print("Closing remove tasks")
+            return None
+        else:
+            index = int(index)
+            self.TITLE.pop(index)
+            self.DESCRIPTION.pop(index)
+            print("\nTask deleted successfully")
+            self.view_tasks()
 
-    def quit_program(self):
+    def quit_program(self) -> None:
         print("Thanks for using the app. GoodBye!")
+
+        with open("Tasks.txt", "a") as file:
+            for title, description in zip(self.TITLE, self.DESCRIPTION):
+                file.writelines(f"Title: {title}\n\tDescription: {description}\n\n")
 
 
 def main() -> None:
