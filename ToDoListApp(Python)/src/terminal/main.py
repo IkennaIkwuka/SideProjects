@@ -1,43 +1,4 @@
-# Utilities
-class Utility:
-    def __init__(self) -> None: ...
-
-    def ask_options(self):
-        while True:
-            # Validate user input and implements error handling.
-            try:
-                choice = int(input("What do you want to do?: "))
-
-                if choice not in range(1, 6):  # Checks input in range of 1 ~ 5
-                    print("\nInvalid Input. Input a value from range 1 ~ 5")
-                else:
-                    break
-            # Throw raised error or any unchecked errors
-            except ValueError:  # Catches and displays ValueError for invalid types.
-                print("\nInvalid Input. Input a number")
-        return choice
-
-    def ask_for_index(self, action: str, list_length: int, func):
-        while True:
-            func()
-            index = input(f"What task would you like to {action} or 'Q' to quit: ")
-
-            if index.isalpha():
-                index = index[0].upper()
-                if index == "Q":
-                    return index
-                else:
-                    print(f"\nPlease type 'Q' if you want to quit and not '{index}'\n")
-            elif index.isdigit():
-                index = int(index) - 1
-                if 0 <= index < list_length:
-                    return index
-                else:
-                    print(f"\nPlease choose a valid index for task and not '{index}'\n")
-            else:
-                print(
-                    f"Invalid input. Please choose a valid task you would like to {action} or 'Q' to quit and not {index}\n"
-                )
+from .packages.utilities import utility
 
 
 class App:
@@ -49,9 +10,6 @@ class App:
             self.task_list["Title"],
             self.task_list["Description"],
         )
-
-        # Instance of Utility class
-        self.utility = Utility()
 
     def add_tasks(self) -> None:
         if len(self.TITLE) == 10:
@@ -90,7 +48,7 @@ class App:
             print("You dont have any tasks to update, create some\n")
             return None
 
-        index = self.utility.ask_for_index("update", len(self.TITLE), self.view_tasks)
+        index = utility.ask_for_index("update", len(self.TITLE), self.view_tasks)
 
         if index == "Q":
             print("Closing update tasks")
@@ -120,7 +78,7 @@ class App:
             print("You dont have any task to remove, create some.")
             return None
 
-        index = self.utility.ask_for_index("update", len(self.TITLE), self.view_tasks)
+        index = utility.ask_for_index("update", len(self.TITLE), self.view_tasks)
 
         if index == "Q":
             print("Closing remove tasks")
@@ -153,7 +111,7 @@ def main() -> None:
         print("5. Quit\n")
 
         # Loop to take input and catch errors
-        choice: int = app.utility.ask_options()
+        choice: int = utility.ask_options()
         match choice:
             case 1:
                 app.add_tasks()
