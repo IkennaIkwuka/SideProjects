@@ -42,4 +42,4 @@ class Utilities:
 
 if __name__ == "__main__":
     # Instance of Utility class
-    utility = Utilities()
+    utilities_instance = Utilities()

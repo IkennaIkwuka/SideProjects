@@ -1,4 +1,4 @@
-from .packages.utilities import utility
+from .packages.utilities import utilities_instance as utility
 
 
 class App:
