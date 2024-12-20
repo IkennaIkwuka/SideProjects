@@ -1,3 +1,9 @@
+"""
+The `Utilities` class provides methods for asking user options and indices with input validation and
+error handling.
+"""
+
+
 # Utilities
 class Utilities:
     def __init__(self) -> None: ...
