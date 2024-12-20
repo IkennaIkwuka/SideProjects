@@ -11,10 +11,8 @@ class App:
         self.task_list = {"Title": [], "Description": []}
 
         # Constants
-        self.TITLE, self.DESCRIPTION = (
-            self.task_list["Title"],
-            self.task_list["Description"],
-        )
+        self.TITLE = self.task_list["Title"]
+        self.DESCRIPTION = self.task_list["Description"]
 
     def add_tasks(self) -> None:
         if len(self.TITLE) == 10:
@@ -109,14 +107,15 @@ def main() -> None:
     while True:
         # Displays options
         print("\nTo-Do List App by Ikenna Nicholas Ikwuka")
-        print("1. Add tasks")
-        print("2. View tasks")
-        print("3. Update tasks")
-        print("4. Remove tasks")
-        print("5. Quit\n")
+        print("1.\tAdd tasks")
+        print("2.\tView tasks")
+        print("3.\tUpdate tasks")
+        print("4.\tRemove tasks")
+        print("5.\tQuit the program\n")
 
         # Loop to take input and catch errors
         choice: int = utility.ask_options()
+
         match choice:
             case 1:
                 app.add_tasks()

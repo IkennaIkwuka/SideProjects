@@ -36,7 +36,7 @@ class Utilities:
                     print(f"\nPlease type 'Q' if you want to quit and not '{index}'\n")
             elif index.isdigit():
                 index = int(index) - 1
-                if 0 <= index < list_length:
+                if index in range(1, list_length + 1):
                     return index
                 else:
                     print(f"\nPlease choose a valid index for task and not '{index}'\n")
