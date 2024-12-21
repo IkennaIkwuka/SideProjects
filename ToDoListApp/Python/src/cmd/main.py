@@ -19,22 +19,29 @@ class App:
             print("You've reached the limit, you cant create anymore tasks.\n")
             return None
 
+        # loop for task title
         while True:
             task_input_title: str = input("Title: ").strip()
             if not task_input_title:
                 print("\nTitle cannot be empty.\n")
                 continue
 
-            task_input_description: str = input("Description: ").strip()
-            if not task_input_description:
-                print("\nDescription cannot be empty\n")
-                continue
+            # Loop for task description
+            while True:
+                task_input_description: str = input("Description: ").strip()
+                if not task_input_description:
+                    print("\nDescription cannot be empty\n")
+                    continue
 
-            self.TITLE.append(task_input_title)
-            self.DESCRIPTION.append(task_input_description)
-            print("\nTasks created successfully")
-            self.view_tasks()
-            break
+                # Add task title and task description
+                self.TITLE.append(task_input_title)
+                self.DESCRIPTION.append(task_input_description)
+                print("\nTasks created successfully")
+
+                # Show tasks
+                self.view_tasks()
+                break  # Exits description loop
+            break  # Exits title loop
 
     def view_tasks(self) -> None:
         if len(self.TITLE) == 0:
@@ -54,43 +61,53 @@ class App:
         index = utility.ask_for_index("update", len(self.TITLE), self.view_tasks)
 
         if index == "Q":
-            print("Closing update tasks")
+            print("\nClosing update tasks...")
             return None
         else:
             index = int(index)
 
+        # loop for task title
         while True:
             new_task_input_title: str = input("New Title: ").strip()
-            new_task_input_description: str = input("New Description: ").strip()
-
-            if not (new_task_input_title and new_task_input_description):
-                print("\nTitle and Description cannot be empty\n")
-            elif not new_task_input_title:
+            if not new_task_input_title:
                 print("\nTitle cannot be empty.\n")
-            elif not new_task_input_description:
-                print("\nDescription cannot be empty\n")
-            else:
+                continue
+
+            # Loop for task description
+            while True:
+                new_task_input_description: str = input("New Description: ").strip()
+                if not new_task_input_description:
+                    print("\nDescription cannot be empty\n")
+                    continue
+
+                # Update tasks
                 self.TITLE[index] = new_task_input_title
                 self.DESCRIPTION[index] = new_task_input_description
-                print("\nTask updated successfully")
+                print("\nTask updated successfully...")
+
+                # Show tasks
                 self.view_tasks()
-                break
+                break  # Exits description loop
+            break  # Exits title loop
 
     def remove_tasks(self) -> None:
         if len(self.TITLE) == 0:
-            print("You dont have any task to remove, create some.")
+            print("\nYou dont have any task to remove, create some.\n")
             return None
 
         index = utility.ask_for_index("update", len(self.TITLE), self.view_tasks)
 
         if index == "Q":
-            print("Closing remove tasks")
+            print("\nClosing remove tasks...")
             return None
         else:
+            # Removes tasks
             index = int(index)
             self.TITLE.pop(index)
             self.DESCRIPTION.pop(index)
             print("\nTask deleted successfully")
+
+            # Shows tasks
             self.view_tasks()
 
     def quit_program(self) -> None:
@@ -101,10 +118,9 @@ class App:
                 file.writelines(f"Title: {title}\n\tDescription: {description}\n\n")
 
 
-app = App()
-
-
 def main() -> None:
+    app = App()
+
     while True:
         # Displays options
         print("\nTo-Do List App by Ikenna Nicholas Ikwuka")
