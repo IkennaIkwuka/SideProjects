@@ -3,7 +3,7 @@ The below Python script defines a To-Do List application that allows users to ad
 remove tasks, with the option to quit the program and save tasks to a file.
 """
 
-from packages.utilities import utilities_instance as utility
+from packages import utility_instance as utility
 
 
 class App:

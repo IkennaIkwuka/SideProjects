@@ -5,7 +5,7 @@ error handling.
 
 
 # Utilities
-class Utilities:
+class Utility:
     def __init__(self) -> None: ...
 
     def ask_options(self):
@@ -45,9 +45,6 @@ class Utilities:
                     f"Invalid input. Please choose a valid task you would like to {action} or 'Q' to quit and not {index}\n"
                 )
 
-
-# Instance of Utility class
-utilities_instance = Utilities()
 
 if __name__ == "__main__":
     ...
