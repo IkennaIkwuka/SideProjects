@@ -95,7 +95,7 @@ class App:
             print("\nYou dont have any task to remove, create some.\n")
             return None
 
-        index = utility.ask_for_index("update", len(self.TITLE), self.view_tasks)
+        index = utility.ask_for_index("remove", len(self.TITLE), self.view_tasks)
 
         if index == "Q":
             print("\nClosing remove tasks...")
