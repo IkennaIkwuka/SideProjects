@@ -3,26 +3,42 @@ The below Python script defines a To-Do List application that allows users to ad
 remove tasks, with the option to quit the program and save tasks to a file.
 """
 
-from packages import utility_instance as utility
+from packages import utility, fileOps
 
 
 class App:
     def __init__(self) -> None:
-        self.task_list = {"Title": [], "Description": []}
+        self.task_list: dict[str, list[str]] = {"Title": [""], "Description": [""]}
 
         # Constants
         self.TASK_TITLE = self.task_list["Title"]
         self.TASK_DESCRIPTION = self.task_list["Description"]
         self.TASKS_MAX_LENGTH = 10
 
+        try:
+            with open("Tasks.txt", "r") as file:
+                print("Tasks were found")
+                for _ in file.readlines():
+                    task = _.strip()
+                    if task.startswith("Title"):
+                        self.task_list["Title"].append(task)
+                    if task.startswith("Description"):
+                        self.task_list["Description"].append(task)
+        except FileNotFoundError:
+            print("You dont have any tasks saved\n")
+
+        # self.file_t, self.file_d = fileOps.get_file_state()
+        # self.TASK_TITLE.extend(self.file_t)
+        # self.TASK_DESCRIPTION.extend(self.file_d)
+
     def add_tasks(self) -> None:
         if len(self.TASK_TITLE) > self.TASKS_MAX_LENGTH:
             print("You've reached the limit, you cant create anymore tasks.\n")
             return None
 
-        create_title_task = utility.ask_for_title_task("New")
+        create_title_task = utility.ask_for_task_title("New")
 
-        create_description_task = utility.ask_for_description_task("New")
+        create_description_task = utility.ask_for_task_description("New")
 
         # Add task title and task description
         self.TASK_TITLE.append(create_title_task)
@@ -55,9 +71,9 @@ class App:
         else:
             index = int(index)
 
-        update_title_task = utility.ask_for_title_task("Update")
+        update_title_task = utility.ask_for_task_title("Update")
 
-        update_description_task = utility.ask_for_description_task("Update")
+        update_description_task = utility.ask_for_task_description("Update")
 
         # Update tasks
         self.TASK_TITLE[index] = update_title_task
@@ -83,13 +99,14 @@ class App:
         # Removes tasks
         self.TASK_TITLE.pop(index)
         self.TASK_DESCRIPTION.pop(index)
-        print("\nTask deleted successfully")
+        print("\nTask deleted successfully...")
 
         # Shows tasks
         self.view_tasks()
 
     def quit_program(self) -> None:
         print("Thanks for using the app. GoodBye!")
+        print("Program ends...")
         print(self.task_list)
         if len(self.TASK_TITLE) <= self.TASKS_MAX_LENGTH:
             try:
@@ -106,20 +123,19 @@ def main() -> None:
     while True:
         # Displays options
         print("\nTo-Do List App by Ikenna Nicholas Ikwuka")
-        print("1.\tAdd tasks")
-        print("2.\tView tasks")
-        print("3.\tUpdate tasks")
-        print("4.\tRemove tasks")
+        print("1.\tAdd a task")
+        print("2.\tView your tasks")
+        print("3.\tUpdate a task")
+        print("4.\tRemove a task")
         print("5.\tQuit the program\n")
-
         # Prints 'You dont have any tasks saved'
-        file_task_dict = utility.get_tasks_from_file()
+        # file_task_dict = utility.get_tasks_from_file()
 
-        # Else adds contents to task list directory
-        if len(file_task_dict["Title"]) != 0:
-            app.TASK_TITLE.append(file_task_dict["Title"])
-        if len(file_task_dict["Description"]) != 0:
-            app.TASK_DESCRIPTION.append(file_task_dict["Description"])
+        # # Else adds contents to task list directory
+        # if len(file_task_dict["Title"]) != 0:
+        #     app.TASK_TITLE.append(file_task_dict["Title"])
+        # if len(file_task_dict["Description"]) != 0:
+        #     app.TASK_DESCRIPTION.append(file_task_dict["Description"])
 
         # Loop to take input and catch errors
         choice: int = utility.ask_options()
@@ -140,4 +156,5 @@ def main() -> None:
 
 # Starts here
 if __name__ == "__main__":
+    print("Program starts...")
     main()

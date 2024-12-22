@@ -1,6 +1,10 @@
 from .utilities import Utility
+from .file_operations import FileOps
 
 # Instance of Utility class
-utility_instance = Utility()
+utility = Utility()
 
-__all__ = ["Utility", "utility_instance"]
+# Instance of FileOps class
+fileOps = FileOps()
+
+__all__ = ["utility", "fileOps"]

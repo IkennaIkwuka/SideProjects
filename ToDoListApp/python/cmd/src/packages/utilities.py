@@ -47,7 +47,7 @@ class Utility:
                     f"Invalid input. Please choose a valid task you would like to {action_word} or 'Q' to quit and not {index}\n"
                 )
 
-    def ask_for_title_task(self, action_word: str):
+    def ask_for_task_title(self, action_word: str):
         # loop for task title
         while True:
             title_input: str = input(f"{action_word} title: ").strip()
@@ -56,7 +56,7 @@ class Utility:
             else:
                 return title_input
 
-    def ask_for_description_task(self, action_word: str):
+    def ask_for_task_description(self, action_word: str):
         # Loop for task description
         while True:
             description_input: str = input(f"{action_word} description: ").strip()
@@ -65,22 +65,6 @@ class Utility:
             else:
                 return description_input
 
-    def get_tasks_from_file(self):
-        file_list = {"Title": [], "Description": []}
-
-        # Checks if tasks file exists and adds contents to file list dictionary
-        try:
-            with open("Tasks.txt", "r") as file:
-                for _ in file.readlines():
-                    task = _.strip()
-                    if task.startswith("Title"):
-                        file_list["Title"].append(task)
-                    if task.startswith("Description"):
-                        file_list["Description"].append(task)
-        except FileNotFoundError:
-            print("You dont have any tasks saved\n")
-
-        return file_list 
 
 
 if __name__ == "__main__":
