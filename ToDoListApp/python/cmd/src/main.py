@@ -13,13 +13,14 @@ class App:
         # Constants
         self.TITLE = self.task_list["Title"]
         self.DESCRIPTION = self.task_list["Description"]
+        self.TASKS_MAX_LENGTH = 10
 
         # try:
         #     with open("Tasks.txt","r") as file:
         #         for _ in file.readlines():
 
     def add_tasks(self) -> None:
-        if len(self.TITLE) == 10:
+        if len(self.TITLE) == self.TASKS_MAX_LENGTH:
             print("You've reached the limit, you cant create anymore tasks.\n")
             return None
 
@@ -30,7 +31,7 @@ class App:
         # Add task title and task description
         self.TITLE.append(create_title_task)
         self.DESCRIPTION.append(create_description_task)
-        print("\nTasks created successfully")
+        print("\nTasks created successfully...")
 
         # Show tasks
         self.view_tasks()
@@ -92,12 +93,10 @@ class App:
 
     def quit_program(self) -> None:
         print("Thanks for using the app. GoodBye!")
-
+        print(self.task_list)
         with open("Tasks.txt", "a") as file:
-            for index, (title, desc) in enumerate(
-                zip(self.TITLE, self.DESCRIPTION), start=1
-            ):
-                file.writelines(f"\n{index}.\tTitle: {title}\n\tDescription: {desc}")
+            for  (title, desc) in zip(self.TITLE, self.DESCRIPTION):
+                file.writelines(f"Title: {title}\n\tDescription: {desc}\n")
 
 
 def main() -> None:
