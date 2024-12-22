@@ -11,16 +11,12 @@ class App:
         self.task_list = {"Title": [], "Description": []}
 
         # Constants
-        self.TITLE = self.task_list["Title"]
-        self.DESCRIPTION = self.task_list["Description"]
+        self.TASK_TITLE = self.task_list["Title"]
+        self.TASK_DESCRIPTION = self.task_list["Description"]
         self.TASKS_MAX_LENGTH = 10
 
-        # try:
-        #     with open("Tasks.txt","r") as file:
-        #         for _ in file.readlines():
-
     def add_tasks(self) -> None:
-        if len(self.TITLE) == self.TASKS_MAX_LENGTH:
+        if len(self.TASK_TITLE) > self.TASKS_MAX_LENGTH:
             print("You've reached the limit, you cant create anymore tasks.\n")
             return None
 
@@ -29,29 +25,29 @@ class App:
         create_description_task = utility.ask_for_description_task("New")
 
         # Add task title and task description
-        self.TITLE.append(create_title_task)
-        self.DESCRIPTION.append(create_description_task)
+        self.TASK_TITLE.append(create_title_task)
+        self.TASK_DESCRIPTION.append(create_description_task)
         print("\nTasks created successfully...")
 
         # Show tasks
         self.view_tasks()
 
     def view_tasks(self) -> None:
-        if len(self.TITLE) == 0:
-            print("You dont have any tasks, create some.\n")
+        if len(self.TASK_TITLE) == 0:
+            print("You dont have any tasks, create some to view.\n")
             return None
 
         for index, (title, desc) in enumerate(
-            zip(self.TITLE, self.DESCRIPTION), start=1
+            zip(self.TASK_TITLE, self.TASK_DESCRIPTION), start=1
         ):
             print(f"\n{index}.\tTitle: {title}\n\tDescription: {desc}\n")
 
     def update_tasks(self) -> None:
-        if len(self.TITLE) == 0:
-            print("You dont have any tasks to update, create some\n")
+        if len(self.TASK_TITLE) == 0:
+            print("You dont have any tasks, create some to update.\n")
             return None
 
-        index = utility.ask_for_index("update", len(self.TITLE), self.view_tasks)
+        index = utility.ask_for_index("update", len(self.TASK_TITLE), self.view_tasks)
 
         if index == "Q":
             print("\nClosing update tasks...")
@@ -64,39 +60,44 @@ class App:
         update_description_task = utility.ask_for_description_task("Update")
 
         # Update tasks
-        self.TITLE[index] = update_title_task
-        self.DESCRIPTION[index] = update_description_task
+        self.TASK_TITLE[index] = update_title_task
+        self.TASK_DESCRIPTION[index] = update_description_task
         print("\nTask updated successfully...")
 
         # Show tasks
         self.view_tasks()
 
     def remove_tasks(self) -> None:
-        if len(self.TITLE) == 0:
-            print("\nYou dont have any task to remove, create some.\n")
+        if len(self.TASK_TITLE) == 0:
+            print("\nYou dont have any task, create some to remove.\n")
             return None
 
-        index = utility.ask_for_index("remove", len(self.TITLE), self.view_tasks)
+        index = utility.ask_for_index("remove", len(self.TASK_TITLE), self.view_tasks)
 
         if index == "Q":
             print("\nClosing remove tasks...")
             return None
         else:
-            # Removes tasks
             index = int(index)
-            self.TITLE.pop(index)
-            self.DESCRIPTION.pop(index)
-            print("\nTask deleted successfully")
 
-            # Shows tasks
-            self.view_tasks()
+        # Removes tasks
+        self.TASK_TITLE.pop(index)
+        self.TASK_DESCRIPTION.pop(index)
+        print("\nTask deleted successfully")
+
+        # Shows tasks
+        self.view_tasks()
 
     def quit_program(self) -> None:
         print("Thanks for using the app. GoodBye!")
         print(self.task_list)
-        with open("Tasks.txt", "a") as file:
-            for  (title, desc) in zip(self.TITLE, self.DESCRIPTION):
-                file.writelines(f"Title: {title}\n\tDescription: {desc}\n")
+        if len(self.TASK_TITLE) <= self.TASKS_MAX_LENGTH:
+            try:
+                with open("Tasks.txt", "a") as file:
+                    for title, desc in zip(self.TASK_TITLE, self.TASK_DESCRIPTION):
+                        file.writelines(f"Title: {title}\nDescription: {desc}\n")
+            except Exception as e:
+                print(f"Unexpected error: {e}")
 
 
 def main() -> None:
@@ -110,6 +111,15 @@ def main() -> None:
         print("3.\tUpdate tasks")
         print("4.\tRemove tasks")
         print("5.\tQuit the program\n")
+
+        # Prints 'You dont have any tasks saved'
+        file_task_dict = utility.get_tasks_from_file()
+
+        # Else adds contents to task list directory
+        if len(file_task_dict["Title"]) != 0:
+            app.TASK_TITLE.append(file_task_dict["Title"])
+        if len(file_task_dict["Description"]) != 0:
+            app.TASK_DESCRIPTION.append(file_task_dict["Description"])
 
         # Loop to take input and catch errors
         choice: int = utility.ask_options()
