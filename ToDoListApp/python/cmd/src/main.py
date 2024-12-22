@@ -11,25 +11,13 @@ class App:
         self.task_list: dict[str, list[str]] = {"Title": [""], "Description": [""]}
 
         # Constants
-        self.TASK_TITLE = self.task_list["Title"]
-        self.TASK_DESCRIPTION = self.task_list["Description"]
+        self.TASK_TITLE = list(filter(None, self.task_list["Title"]))
+        self.TASK_DESCRIPTION = list(filter(None, self.task_list["Description"]))
         self.TASKS_MAX_LENGTH = 10
 
-        try:
-            with open("Tasks.txt", "r") as file:
-                print("Tasks were found")
-                for _ in file.readlines():
-                    task = _.strip()
-                    if task.startswith("Title"):
-                        self.task_list["Title"].append(task)
-                    if task.startswith("Description"):
-                        self.task_list["Description"].append(task)
-        except FileNotFoundError:
-            print("You dont have any tasks saved\n")
-
-        # self.file_t, self.file_d = fileOps.get_file_state()
-        # self.TASK_TITLE.extend(self.file_t)
-        # self.TASK_DESCRIPTION.extend(self.file_d)
+        self.file_title, self.file_description = utility.get_file_state()
+        self.TASK_TITLE.extend(self.file_title)
+        self.TASK_DESCRIPTION.extend(self.file_description)
 
     def add_tasks(self) -> None:
         if len(self.TASK_TITLE) > self.TASKS_MAX_LENGTH:
@@ -43,6 +31,7 @@ class App:
         # Add task title and task description
         self.TASK_TITLE.append(create_title_task)
         self.TASK_DESCRIPTION.append(create_description_task)
+
         print("\nTasks created successfully...")
 
         # Show tasks
@@ -56,6 +45,12 @@ class App:
         for index, (title, desc) in enumerate(
             zip(self.TASK_TITLE, self.TASK_DESCRIPTION), start=1
         ):
+            # if title == "":
+            #     index -= 1
+            #     continue
+            # if desc == "":
+            #     index -= 1
+            #     continue
             print(f"\n{index}.\tTitle: {title}\n\tDescription: {desc}\n")
 
     def update_tasks(self) -> None:
@@ -128,14 +123,6 @@ def main() -> None:
         print("3.\tUpdate a task")
         print("4.\tRemove a task")
         print("5.\tQuit the program\n")
-        # Prints 'You dont have any tasks saved'
-        # file_task_dict = utility.get_tasks_from_file()
-
-        # # Else adds contents to task list directory
-        # if len(file_task_dict["Title"]) != 0:
-        #     app.TASK_TITLE.append(file_task_dict["Title"])
-        # if len(file_task_dict["Description"]) != 0:
-        #     app.TASK_DESCRIPTION.append(file_task_dict["Description"])
 
         # Loop to take input and catch errors
         choice: int = utility.ask_options()
@@ -156,5 +143,5 @@ def main() -> None:
 
 # Starts here
 if __name__ == "__main__":
-    print("Program starts...")
+    print("\nProgram starts...")
     main()

@@ -26,7 +26,7 @@ class FileOps:
         except FileNotFoundError:
             print("You dont have any tasks saved\n")
 
-        return [file_list["Title"], file_list["Description"]]
+        return file_list["Title"], file_list["Description"]
 
     def display(self):
         print("\nTo-Do List App by Ikenna Nicholas Ikwuka")

@@ -38,7 +38,7 @@ class Utility:
                     print(f"\nPlease type 'Q' if you want to quit and not '{index}'\n")
             elif index.isdigit():
                 index = int(index) - 1
-                if index in range(1, list_length + 1):
+                if index in range(1, list_length):
                     return index
                 else:
                     print(f"\nPlease choose a valid index for task and not '{index}'\n")
@@ -65,6 +65,27 @@ class Utility:
             else:
                 return description_input
 
+    def get_file_state(self):
+        file_list: dict[str, list[str]] = {"Title": [""], "Description": [""]}
+
+        # Checks if tasks file exists and adds contents to the file list dictionary
+        try:
+            with open("Tasks.txt", "r") as file:
+                for _ in file.readlines():
+                    task = _.strip()
+                    if task.startswith(""):
+                        continue
+                    if task.startswith("Title"):
+                        file_list["Title"].append(task)
+                    if task.startswith("Description"):
+                        file_list["Description"].append(task)
+        except FileNotFoundError:
+            print("You dont have any tasks saved\n")
+
+        return [
+            list(filter(None, file_list["Title"])),
+            list(filter(None, file_list["Description"])),
+        ]
 
 
 if __name__ == "__main__":
