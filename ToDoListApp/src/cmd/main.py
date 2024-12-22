@@ -14,34 +14,26 @@ class App:
         self.TITLE = self.task_list["Title"]
         self.DESCRIPTION = self.task_list["Description"]
 
+        # try:
+        #     with open("Tasks.txt","r") as file:
+        #         for _ in file.readlines():
+
     def add_tasks(self) -> None:
         if len(self.TITLE) == 10:
             print("You've reached the limit, you cant create anymore tasks.\n")
             return None
 
-        # loop for task title
-        while True:
-            task_input_title: str = input("Title: ").strip()
-            if not task_input_title:
-                print("\nTitle cannot be empty.\n")
-                continue
+        create_title_task = utility.ask_for_title_task("New")
 
-            # Loop for task description
-            while True:
-                task_input_description: str = input("Description: ").strip()
-                if not task_input_description:
-                    print("\nDescription cannot be empty\n")
-                    continue
+        create_description_task = utility.ask_for_description_task("New")
 
-                # Add task title and task description
-                self.TITLE.append(task_input_title)
-                self.DESCRIPTION.append(task_input_description)
-                print("\nTasks created successfully")
+        # Add task title and task description
+        self.TITLE.append(create_title_task)
+        self.DESCRIPTION.append(create_description_task)
+        print("\nTasks created successfully")
 
-                # Show tasks
-                self.view_tasks()
-                break  # Exits description loop
-            break  # Exits title loop
+        # Show tasks
+        self.view_tasks()
 
     def view_tasks(self) -> None:
         if len(self.TITLE) == 0:
@@ -66,29 +58,17 @@ class App:
         else:
             index = int(index)
 
-        # loop for task title
-        while True:
-            new_task_input_title: str = input("New Title: ").strip()
-            if not new_task_input_title:
-                print("\nTitle cannot be empty.\n")
-                continue
+        update_title_task = utility.ask_for_title_task("Update")
 
-            # Loop for task description
-            while True:
-                new_task_input_description: str = input("New Description: ").strip()
-                if not new_task_input_description:
-                    print("\nDescription cannot be empty\n")
-                    continue
+        update_description_task = utility.ask_for_description_task("Update")
 
-                # Update tasks
-                self.TITLE[index] = new_task_input_title
-                self.DESCRIPTION[index] = new_task_input_description
-                print("\nTask updated successfully...")
+        # Update tasks
+        self.TITLE[index] = update_title_task
+        self.DESCRIPTION[index] = update_description_task
+        print("\nTask updated successfully...")
 
-                # Show tasks
-                self.view_tasks()
-                break  # Exits description loop
-            break  # Exits title loop
+        # Show tasks
+        self.view_tasks()
 
     def remove_tasks(self) -> None:
         if len(self.TITLE) == 0:
@@ -114,8 +94,10 @@ class App:
         print("Thanks for using the app. GoodBye!")
 
         with open("Tasks.txt", "a") as file:
-            for title, description in zip(self.TITLE, self.DESCRIPTION):
-                file.writelines(f"Title: {title}\n\tDescription: {description}\n\n")
+            for index, (title, desc) in enumerate(
+                zip(self.TITLE, self.DESCRIPTION), start=1
+            ):
+                file.writelines(f"\n{index}.\tTitle: {title}\n\tDescription: {desc}")
 
 
 def main() -> None:

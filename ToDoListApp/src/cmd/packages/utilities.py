@@ -12,7 +12,7 @@ class Utility:
         while True:
             # Validate user input and implements error handling.
             try:
-                choice = int(input("What do you want to do?: "))
+                choice = int(input("What do you want to do? or '5' to quit: "))
 
                 if choice not in range(1, 6):  # Checks input in range of 1 ~ 5
                     print("\nInvalid Input. Input a value from range 1 ~ 5\n")
@@ -23,10 +23,12 @@ class Utility:
                 print("\nInvalid Input. Input a number\n")
         return choice
 
-    def ask_for_index(self, action: str, list_length: int, func):
+    def ask_for_index(self, action_word: str, list_length: int, func):
         while True:
             func()
-            index = input(f"What task would you like to {action} or 'Q' to quit: ")
+            index = input(
+                f"What task would you like to {action_word} or 'Q' to quit: "
+            ).strip()
 
             if index.isalpha():
                 index = index[0].upper()
@@ -42,8 +44,26 @@ class Utility:
                     print(f"\nPlease choose a valid index for task and not '{index}'\n")
             else:
                 print(
-                    f"Invalid input. Please choose a valid task you would like to {action} or 'Q' to quit and not {index}\n"
+                    f"Invalid input. Please choose a valid task you would like to {action_word} or 'Q' to quit and not {index}\n"
                 )
+
+    def ask_for_title_task(self, action_word: str):
+        # loop for task title
+        while True:
+            title_input: str = input(f"{action_word} title: ").strip()
+            if not title_input:
+                print("\nTitle cannot be empty.\n")
+            else:
+                return title_input
+
+    def ask_for_description_task(self, action_word: str):
+        # Loop for task description
+        while True:
+            description_input: str = input(f"{action_word} description: ").strip()
+            if not description_input:
+                print("\nDescription cannot be empty\n")
+            else:
+                return description_input
 
 
 if __name__ == "__main__":
