@@ -36,6 +36,7 @@ class Utility:
 
             elif index.isalpha():
                 index = index[0].upper().strip()
+
                 if index == "Q":
                     return index
                 else:
@@ -43,6 +44,7 @@ class Utility:
 
             elif index.isdigit():
                 index = int(index) - 1
+
                 if index in range(list_length):
                     return index
                 else:
@@ -56,6 +58,7 @@ class Utility:
         # loop for task title
         while True:
             title_input: str = input(f"{action_word} title: ")
+
             if not title_input:
                 print("\nTitle cannot be empty.\n")
             else:
@@ -65,6 +68,7 @@ class Utility:
         # Loop for task description
         while True:
             description_input: str = input(f"{action_word} description: ")
+
             if not description_input:
                 print("\nDescription cannot be empty\n")
             else:
@@ -76,13 +80,18 @@ class Utility:
             for title_exist in file_
             if title_exist.startswith("Title:")
         ]
+
+        strip_title = [item.strip() for item in title_length]
+
         description_length: list[str] = [
             title_exist.strip("Description:")
             for title_exist in file_
             if title_exist.startswith("Description:")
         ]
 
-        return title_length, description_length
+        strip_desc = [item.strip() for item in description_length]
+
+        return strip_title, strip_desc
 
 
 if __name__ == "__main__":
