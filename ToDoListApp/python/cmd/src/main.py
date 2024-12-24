@@ -19,7 +19,7 @@ class App:
 
         # Constants
         self.MAX_LENGTH = 10
-        self.TASK_FILE_PATH = "python\\docs\\Tasks.txt"
+        self.TASK_FILE_PATH = "python\\cmd\\docs\\Tasks.txt"
 
         # Checks if tasks file exists and adds contents to the file list dictionary
         try:
@@ -46,9 +46,9 @@ class App:
 
             return None
 
-        create_title_task: str = utility.ask_for_task_title("New")
+        create_title_task: str = utility.ask_for_task_title("Create")
         print("")
-        create_description_task: str = utility.ask_for_task_description("New")
+        create_description_task: str = utility.ask_for_task_description("Create")
 
         # Add task title and task description
         self.task_title.append(create_title_task.strip())

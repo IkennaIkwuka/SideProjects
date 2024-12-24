@@ -3,12 +3,14 @@ The `Utility` class provides methods for handling user input validation and erro
 asking options, indices, task titles, and task descriptions.
 """
 
+from typing import Literal, Union
+
 
 # Utilities
 class Utility:
     def __init__(self) -> None: ...
 
-    def ask_options(self):
+    def ask_options(self) -> int:
         while True:
             # Validate user input and implements error handling.
             try:
@@ -27,54 +29,54 @@ class Utility:
         self,
         action_word: str,
         list_length: int,
-    ):
+    ) -> Union[int, Literal["Q"]]:
         while True:
-            index = input(f"What task would you like to {action_word} or 'Q' to quit: ")
+            user_input = input(
+                f"What task would you like to {action_word} or 'Q' to quit: "
+            ).strip()
 
-            if not index:
-                print("\nCannot be empty\n")
+            if not user_input:
+                print("\nCannot be empty. Please try again\n")
+                continue
 
-            elif index.isalpha():
-                index = index[0].upper().strip()
+            if user_input.upper() == "Q":
+                return "Q"
 
-                if index == "Q":
-                    return index
+            if user_input.isdigit():
+                user_input = int(user_input) - 1
+
+                if user_input in range(list_length):
+                    return user_input
                 else:
-                    print(f"\nPlease type 'Q' if you want to quit and not '{index}'\n")
-
-            elif index.isdigit():
-                index = int(index) - 1
-
-                if index in range(list_length):
-                    return index
-                else:
-                    print(f"\nPlease choose a valid index for task and not '{index}'\n")
+                    print(
+                        f"\nPlease choose a valid index between 1 and {list_length}.\n"
+                    )
             else:
                 print(
-                    f"Invalid input. Please choose a valid task you would like to {action_word} or 'Q' to quit and not {index}\n"
+                    f"Invalid input.\nPlease choose a valid task you would like to {action_word} or 'Q' to quit.\n"
                 )
 
-    def ask_for_task_title(self, action_word: str):
+    def ask_for_task_title(self, action_word: str) -> str:
         # loop for task title
         while True:
-            title_input: str = input(f"{action_word} title: ")
+            title_input: str = input(f"{action_word} title: ").strip()
 
             if not title_input:
                 print("\nTitle cannot be empty.\n")
             else:
-                return title_input.strip()
+                return title_input
 
-    def ask_for_task_description(self, action_word: str):
+    def ask_for_task_description(self, action_word: str) -> str:
         # Loop for task description
         while True:
-            description_input: str = input(f"{action_word} description: ")
+            description_input: str = input(f"{action_word} description: ").strip()
 
             if not description_input:
                 print("\nDescription cannot be empty\n")
             else:
-                return description_input.strip()
+                return description_input
 
-    def get_title_desc_length(self, file_: list[str]):
+    def get_title_desc_length(self, file_: list[str]) -> tuple[list[str], list[str]]:
         title_length: list[str] = [
             title_exist.strip("Title:")
             for title_exist in file_
