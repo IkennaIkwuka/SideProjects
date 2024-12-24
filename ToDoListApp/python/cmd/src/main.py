@@ -7,6 +7,11 @@ remove tasks, with the ability to save tasks to a file and load them back when t
     Methods not responding appropriately when file is full //  fixed
 
 
+# TODO Things to add:
+    Implement a way to ask user if the want to create a new file when file is full // not added
+    Add a functionality that removes content in program's list that exceeds max file length // added
+    functionality that prevents modification of file outside program // not added
+
 """
 
 from typing import Literal
@@ -30,8 +35,18 @@ class App:
                 # These are both lists with types list[str]
                 file_title, file_desc = utility.get_title_desc_length(file_)
 
-                self.task_title.extend(file_title)
+                file_length = len(file_title) or len(file_desc)
 
+                while file_length > self.MAX_LENGTH:
+                    # Removes values after index of max length in file title and description lists
+                    file_title.pop(file_length - 1)
+                    file_desc.pop(file_length - 1)
+
+                    # Decrements file_length until it is greater than max length
+                    file_length -= 1
+
+                # Adds lists to program's main lists
+                self.task_title.extend(file_title)
                 self.task_desc.extend(file_desc)
 
         except FileNotFoundError:
@@ -51,7 +66,6 @@ class App:
 
         # Add task title and task description
         self.task_title.append(create_title_task.strip())
-
         self.task_desc.append(create_desc_task.strip())
 
         print("\nTasks created successfully...\n")
