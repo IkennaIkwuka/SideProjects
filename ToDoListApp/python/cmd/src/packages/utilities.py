@@ -23,22 +23,27 @@ class Utility:
                 print("\nInvalid Input. Input a number\n")
         return choice
 
-    def ask_for_index(self, action_word: str, list_length: int, func):
+    def ask_for_index(
+        self,
+        action_word: str,
+        list_length: int,
+    ):
         while True:
-            func()
-            index = input(
-                f"What task would you like to {action_word} or 'Q' to quit: "
-            ).strip()
+            index = input(f"What task would you like to {action_word} or 'Q' to quit: ")
 
-            if index.isalpha():
-                index = index[0].upper()
+            if not index:
+                print("\nCannot be empty\n")
+
+            elif index.isalpha():
+                index = index[0].upper().strip()
                 if index == "Q":
                     return index
                 else:
                     print(f"\nPlease type 'Q' if you want to quit and not '{index}'\n")
+
             elif index.isdigit():
                 index = int(index) - 1
-                if index in range(1, list_length):
+                if index in range(list_length):
                     return index
                 else:
                     print(f"\nPlease choose a valid index for task and not '{index}'\n")
@@ -50,43 +55,37 @@ class Utility:
     def ask_for_task_title(self, action_word: str):
         # loop for task title
         while True:
-            title_input: str = input(f"{action_word} title: ").strip()
+            title_input: str = input(f"{action_word} title: ")
             if not title_input:
                 print("\nTitle cannot be empty.\n")
             else:
-                return title_input
+                return title_input.strip()
 
     def ask_for_task_description(self, action_word: str):
         # Loop for task description
         while True:
-            description_input: str = input(f"{action_word} description: ").strip()
+            description_input: str = input(f"{action_word} description: ")
             if not description_input:
                 print("\nDescription cannot be empty\n")
             else:
-                return description_input
+                return description_input.strip()
 
-    def get_file_state(self):
-        file_list: dict[str, list[str]] = {"Title": [""], "Description": [""]}
-
-        # Checks if tasks file exists and adds contents to the file list dictionary
-        try:
-            with open("Tasks.txt", "r") as file:
-                for _ in file.readlines():
-                    task = _.strip()
-                    if task.startswith(""):
-                        continue
-                    if task.startswith("Title"):
-                        file_list["Title"].append(task)
-                    if task.startswith("Description"):
-                        file_list["Description"].append(task)
-        except FileNotFoundError:
-            print("You dont have any tasks saved\n")
-
-        return [
-            list(filter(None, file_list["Title"])),
-            list(filter(None, file_list["Description"])),
+    def get_title_desc_length(self, file_: list[str]):
+        title_length: list[str] = [
+            title_exist.strip("Title:")
+            for title_exist in file_
+            if title_exist.startswith("Title:")
         ]
+        description_length: list[str] = [
+            title_exist.strip("Description:")
+            for title_exist in file_
+            if title_exist.startswith("Description:")
+        ]
+
+        return title_length, description_length
 
 
 if __name__ == "__main__":
+    ult = Utility()
+    # ult.get_file_state(20)
     ...

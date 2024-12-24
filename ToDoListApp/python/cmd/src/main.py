@@ -3,121 +3,138 @@ The below Python script defines a To-Do List application that allows users to ad
 remove tasks, with the option to quit the program and save tasks to a file.
 """
 
-from packages import utility, fileOps
+from typing import Literal
+from packages import utility
 
 
 class App:
     def __init__(self) -> None:
-        self.task_list: dict[str, list[str]] = {"Title": [""], "Description": [""]}
+        self.task_title: list[str] = []
+        self.task_description: list[str] = []
 
         # Constants
-        self.TASK_TITLE = list(filter(None, self.task_list["Title"]))
-        self.TASK_DESCRIPTION = list(filter(None, self.task_list["Description"]))
-        self.TASKS_MAX_LENGTH = 10
+        self.MAX_LENGTH = 20
+        self.FILE_PATH = "python\\docs\\Tasks.txt"
 
-        self.file_title, self.file_description = utility.get_file_state()
-        self.TASK_TITLE.extend(self.file_title)
-        self.TASK_DESCRIPTION.extend(self.file_description)
+        # Checks if tasks file exists and adds contents to the file list dictionary
+        try:
+            with open(self.FILE_PATH, "r") as file:
+                file_: list[str] = file.readlines()
+
+                # These are both lists with types list[str]
+                file_title, file_description = utility.get_title_desc_length(file_)
+
+                if (len(file_title) and len(file_description)) > self.MAX_LENGTH:
+                    print("File is full")
+                else:
+                    self.task_title.extend(file_title)
+                    self.task_description.extend(file_description)
+
+        except FileNotFoundError:
+            print("Cannot find file\n")
 
     def add_tasks(self) -> None:
-        if len(self.TASK_TITLE) > self.TASKS_MAX_LENGTH:
-            print("You've reached the limit, you cant create anymore tasks.\n")
+        if (len(self.task_title) and len(self.task_description)) > self.MAX_LENGTH:
+            print(
+                "You have expended all your space for creating tasks, you can either view, update, or delete tasks for more space."
+            )
+
             return None
 
-        create_title_task = utility.ask_for_task_title("New")
-
-        create_description_task = utility.ask_for_task_description("New")
+        create_title_task: str = utility.ask_for_task_title("New")
+        print("")
+        create_description_task: str = utility.ask_for_task_description("New")
 
         # Add task title and task description
-        self.TASK_TITLE.append(create_title_task)
-        self.TASK_DESCRIPTION.append(create_description_task)
+        self.task_title.append(create_title_task.strip())
+        self.task_description.append(create_description_task.strip())
 
-        print("\nTasks created successfully...")
-
-        # Show tasks
-        self.view_tasks()
+        print("\nTasks created successfully...\n")
 
     def view_tasks(self) -> None:
-        if len(self.TASK_TITLE) == 0:
+        if (len(self.task_title) or len(self.task_description)) == 0:
             print("You dont have any tasks, create some to view.\n")
             return None
 
         for index, (title, desc) in enumerate(
-            zip(self.TASK_TITLE, self.TASK_DESCRIPTION), start=1
+            zip(self.task_title, self.task_description), start=1
         ):
-            # if title == "":
-            #     index -= 1
-            #     continue
-            # if desc == "":
-            #     index -= 1
-            #     continue
             print(f"\n{index}.\tTitle: {title}\n\tDescription: {desc}\n")
 
     def update_tasks(self) -> None:
-        if len(self.TASK_TITLE) == 0:
+        if (len(self.task_title) or len(self.task_description)) == 0:
             print("You dont have any tasks, create some to update.\n")
             return None
 
-        index = utility.ask_for_index("update", len(self.TASK_TITLE), self.view_tasks)
+        index: int | Literal["Q"] = utility.ask_for_index(
+            "update", len(self.task_title)
+        )
 
         if index == "Q":
             print("\nClosing update tasks...")
             return None
-        else:
-            index = int(index)
 
-        update_title_task = utility.ask_for_task_title("Update")
+        update_title_task: str = utility.ask_for_task_title("Update")
+        print("")
+        update_description_task: str = utility.ask_for_task_description("Update")
 
-        update_description_task = utility.ask_for_task_description("Update")
+        # Update title and description
+        self.task_title[int(index)] = update_title_task
+        self.task_description[int(index)] = update_description_task
 
-        # Update tasks
-        self.TASK_TITLE[index] = update_title_task
-        self.TASK_DESCRIPTION[index] = update_description_task
-        print("\nTask updated successfully...")
-
-        # Show tasks
-        self.view_tasks()
+        print("\nTask updated successfully...\n")
 
     def remove_tasks(self) -> None:
-        if len(self.TASK_TITLE) == 0:
+        if (len(self.task_title) or len(self.task_description)) == 0:
             print("\nYou dont have any task, create some to remove.\n")
             return None
 
-        index = utility.ask_for_index("remove", len(self.TASK_TITLE), self.view_tasks)
+        index: int | Literal["Q"] = utility.ask_for_index(
+            "remove", len(self.task_title)
+        )
 
         if index == "Q":
-            print("\nClosing remove tasks...")
+            print("\nClosing remove tasks...\n")
             return None
-        else:
-            index = int(index)
 
         # Removes tasks
-        self.TASK_TITLE.pop(index)
-        self.TASK_DESCRIPTION.pop(index)
-        print("\nTask deleted successfully...")
+        self.task_title.pop(index)
+        self.task_description.pop(index)
 
-        # Shows tasks
-        self.view_tasks()
+        print("\nTask deleted successfully...\n")
 
     def quit_program(self) -> None:
         print("Thanks for using the app. GoodBye!")
-        print("Program ends...")
-        print(self.task_list)
-        if len(self.TASK_TITLE) <= self.TASKS_MAX_LENGTH:
-            try:
-                with open("Tasks.txt", "a") as file:
-                    for title, desc in zip(self.TASK_TITLE, self.TASK_DESCRIPTION):
-                        file.writelines(f"Title: {title}\nDescription: {desc}\n")
-            except Exception as e:
-                print(f"Unexpected error: {e}")
+        if (len(self.task_title) or len(self.task_description)) == 0:
+            return None
+
+        try:
+            with open(self.FILE_PATH, "a") as file1:
+                with open(self.FILE_PATH, "r") as file2:
+                    file_: list[str] = file2.readlines()
+
+                    # These are both lists with types list[str]
+                    file_title, file_description = utility.get_title_desc_length(file_)
+
+                    if (len(file_title) and len(file_description)) > self.MAX_LENGTH:
+                        print("File is full, Program ends successfully...")
+                        return None
+                    else:
+                        for title, desc in zip(self.task_title, self.task_description):
+                            file1.writelines(f"Title:{title}\nDescription:{desc}\n")
+                        print("Tasks saved to file, Program ends successfully...")
+        except FileNotFoundError:
+            print("File not found")
 
 
 def main() -> None:
+    print("\nProgram starts...")
+
     app = App()
 
     while True:
         # Displays options
-        print("\nTo-Do List App by Ikenna Nicholas Ikwuka")
+        print("To-Do List App by Ikenna Nicholas Ikwuka")
         print("1.\tAdd a task")
         print("2.\tView your tasks")
         print("3.\tUpdate a task")
@@ -143,5 +160,4 @@ def main() -> None:
 
 # Starts here
 if __name__ == "__main__":
-    print("\nProgram starts...")
     main()
