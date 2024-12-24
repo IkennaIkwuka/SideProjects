@@ -4,7 +4,8 @@ remove tasks, with the ability to save tasks to a file and load them back when t
 
 # TODO Things to fix:
     Duplication error // fixed
-    Methods not responding appropriately when file is full // fixed
+    Methods not responding appropriately when file is full //  fixed
+
 
 """
 
@@ -27,19 +28,17 @@ class App:
                 file_: list[str] = file.readlines()
 
                 # These are both lists with types list[str]
-                file_title, file_description = utility.get_title_desc_length(file_)
+                file_title, file_desc = utility.get_title_desc_length(file_)
 
-                if (len(file_title) and len(file_description)) >= self.MAX_LENGTH:
-                    print("File is full\n")
-                else:
-                    self.task_title.extend(file_title)
-                    self.task_desc.extend(file_description)
+                self.task_title.extend(file_title)
+
+                self.task_desc.extend(file_desc)
 
         except FileNotFoundError:
             print("Cannot find file\n")
 
     def add_tasks(self) -> None:
-        if (len(self.task_title) and len(self.task_desc)) >= self.MAX_LENGTH:
+        if (len(self.task_title) or len(self.task_desc)) >= self.MAX_LENGTH:
             print(
                 "You have expended all your space for creating tasks, you can either view, update, or delete tasks for more space."
             )
@@ -47,11 +46,12 @@ class App:
             return None
 
         create_title_task: str = utility.ask_for_title_desc("Create", "Title")
-        print("")
+
         create_desc_task: str = utility.ask_for_title_desc("Create", "Description")
 
         # Add task title and task description
         self.task_title.append(create_title_task.strip())
+
         self.task_desc.append(create_desc_task.strip())
 
         print("\nTasks created successfully...\n")
@@ -80,7 +80,7 @@ class App:
             return None
 
         update_title_task: str = utility.ask_for_title_desc("Update", "Title")
-        print("")
+
         update_desc_task: str = utility.ask_for_title_desc("Update", "Description")
 
         # Update title and description
@@ -119,9 +119,9 @@ class App:
                     file_: list[str] = file2.readlines()
 
                 # These are both lists with types list[str]
-                file_title, file_description = utility.get_title_desc_length(file_)
+                file_title, file_desc = utility.get_title_desc_length(file_)
 
-                if (len(file_title) or len(file_description)) >= self.MAX_LENGTH:
+                if (len(file_title) or len(file_desc)) >= self.MAX_LENGTH:
                     print("File is full, Program ends successfully...")
                     return None
 
@@ -141,7 +141,7 @@ class App:
 
 
 def main() -> None:
-    print("\nProgram starts...")
+    print("\nProgram starts...\n")
 
     app = App()
 

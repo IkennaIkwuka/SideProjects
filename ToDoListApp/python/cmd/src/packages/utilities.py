@@ -59,10 +59,11 @@ class Utility:
     def ask_for_title_desc(self, method_name: str, action_word: str) -> str:
         # loop for task title and description
         while True:
-            user_input: str = input(f"{action_word} {method_name}: ").strip()
+            user_input: str = input(f"{method_name} {action_word}: ").strip()
+            print("")
 
             if not user_input:
-                print(f"\n{method_name} cannot be empty.\n")
+                print(f"\n{action_word} cannot be empty.\n")
             else:
                 return user_input
 
