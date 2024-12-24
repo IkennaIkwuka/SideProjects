@@ -46,13 +46,13 @@ class App:
 
             return None
 
-        create_title_task: str = utility.ask_for_task_title("Create")
+        create_title_task: str = utility.ask_for_title_desc("Create", "Title")
         print("")
-        create_description_task: str = utility.ask_for_task_description("Create")
+        create_desc_task: str = utility.ask_for_title_desc("Create", "Description")
 
         # Add task title and task description
         self.task_title.append(create_title_task.strip())
-        self.task_desc.append(create_description_task.strip())
+        self.task_desc.append(create_desc_task.strip())
 
         print("\nTasks created successfully...\n")
 
@@ -79,13 +79,13 @@ class App:
             print("\nClosing update tasks...\n")
             return None
 
-        update_title_task: str = utility.ask_for_task_title("Update")
+        update_title_task: str = utility.ask_for_title_desc("Update", "Title")
         print("")
-        update_description_task: str = utility.ask_for_task_description("Update")
+        update_desc_task: str = utility.ask_for_title_desc("Update", "Description")
 
         # Update title and description
         self.task_title[int(index)] = update_title_task
-        self.task_desc[int(index)] = update_description_task
+        self.task_desc[int(index)] = update_desc_task
 
         print("\nTask updated successfully...\n")
 

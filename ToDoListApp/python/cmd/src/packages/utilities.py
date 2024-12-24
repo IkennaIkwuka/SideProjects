@@ -56,25 +56,15 @@ class Utility:
                     f"Invalid input.\nPlease choose a valid task you would like to {action_word} or 'Q' to quit.\n"
                 )
 
-    def ask_for_task_title(self, action_word: str) -> str:
-        # loop for task title
+    def ask_for_title_desc(self, method_name: str, action_word: str) -> str:
+        # loop for task title and description
         while True:
-            title_input: str = input(f"{action_word} title: ").strip()
+            user_input: str = input(f"{action_word} {method_name}: ").strip()
 
-            if not title_input:
-                print("\nTitle cannot be empty.\n")
+            if not user_input:
+                print(f"\n{method_name} cannot be empty.\n")
             else:
-                return title_input
-
-    def ask_for_task_description(self, action_word: str) -> str:
-        # Loop for task description
-        while True:
-            description_input: str = input(f"{action_word} description: ").strip()
-
-            if not description_input:
-                print("\nDescription cannot be empty\n")
-            else:
-                return description_input
+                return user_input
 
     def get_title_desc_length(self, file_: list[str]) -> tuple[list[str], list[str]]:
         title_length: list[str] = [
