@@ -1,6 +1,11 @@
 """
-The below Python script defines a To-Do List application that allows users to add, view, update, and
-remove tasks, with the option to quit the program and save tasks to a file.
+The provided Python script is a To-Do List application that allows users to add, view, update, and
+remove tasks, with the ability to save tasks to a file and load them back when the program restarts.
+
+# TODO Things to fix:
+    Duplication error // fixed
+    Methods not responding appropriately when file is full // fixed
+
 """
 
 from typing import Literal
@@ -13,7 +18,7 @@ class App:
         self.task_desc: list[str] = []
 
         # Constants
-        self.MAX_LENGTH = 20
+        self.MAX_LENGTH = 10
         self.TASK_FILE_PATH = "python\\docs\\Tasks.txt"
 
         # Checks if tasks file exists and adds contents to the file list dictionary
@@ -24,8 +29,8 @@ class App:
                 # These are both lists with types list[str]
                 file_title, file_description = utility.get_title_desc_length(file_)
 
-                if (len(file_title) and len(file_description)) > self.MAX_LENGTH:
-                    print("File is full")
+                if (len(file_title) and len(file_description)) >= self.MAX_LENGTH:
+                    print("File is full\n")
                 else:
                     self.task_title.extend(file_title)
                     self.task_desc.extend(file_description)
@@ -34,7 +39,7 @@ class App:
             print("Cannot find file\n")
 
     def add_tasks(self) -> None:
-        if (len(self.task_title) and len(self.task_desc)) > self.MAX_LENGTH:
+        if (len(self.task_title) and len(self.task_desc)) >= self.MAX_LENGTH:
             print(
                 "You have expended all your space for creating tasks, you can either view, update, or delete tasks for more space."
             )
@@ -71,7 +76,7 @@ class App:
         )
 
         if index == "Q":
-            print("\nClosing update tasks...")
+            print("\nClosing update tasks...\n")
             return None
 
         update_title_task: str = utility.ask_for_task_title("Update")
@@ -113,16 +118,24 @@ class App:
                 with open(self.TASK_FILE_PATH, "r") as file2:
                     file_: list[str] = file2.readlines()
 
-                    # These are both lists with types list[str]
-                    file_title, file_description = utility.get_title_desc_length(file_)
+                # These are both lists with types list[str]
+                file_title, file_description = utility.get_title_desc_length(file_)
 
-                    if (len(file_title) and len(file_description)) > self.MAX_LENGTH:
-                        print("File is full, Program ends successfully...")
-                        return None
-                    else:
-                        for title, desc in zip(self.task_title, self.task_desc):
-                            file1.writelines(f"Title:{title}\nDescription:{desc}\n")
-                        print("Tasks saved to file, Program ends successfully...")
+                if (len(file_title) or len(file_description)) >= self.MAX_LENGTH:
+                    print("File is full, Program ends successfully...")
+                    return None
+
+                for title, desc in zip(self.task_title, self.task_desc):
+                    file_title_format = f"Title:{title}\n"
+                    file_desc_format = f"Description:{desc}\n"
+
+                    # Fixes duplication error
+                    if (file_title_format or file_desc_format) in file_:
+                        continue
+
+                    file1.writelines(f"Title:{title}\nDescription:{desc}\n")
+
+                print("Tasks saved to file, Program ends successfully...")
         except FileNotFoundError:
             print("File not found")
 

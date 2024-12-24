@@ -1,6 +1,6 @@
 """
-The `Utilities` class provides methods for asking user options and indices with input validation and
-error handling.
+The `Utility` class provides methods for handling user input validation and error handling for
+asking options, indices, task titles, and task descriptions.
 """
 
 
