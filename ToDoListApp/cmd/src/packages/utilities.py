@@ -67,27 +67,19 @@ class Utility:
             else:
                 return user_input
 
-    def get_title_desc_length(self, file_: list[str]) -> tuple[list[str], list[str]]:
-        title_length: list[str] = [
-            title_exist.strip("Title:")
-            for title_exist in file_
-            if title_exist.startswith("Title:")
+    def get_title_desc_content(self, file_) -> tuple[list[str], list[str]]:
+        file_content: list[str] = [
+            item.strip()
+            for item in file_
+            if item.startswith(("Title:", "Description:"))
         ]
 
-        strip_title = [item.strip() for item in title_length]
+        title_content: list[str] = [item.strip("Title:") for item in file_content]
+        desc_content: list[str] = [item.strip("Description:") for item in file_content]
 
-        description_length: list[str] = [
-            title_exist.strip("Description:")
-            for title_exist in file_
-            if title_exist.startswith("Description:")
-        ]
-
-        strip_desc = [item.strip() for item in description_length]
-
-        return strip_title, strip_desc
+        return title_content, desc_content
 
 
 if __name__ == "__main__":
-    ult = Utility()
-    # ult.get_file_state(20)
+    # ult = Utility()
     ...

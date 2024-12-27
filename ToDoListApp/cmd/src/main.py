@@ -8,9 +8,9 @@ remove tasks, with the ability to save tasks to a file and load them back when t
 
 
 # TODO Things to add:
-    Implement a way to ask user if the want to create a new file when file is full // not added
     Add a functionality that removes content in program's list that exceeds max file length // added
     functionality that prevents modification of file outside program // not added
+    Implement a way to ask user if the want to create a new file when file is full // not added
 
 """
 
@@ -19,41 +19,32 @@ from packages import utility
 
 
 class App:
-    def __init__(self) -> None:
+    def __init__(self, max_length: int, file_path: str) -> None:
         self.task_title: list[str] = []
         self.task_desc: list[str] = []
-
-        # Constants
-        self.MAX_LENGTH = 10
-        self.TASK_FILE_PATH = "python\\cmd\\docs\\Tasks.txt"
+        self.max_length: int = max_length
+        self.file_path: str = file_path
 
         # Checks if tasks file exists and adds contents to the file list dictionary
         try:
-            with open(self.TASK_FILE_PATH, "r") as file:
-                file_: list[str] = file.readlines()
+            with open(self.file_path, "r") as file:
+                file_: list[str] = file.readlines(50)
 
                 # These are both lists with types list[str]
-                file_title, file_desc = utility.get_title_desc_length(file_)
-
-                file_length = len(file_title) or len(file_desc)
-
-                while file_length > self.MAX_LENGTH:
-                    # Removes values after index of max length in file title and description lists
-                    file_title.pop(file_length - 1)
-                    file_desc.pop(file_length - 1)
-
-                    # Decrements file_length until it is greater than max length
-                    file_length -= 1
+                title_content, desc_content = utility.get_title_desc_content(file_)
 
                 # Adds lists to program's main lists
-                self.task_title.extend(file_title)
-                self.task_desc.extend(file_desc)
-
+                self.task_title.extend(title_content[0:max_length])
+                self.task_desc.extend(desc_content[0:max_length])
         except FileNotFoundError:
-            print("Cannot find file\n")
+            print(
+                f"Path to file: {self.file_path} could not be found, creating a new one...\n"
+            )
+            with open(self.file_path, "a") as file:
+                file.writelines([])
 
     def add_tasks(self) -> None:
-        if (len(self.task_title) or len(self.task_desc)) >= self.MAX_LENGTH:
+        if (len(self.task_title) or len(self.task_desc)) >= self.max_length:
             print(
                 "You have expended all your space for creating tasks, you can either view, update, or delete tasks for more space."
             )
@@ -128,14 +119,14 @@ class App:
             return None
 
         try:
-            with open(self.TASK_FILE_PATH, "a") as file1:
-                with open(self.TASK_FILE_PATH, "r") as file2:
+            with open(self.file_path, "a") as file1:
+                with open(self.file_path, "r") as file2:
                     file_: list[str] = file2.readlines()
 
                 # These are both lists with types list[str]
-                file_title, file_desc = utility.get_title_desc_length(file_)
+                file_title, file_desc = utility.get_title_desc_content(file_)
 
-                if (len(file_title) or len(file_desc)) >= self.MAX_LENGTH:
+                if (len(file_title) or len(file_desc)) >= self.max_length:
                     print("File is full, Program ends successfully...")
                     return None
 
@@ -155,10 +146,6 @@ class App:
 
 
 def main() -> None:
-    print("\nProgram starts...\n")
-
-    app = App()
-
     while True:
         # Displays options
         print("To-Do List App by Ikenna Nicholas Ikwuka")
@@ -187,4 +174,6 @@ def main() -> None:
 
 # Starts here
 if __name__ == "__main__":
-    main()
+    print("\nProgram starts...\n")
+    app = App(10, "cmd\\docs\\Tasks.txt")
+    # main()
