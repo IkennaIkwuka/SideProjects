@@ -9,7 +9,7 @@ remove tasks, with the ability to save tasks to a file and load them back when t
 
 # TODO Things to add:
     Add a functionality that removes content in program's list that exceeds max file length // added
-    functionality that prevents modification of file outside program // not added
+    functionality that prevents modification of file outside program // added
     Implement a way to ask user if the want to create a new file when file is full // not added
 
 """
@@ -28,19 +28,45 @@ class App:
         # Checks if tasks file exists and adds contents to the file list dictionary
         try:
             with open(self.file_path, "r") as file:
-                file_: list[str] = file.readlines(50)
+                file_: list[str] = file.readlines()
 
-                # These are both lists with types list[str]
-                title_content, desc_content = utility.get_title_desc_content(file_)
+                title_content: list[str] = utility.get_title_content(file_)
+                desc_content: list[str] = utility.get_desc_content(file_)
 
-                # Adds lists to program's main lists
-                self.task_title.extend(title_content[0:max_length])
-                self.task_desc.extend(desc_content[0:max_length])
+                if len(file_) <= self.max_length * 2:
+                    print(
+                        f"file path: {self.file_path} was found to have content, content will be taken and file will be cleared"
+                    )
+                    # Adds lists to program's main lists
+                    self.task_title.clear()
+                    self.task_title.extend(title_content)
+                    self.task_desc.clear()
+                    self.task_desc.extend(desc_content)
+
+                    # Resetting file
+                    with open(self.file_path, "w") as file:
+                        file.writelines([])
+                else:
+                    print(
+                        f"File at path: {self.file_path} has exceeded maximum limit, appropriate content (if found) will be taken and the file cleared"
+                    )
+
+                    # Adds lists to program's main lists
+                    self.task_title.clear()
+                    self.task_title.extend(title_content)
+                    self.task_desc.clear()
+                    self.task_desc.extend(desc_content)
+
+                    # Resetting file
+                    with open(self.file_path, "w") as file:
+                        file.writelines([])
+
         except FileNotFoundError:
             print(
                 f"Path to file: {self.file_path} could not be found, creating a new one...\n"
             )
-            with open(self.file_path, "a") as file:
+            # creating file
+            with open(self.file_path, "w") as file:
                 file.writelines([])
 
     def add_tasks(self) -> None:
@@ -119,26 +145,9 @@ class App:
             return None
 
         try:
-            with open(self.file_path, "a") as file1:
-                with open(self.file_path, "r") as file2:
-                    file_: list[str] = file2.readlines()
-
-                # These are both lists with types list[str]
-                file_title, file_desc = utility.get_title_desc_content(file_)
-
-                if (len(file_title) or len(file_desc)) >= self.max_length:
-                    print("File is full, Program ends successfully...")
-                    return None
-
+            with open(self.file_path, "a") as file:
                 for title, desc in zip(self.task_title, self.task_desc):
-                    file_title_format = f"Title:{title}\n"
-                    file_desc_format = f"Description:{desc}\n"
-
-                    # Fixes duplication error
-                    if (file_title_format or file_desc_format) in file_:
-                        continue
-
-                    file1.writelines(f"Title:{title}\nDescription:{desc}\n")
+                    file.writelines(f"Title:{title}\nDescription:{desc}\n")
 
                 print("Tasks saved to file, Program ends successfully...")
         except FileNotFoundError:
@@ -176,4 +185,4 @@ def main() -> None:
 if __name__ == "__main__":
     print("\nProgram starts...\n")
     app = App(10, "cmd\\docs\\Tasks.txt")
-    # main()
+    main()

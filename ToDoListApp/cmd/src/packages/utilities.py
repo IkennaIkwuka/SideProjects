@@ -67,19 +67,40 @@ class Utility:
             else:
                 return user_input
 
-    def get_title_desc_content(self, file_) -> tuple[list[str], list[str]]:
+    def get_title_content(self, file_: list[str]) -> list[str]:
         file_content: list[str] = [
-            item.strip()
-            for item in file_
-            if item.startswith(("Title:", "Description:"))
+            item.strip() for item in file_ if item.startswith(("Title:"))
         ]
 
-        title_content: list[str] = [item.strip("Title:") for item in file_content]
-        desc_content: list[str] = [item.strip("Description:") for item in file_content]
+        duplicates = set()
 
-        return title_content, desc_content
+        title_content: list[str] = []
+
+        for item in file_content:
+            if item not in duplicates:
+                title_content.append(item.strip("Title:"))
+                duplicates.add(item)
+
+        return title_content
+
+    def get_desc_content(self, file_: list[str]) -> list[str]:
+        file_content: list[str] = [
+            item.strip() for item in file_ if item.startswith(("Description:"))
+        ]
+
+        duplicates = set()
+
+        desc_content: list[str] = []
+
+        for item in file_content:
+            if item not in duplicates:
+                desc_content.append(item.strip("Description:"))
+                duplicates.add(item)
+
+        return desc_content
 
 
 if __name__ == "__main__":
-    # ult = Utility()
+    ult = Utility()
+    # ult.get_title_desc_content(app.)
     ...

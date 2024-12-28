@@ -3,13 +3,24 @@
 # print(pathlib.Path().resolve())  # Prints the current directory
 
 
+
+
 def truncate_file(filename, line_number):
     # Open the file in read mode or create it if it doesn't exist
     try:
         with open(filename, "r") as file:
             lines = file.readlines()
+            deps = set()
+            new_lines = []
+            for item in lines:
+                if item not in deps:
+                    new_lines.append(item)
+                    deps.add(item)
+                    
             print(len(lines))
             print(lines)
+            print(len(new_lines))
+            print(new_lines)
     except FileNotFoundError:
         print(f"File '{filename}' not found. Creating a new file.")
         lines = [
