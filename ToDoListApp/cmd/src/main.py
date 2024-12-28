@@ -23,7 +23,6 @@ class App:
         self.task_desc: list[str] = []
         self.max_length: int = max_length
         self.file_path: str = file_path
-        # self.backup_file_path = backup_file_pat
 
         # Checks if tasks file exists and adds contents to the file list dictionary
         try:
@@ -54,7 +53,7 @@ class App:
                 f"Path to file: {self.file_path} could not be found, creating a new one...\n"
             )
             # creating file
-            with open(self.file_path, "w") as file:
+            with open(self.file_path, "x") as file:
                 file.writelines([])
 
     def add_tasks(self) -> None:
@@ -169,4 +168,4 @@ def main() -> None:
 if __name__ == "__main__":
     print("\nProgram starts...\n")
     app = App(10, "cmd\\docs\\Tasks.txt")
-    # main()g
+    main()

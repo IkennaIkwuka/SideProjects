@@ -87,28 +87,30 @@ class Utility:
                 duplicates.add(item)
 
         return desc_content
-    
+
     def ask_for_backup(self, file_):
+        backup_prompt = "Would you like to create a backup (Y/N)? | Warning: Not creating a backup means if any problem arises all data will be lost!: "
+
+        backup_name_prompt = "What name would you give this backup file?: "
         while True:
-            backup = input("Would you like to create a backup? (Y/N): ").strip()
+            backup = input(backup_prompt).strip()
 
             if backup.upper() == "Y":
                 while True:
-                    backup_name = input(
-                                "What name would you give this backup file?: "
-                            ).strip().title()
+                    backup_name = input(backup_name_prompt).strip().title()
                     try:
                         with open(f"cmd\\docs\\{backup_name}.txt", "x") as file:
                             file.writelines(file_)
                             break
                     except FileExistsError:
-                        print("File exists already create a new one.")
+                        print(
+                            f"File at path: cmd\\docs\\{backup_name}.txt exists already create a new one."
+                        )
                 break
             elif backup.upper() == "N":
                 break
             else:
                 print("Invalid input")
-
 
 
 if __name__ == "__main__":
