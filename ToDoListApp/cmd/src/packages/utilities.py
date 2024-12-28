@@ -3,8 +3,6 @@ The `Utility` class provides methods for handling user input validation and erro
 asking options, indices, task titles, and task descriptions.
 """
 
-from typing import Literal, Union
-
 
 # Utilities
 class Utility:
@@ -25,36 +23,27 @@ class Utility:
                 print("\nInvalid Input. Input a number\n")
         return choice
 
-    def ask_for_index(
-        self,
-        action_word: str,
-        list_length: int,
-    ) -> Union[int, Literal["Q"]]:
-        while True:
-            user_input = input(
-                f"What task would you like to {action_word} or 'Q' to quit: "
-            ).strip()
+    def ask_for_index(self, action_word: str, list_length: int) -> None | int:
+        prompt: str = f"What task would you like to {action_word} or 'Q' to quit: "
 
-            if not user_input:
-                print("\nCannot be empty. Please try again\n")
-                continue
+        err_msg: str = f"\nPlease choose a valid index between 1 and {list_length}.\n"
+
+        while True:
+            user_input = input(prompt).strip()
 
             if user_input.upper() == "Q":
-                return "Q"
+                return None
 
-            if user_input.isdigit():
-                user_input = int(user_input) - 1
+            if not user_input.isdigit():
+                print("invalid must be a number or 'Q' to quit")
+                continue
 
-                if user_input in range(list_length):
-                    return user_input
-                else:
-                    print(
-                        f"\nPlease choose a valid index between 1 and {list_length}.\n"
-                    )
+            user_input = int(user_input) - 1
+
+            if user_input in range(list_length):
+                return user_input
             else:
-                print(
-                    f"Invalid input.\nPlease choose a valid task you would like to {action_word} or 'Q' to quit.\n"
-                )
+                print(err_msg)
 
     def ask_for_title_desc(self, method_name: str, action_word: str) -> str:
         # loop for task title and description
@@ -98,9 +87,32 @@ class Utility:
                 duplicates.add(item)
 
         return desc_content
+    
+    def ask_for_backup(self, file_):
+        while True:
+            backup = input("Would you like to create a backup? (Y/N): ").strip()
+
+            if backup.upper() == "Y":
+                while True:
+                    backup_name = input(
+                                "What name would you give this backup file?: "
+                            ).strip().title()
+                    try:
+                        with open(f"cmd\\docs\\{backup_name}.txt", "x") as file:
+                            file.writelines(file_)
+                            break
+                    except FileExistsError:
+                        print("File exists already create a new one.")
+                break
+            elif backup.upper() == "N":
+                break
+            else:
+                print("Invalid input")
+
 
 
 if __name__ == "__main__":
     ult = Utility()
     # ult.get_title_desc_content(app.)
+    ult.ask_for_index("Update", 10)
     ...

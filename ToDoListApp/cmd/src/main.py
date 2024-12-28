@@ -14,7 +14,6 @@ remove tasks, with the ability to save tasks to a file and load them back when t
 
 """
 
-from typing import Literal
 from packages import utility
 
 
@@ -24,42 +23,31 @@ class App:
         self.task_desc: list[str] = []
         self.max_length: int = max_length
         self.file_path: str = file_path
+        # self.backup_file_path = backup_file_pat
 
         # Checks if tasks file exists and adds contents to the file list dictionary
         try:
             with open(self.file_path, "r") as file:
+                print(
+                    f"file path: {self.file_path} was found, appropriate content (if found) will be taken and file will be cleared"
+                )
+
                 file_: list[str] = file.readlines()
+
+                utility.ask_for_backup(file_)
 
                 title_content: list[str] = utility.get_title_content(file_)
                 desc_content: list[str] = utility.get_desc_content(file_)
 
-                if len(file_) <= self.max_length * 2:
-                    print(
-                        f"file path: {self.file_path} was found to have content, content will be taken and file will be cleared"
-                    )
-                    # Adds lists to program's main lists
-                    self.task_title.clear()
-                    self.task_title.extend(title_content)
-                    self.task_desc.clear()
-                    self.task_desc.extend(desc_content)
+                # Adds lists to program's main lists
+                self.task_title.clear()
+                self.task_title.extend(title_content)
+                self.task_desc.clear()
+                self.task_desc.extend(desc_content)
 
-                    # Resetting file
-                    with open(self.file_path, "w") as file:
-                        file.writelines([])
-                else:
-                    print(
-                        f"File at path: {self.file_path} has exceeded maximum limit, appropriate content (if found) will be taken and the file cleared"
-                    )
-
-                    # Adds lists to program's main lists
-                    self.task_title.clear()
-                    self.task_title.extend(title_content)
-                    self.task_desc.clear()
-                    self.task_desc.extend(desc_content)
-
-                    # Resetting file
-                    with open(self.file_path, "w") as file:
-                        file.writelines([])
+                # Resetting file
+                with open(self.file_path, "w") as file:
+                    file.writelines([])
 
         except FileNotFoundError:
             print(
@@ -102,11 +90,9 @@ class App:
             print("You dont have any tasks, create some to update.\n")
             return None
 
-        index: int | Literal["Q"] = utility.ask_for_index(
-            "update", len(self.task_title)
-        )
+        index: None | int = utility.ask_for_index("update", len(self.task_title))
 
-        if index == "Q":
+        if index is None:
             print("\nClosing update tasks...\n")
             return None
 
@@ -125,17 +111,15 @@ class App:
             print("\nYou dont have any task, create some to remove.\n")
             return None
 
-        index: int | Literal["Q"] = utility.ask_for_index(
-            "remove", len(self.task_title)
-        )
+        index: None | int = utility.ask_for_index("remove", len(self.task_title))
 
-        if index == "Q":
+        if index is None:
             print("\nClosing remove tasks...\n")
             return None
 
         # Removes tasks
-        self.task_title.pop(index)
-        self.task_desc.pop(index)
+        self.task_title.pop(int(index))
+        self.task_desc.pop(int(index))
 
         print("\nTask deleted successfully...\n")
 
@@ -185,4 +169,4 @@ def main() -> None:
 if __name__ == "__main__":
     print("\nProgram starts...\n")
     app = App(10, "cmd\\docs\\Tasks.txt")
-    main()
+    # main()g
