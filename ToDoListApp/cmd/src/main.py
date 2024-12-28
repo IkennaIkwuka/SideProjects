@@ -1,6 +1,5 @@
 """
-The provided Python script is a To-Do List application that allows users to add, view, update, and
-remove tasks, with the ability to save tasks to a file and load them back when the program restarts.
+The provided Python script is a To-Do List application that allows users to manage tasks by adding, viewing, updating, and removing them, with the ability to save tasks to a file and load them back when the program restarts.
 
 # TODO Things to fix:
     Duplication error // fixed
@@ -24,29 +23,39 @@ class App:
         self.max_length: int = max_length
         self.file_path: str = file_path
 
+        read_file_msg: str = f"file path: {self.file_path} was found, appropriate content (if found) will be taken and file will be cleared"
+        leftover_file_msg: str = "File has reached its limits, therefore leftover contents will be added to new file"
+
+        self.file_path_leftover: str = "Tasks leftover.txt"
+
         # Checks if tasks file exists and adds contents to the file list dictionary
         try:
             with open(self.file_path, "r") as file:
-                print(
-                    f"file path: {self.file_path} was found, appropriate content (if found) will be taken and file will be cleared"
-                )
+                print(read_file_msg)
 
                 file_: list[str] = file.readlines()
-
-                utility.ask_for_backup(file_)
 
                 title_content: list[str] = utility.get_title_content(file_)
                 desc_content: list[str] = utility.get_desc_content(file_)
 
-                # Adds lists to program's main lists
-                self.task_title.clear()
-                self.task_title.extend(title_content)
-                self.task_desc.clear()
-                self.task_desc.extend(desc_content)
+                self.zipped = list(zip(title_content, desc_content))
 
-                # Resetting file
-                with open(self.file_path, "w") as file:
-                    file.writelines([])
+                contents: list[tuple[str, str]] = self.zipped[: self.max_length]
+
+                leftover: list[tuple[str, str]] = self.zipped[self.max_length :]
+
+                if len(self.zipped) <= self.max_length:
+                    utility.resetting_file(contents, self.file_path)
+                else:
+                    print(leftover_file_msg)
+                    utility.resetting_file(leftover, self.file_path_leftover)
+
+                self.task_title.clear()
+                self.task_desc.clear()
+
+                # Adds lists to program's main lists
+                self.task_title = [title for title, _ in contents]
+                self.task_desc = [desc for _, desc in contents]
 
         except FileNotFoundError:
             print(
@@ -127,14 +136,27 @@ class App:
         if (len(self.task_title) or len(self.task_desc)) == 0:
             return None
 
-        try:
-            with open(self.file_path, "a") as file:
-                for title, desc in zip(self.task_title, self.task_desc):
-                    file.writelines(f"Title:{title}\nDescription:{desc}\n")
+        if len(self.zipped) <= self.max_length:
+            try:
+                with open(self.file_path, "a") as file:
+                    for title, desc in zip(self.task_title, self.task_desc):
+                        file.writelines(f"Title:{title}\nDescription:{desc}\n")
+                    print(
+                        f"Tasks saved to file with path: {self.file_path}, Program ends successfully..."
+                    )
+            except FileNotFoundError:
+                print("file not found")
+        else:
+            try:
+                with open(self.file_path_leftover, "a") as file:
+                    for title, desc in zip(self.task_title, self.task_desc):
+                        file.writelines(f"Title:{title}\nDescription:{desc}\n")
 
-                print("Tasks saved to file, Program ends successfully...")
-        except FileNotFoundError:
-            print("File not found")
+                    print(
+                        f"Tasks saved to file with path: {self.file_path_leftover}, Program ends successfully..."
+                    )
+            except FileNotFoundError:
+                print("File is not found")
 
 
 def main() -> None:
@@ -167,5 +189,5 @@ def main() -> None:
 # Starts here
 if __name__ == "__main__":
     print("\nProgram starts...\n")
-    app = App(10, "cmd\\docs\\Tasks.txt")
+    app = App(10, "cmd/docs/Tasks.txt")
     main()

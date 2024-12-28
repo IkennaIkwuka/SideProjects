@@ -1,6 +1,5 @@
 """
-The `Utility` class provides methods for handling user input validation and error handling for
-asking options, indices, task titles, and task descriptions.
+The `Utility` class provides methods for handling user input validation, error handling, and file content extraction in a task management program.
 """
 
 
@@ -56,9 +55,9 @@ class Utility:
             else:
                 return user_input
 
-    def get_title_content(self, file_: list[str]) -> list[str]:
+    def get_title_content(self, file_list: list[str]) -> list[str]:
         file_content: list[str] = [
-            item.strip() for item in file_ if item.startswith(("Title:"))
+            item.strip() for item in file_list if item.startswith(("Title:"))
         ]
 
         duplicates = set()
@@ -72,9 +71,9 @@ class Utility:
 
         return title_content
 
-    def get_desc_content(self, file_: list[str]) -> list[str]:
+    def get_desc_content(self, file_list: list[str]) -> list[str]:
         file_content: list[str] = [
-            item.strip() for item in file_ if item.startswith(("Description:"))
+            item.strip() for item in file_list if item.startswith(("Description:"))
         ]
 
         duplicates = set()
@@ -88,29 +87,34 @@ class Utility:
 
         return desc_content
 
-    def ask_for_backup(self, file_):
-        backup_prompt = "Would you like to create a backup (Y/N)? | Warning: Not creating a backup means if any problem arises all data will be lost!: "
+    # def ask_for_backup(self, file_):
+    #     backup_prompt = "Would you like to create a backup (Y/N)? | Warning: Not creating a backup means if any problem arises all data will be lost!: "
 
-        backup_name_prompt = "What name would you give this backup file?: "
-        while True:
-            backup = input(backup_prompt).strip()
+    #     backup_name_prompt = "What name would you give this backup file?: "
+    #     while True:
+    #         backup = input(backup_prompt).strip()
 
-            if backup.upper() == "Y":
-                while True:
-                    backup_name = input(backup_name_prompt).strip().title()
-                    try:
-                        with open(f"cmd\\docs\\{backup_name}.txt", "x") as file:
-                            file.writelines(file_)
-                            break
-                    except FileExistsError:
-                        print(
-                            f"File at path: cmd\\docs\\{backup_name}.txt exists already create a new one."
-                        )
-                break
-            elif backup.upper() == "N":
-                break
-            else:
-                print("Invalid input")
+    #         if backup.upper() == "Y":
+    #             while True:
+    #                 backup_name = input(backup_name_prompt).strip().title()
+    #                 try:
+    #                     with open(f"cmd/docs/{backup_name}.txt", "x") as file:
+    #                         file.writelines(file_)
+    #                         break
+    #                 except FileExistsError:
+    #                     print(
+    #                         f"File at path: cmd/docs/{backup_name}.txt exists already create a new one."
+    #                     )
+    #             break
+    #         elif backup.upper() == "N":
+    #             break
+    #         else:
+    #             print("Invalid input")
+
+    def resetting_file(self, zipped_list: list, file_path: str) -> None:
+        with open(file_path, "w") as file:
+            for title, desc in zipped_list:
+                file.writelines(f"Title:{title}\nDescription:{desc}\n")
 
 
 if __name__ == "__main__":
