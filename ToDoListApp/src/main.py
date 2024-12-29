@@ -13,7 +13,7 @@ The provided Python script is a To-Do List application that allows users to mana
 
 """
 
-from packages import utility
+from src import utility
 
 
 class App:
