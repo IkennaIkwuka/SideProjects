@@ -13,7 +13,7 @@ The provided Python script is a To-Do List application that allows users to mana
 
 """
 
-from src import utility
+from utilities import tdl_utility
 
 
 class App:
@@ -35,8 +35,8 @@ class App:
 
                 file_: list[str] = file.readlines()
 
-                title_content: list[str] = utility.get_title_content(file_)
-                desc_content: list[str] = utility.get_desc_content(file_)
+                title_content: list[str] = tdl_utility.get_title_content(file_)
+                desc_content: list[str] = tdl_utility.get_desc_content(file_)
 
                 self.zipped = list(zip(title_content, desc_content))
 
@@ -45,10 +45,10 @@ class App:
                 leftover: list[tuple[str, str]] = self.zipped[self.max_length :]
 
                 if len(self.zipped) <= self.max_length:
-                    utility.resetting_file(contents, self.file_path)
+                    tdl_utility.resetting_file(contents, self.file_path)
                 else:
                     print(leftover_file_msg)
-                    utility.resetting_file(leftover, self.file_path_leftover)
+                    tdl_utility.resetting_file(leftover, self.file_path_leftover)
 
                 self.task_title.clear()
                 self.task_desc.clear()
@@ -73,9 +73,9 @@ class App:
 
             return None
 
-        create_title_task: str = utility.ask_for_title_desc("Create", "Title")
+        create_title_task: str = tdl_utility.ask_for_title_desc("Create", "Title")
 
-        create_desc_task: str = utility.ask_for_title_desc("Create", "Description")
+        create_desc_task: str = tdl_utility.ask_for_title_desc("Create", "Description")
 
         # Add task title and task description
         self.task_title.append(create_title_task.strip())
@@ -98,15 +98,15 @@ class App:
             print("You dont have any tasks, create some to update.\n")
             return None
 
-        index: None | int = utility.ask_for_index("update", len(self.task_title))
+        index: None | int = tdl_utility.ask_for_index("update", len(self.task_title))
 
         if index is None:
             print("\nClosing update tasks...\n")
             return None
 
-        update_title_task: str = utility.ask_for_title_desc("Update", "Title")
+        update_title_task: str = tdl_utility.ask_for_title_desc("Update", "Title")
 
-        update_desc_task: str = utility.ask_for_title_desc("Update", "Description")
+        update_desc_task: str = tdl_utility.ask_for_title_desc("Update", "Description")
 
         # Update title and description
         self.task_title[int(index)] = update_title_task
@@ -119,7 +119,7 @@ class App:
             print("\nYou dont have any task, create some to remove.\n")
             return None
 
-        index: None | int = utility.ask_for_index("remove", len(self.task_title))
+        index: None | int = tdl_utility.ask_for_index("remove", len(self.task_title))
 
         if index is None:
             print("\nClosing remove tasks...\n")
@@ -170,7 +170,7 @@ def main() -> None:
         print("5.\tQuit the program\n")
 
         # Loop to take input and catch errors
-        choice: int = utility.ask_options()
+        choice: int = tdl_utility.ask_options()
 
         match choice:
             case 1:
@@ -189,5 +189,7 @@ def main() -> None:
 # Starts here
 if __name__ == "__main__":
     print("\nProgram starts...\n")
+
     app = App(10, "cmd/docs/Tasks.txt")
+
     main()

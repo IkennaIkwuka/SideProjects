@@ -117,8 +117,9 @@ class Utility:
                 file.writelines(f"Title:{title}\nDescription:{desc}\n")
 
 
+tdl_utility = Utility()
+
 if __name__ == "__main__":
-    ult = Utility()
     # ult.get_title_desc_content(app.)
-    ult.ask_for_index("Update", 10)
+    # ult.ask_for_index("Update", 10)
     ...
