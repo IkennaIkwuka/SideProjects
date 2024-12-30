@@ -1,6 +1,9 @@
 """
+#TODO: Things to fix:
+    Fix get_result functionality // not fixed
 #TODO: Things to add:
-    A difficulty setting // not added
+    A game difficulty setting // not added
+    A score board // not added
 """
 
 # from utilities import ngg_utility
@@ -8,18 +11,38 @@ import random
 
 
 class Game:
-    def __init__(self, number_range: int) -> None:
-        self.range: int = number_range
-        self.computer_input: int = self.get_computer_input()
-        self.user_input: int = self.get_user_input()
+    def __init__(self) -> None:
+        self.difficulties = (10, 30, 50, 80)
 
-    def game_logic(self) -> str:
+        level: int = self.set_game_difficulty()
+
+        self.computer_input: int = random.randrange(1, self.difficulties[level])
+
+        self.user_input: int = self.ask_user_input()
+
+        # print(self.get_result())
+
+    def game_logic(self) -> None:
+        ...
+
+        # dpg  = int(input(""))
+
+    def get_result(self) -> None:
+        # result: str = ""
         if self.user_input == self.computer_input:
-            return f"Congratulations!! you got it {self.computer_input} was the right answer, your input was {self.user_input}"
-        else:
-            return f"Not the right number {self.computer_input} is the right one, your input was {self.user_input}"
+            print(
+                f"Congratulations!! you got it {self.computer_input} was the right answer, your input was {self.user_input}"
+            )
 
-    def get_user_input(self) -> int:
+        elif self.user_input < self.computer_input:
+            print(f"Almost, your input was {self.user_input}")
+
+        elif self.user_input > self.computer_input:
+            print(f"Too far!, your input was {self.user_input}")
+
+        # print(result)
+
+    def ask_user_input(self) -> int:
         while True:
             try:
                 user_input = int(
@@ -29,28 +52,34 @@ class Game:
             except ValueError:
                 print("Error: Must be a number\n")
 
-    def get_computer_input(self) -> int:
-        computer_input: int = random.randrange(self.range)
-        return computer_input
+    def set_game_difficulty(self) -> int:
+        print("What game difficulty would you like:\n")
+        print("1. Easy: 1 ~ 10")
+        print("2. Medium: 1 ~ 30")
+        print("3. Hard: 1 ~ 50")
+        print("4. Insane: 1 ~ 80")
+
+        while True:
+            try:
+                game_difficulty = int(input("Choose a game difficulty: "))
+
+                if game_difficulty in range(1, 5):
+                    break
+                else:
+                    print("Please type between 1 ~ 4")
+            except ValueError:
+                print("Error: Please type a number")
+        return game_difficulty
 
 
 def main() -> None:
     print("\nHi!, welcome to the Number Guessing Game.\n")
-    print("What difficulty would you like:\n")
-    while True:
-        try:
-            game_range = int(
-                input(
-                    "Please give a number in whose range you'll guess what the correct number is:"
-                )
-            )
-            break
-        except ValueError:
-            print("Error: Must be a number.")
 
-    game = Game(game_range)
+    game = Game()
+    game.get_result()
+    # game.game_logic()
 
-    print(game.game_logic())
+    # print(game.get_result())
 
 
 if __name__ == "__main__":
