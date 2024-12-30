@@ -1,6 +1,6 @@
 """
 #TODO: Things to fix:
-    Fix get_result functionality // fixed
+    Fix game_logic functionality // fixed
 #TODO: Things to add:
     A game difficulty setting // added
     A way to determine the number of users and a score board // not added
