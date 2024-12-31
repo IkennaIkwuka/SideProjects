@@ -1,29 +1,29 @@
 /*
- * Process:
- * Accept height and weight as input.
- * Calculate BMI using a formula.
- * Display the result and categorize (underweight, normal, overweight)
- * 
- */
-/*
- * ask if user prefers metric or imperial system
- * metric:
- *  get weight(kg) 
- *  get height(m)
- * imperial:
- *  get weight(lbs)
- *  get height(inches)
- * Underweight: < 18.5
- * Normal weight: 18.5 - 24.9
- * Overweight: 25 - 29.9
- * Obese: ≥ 30
- */
+* Process:
+* Accept height and weight as input.
+* Calculate BMI using a formula.
+* Display the result and categorize (underweight, normal, overweight)
+* 
+ask if user prefers metric or imperial system
+* metric:
+*  get weight(kg) 
+*  get height(m)
+* imperial:
+*  get weight(lbs)
+*  get height(inches)
+* Underweight: < 18.5
+* Normal weight: 18.5 - 24.9
+* Overweight: 25 - 29.9
+* Obese: ≥ 30
+*/
+package com.main;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class App {
-    private static Scanner inputScanner = new Scanner(System.in);
+
+    private static final Scanner inputScanner = new Scanner(System.in);
 
     private static final String ERRORMSG = "Error: Must be a number (integer)\n";
 
