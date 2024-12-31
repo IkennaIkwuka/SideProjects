@@ -1,3 +1,4 @@
+package src;
 /*
 * Process:
 * Accept height and weight as input.
@@ -16,7 +17,6 @@ ask if user prefers metric or imperial system
 * Overweight: 25 - 29.9
 * Obese: ≥ 30
 */
-package com.java.main;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
