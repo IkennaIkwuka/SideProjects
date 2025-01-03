@@ -159,37 +159,10 @@ class App:
                 print("File is not found")
 
 
-def main() -> None:
-    while True:
-        # Displays options
-        print("To-Do List App by Ikenna Nicholas Ikwuka")
-        print("1.\tAdd a task")
-        print("2.\tView your tasks")
-        print("3.\tUpdate a task")
-        print("4.\tRemove a task")
-        print("5.\tQuit the program\n")
-
-        # Loop to take input and catch errors
-        choice: int = tdl_utility.ask_options()
-
-        match choice:
-            case 1:
-                app.add_tasks()
-            case 2:
-                app.view_tasks()
-            case 3:
-                app.update_tasks()
-            case 4:
-                app.remove_tasks()
-            case 5:
-                app.quit_program()
-                break
-
 
 # Starts here
 if __name__ == "__main__":
     print("\nProgram starts...\n")
 
-    app = App(10, "cmd/docs/Tasks.txt")
+    # app = App(10, "cmd/docs/Tasks.txt")
 
-    main()
