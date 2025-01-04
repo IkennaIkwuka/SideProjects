@@ -1,5 +1,7 @@
 import main as mn
 
+print("\nProgram starts...\n")
+
 # Displays options
 prompt_action_to_take = """
 To-Do List App by Ikenna Nicholas Ikwuka
@@ -34,6 +36,7 @@ def main() -> None:
                     print("Error: Invalid range")
         else:
             print("Error: Invalid Integer")
+    print("Thanks for using the app, Goodbye")
 
 
 if __name__ == "__main__":
