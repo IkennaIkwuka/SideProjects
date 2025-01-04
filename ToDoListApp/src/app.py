@@ -1,5 +1,4 @@
-from ToDoListApp.src.main import App
-
+import main as mn
 
 # Displays options
 prompt_action_to_take = """
@@ -12,24 +11,30 @@ Here are the options:
 5. Save tasks.
 6. Quit the program.
 
-What do you chose: 
 """
 
-# Loop to take input and catch errors
-while (user_input := input(prompt_action_to_take)) != "6":
-    if user_input.isdigit():
-        match user_input := int(user_input):
-            case 1:
-                App.add_tasks()
-            case 2:
-                App.view_tasks()
-            case 3:
-                App.update_tasks()
-            case 4:
-                App.remove_tasks()
-            case 5:
-                App.quit_program()
-            case _:
-                print("Error: Invalid range")
-    else:
-        print("Error: Invalid Integer")
+
+def main() -> None:
+    # Loop to take input and catch errors
+    while (user_input := input(prompt_action_to_take + "What do you chose:")) != "6":
+        if user_input.isdigit():
+            match user_input := int(user_input):
+                case 1:
+                    mn.add_tasks()
+                case 2:
+                    mn.view_tasks()
+                case 3:
+                    mn.update_tasks()
+                case 4:
+                    mn.remove_tasks()
+                case 5:
+                    # mn.save_tasks()
+                    ...
+                case _:
+                    print("Error: Invalid range")
+        else:
+            print("Error: Invalid Integer")
+
+
+if __name__ == "__main__":
+    main()

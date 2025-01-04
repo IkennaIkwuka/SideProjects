@@ -22,38 +22,33 @@ class Utility:
                 print("\nInvalid Input. Input a number\n")
         return choice
 
-    def ask_for_index(self, action_word: str, list_length: int) -> None | int:
+    def ask_for_index(self, action_word: str, list_length: int) -> int:
         prompt: str = f"What task would you like to {action_word} or 'Q' to quit: "
-
         err_msg: str = f"\nPlease choose a valid index between 1 and {list_length}.\n"
-
-        while True:
-            user_input = input(prompt).strip()
-
-            if user_input.upper() == "Q":
-                return None
-
+        
+        while (user_input := input(prompt).upper().strip()) != "Q":
             if not user_input.isdigit():
-                print("invalid must be a number or 'Q' to quit")
+                print("Not an integer")
                 continue
 
             user_input = int(user_input) - 1
-
             if user_input in range(list_length):
                 return user_input
             else:
                 print(err_msg)
 
-    def ask_for_title_desc(self, method_name: str, action_word: str) -> str:
-        # loop for task title and description
-        while True:
-            user_input: str = input(f"{method_name} {action_word}: ").strip()
-            print("")
+        return 0
 
-            if not user_input:
-                print(f"\n{action_word} cannot be empty.\n")
-            else:
-                return user_input
+    # def ask_for_title_desc(self, method_name: str, action_word: str) -> str:
+    #     # loop for task title and description
+    #     while True:
+    #         user_input: str = input(f"{method_name} {action_word}: ").strip()
+    #         print("")
+
+    #         if not user_input:
+    #             print(f"\n{action_word} cannot be empty.\n")
+    #         else:
+    #             return user_input
 
     def get_title_content(self, file_list: list[str]) -> list[str]:
         file_content: list[str] = [
