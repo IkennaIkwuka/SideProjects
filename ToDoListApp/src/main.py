@@ -1,3 +1,5 @@
+import os
+
 """
 The provided Python script is a To-Do List application that allows users to manage tasks by adding, viewing, updating, and removing them, with the ability to save tasks to a file and load them back when the program restarts.
 
@@ -13,169 +15,177 @@ The provided Python script is a To-Do List application that allows users to mana
 
 """
 
-tasks: list[str] = []
-# task_desc: list[str] = []
-max_length = 10
-file_path = "cmd/docs/Tasks.txt"
-
-# read_file_msg: str = f"file path: {file_path} was found, appropriate content (if found) will be taken and file will be cleared"
-# leftover_file_msg: str = """File has reached its limits, therefore leftover contents will be added to new file"""
-
-# file_path_leftover: str = "Tasks leftover.txt"
-
-# # Checks if tasks file exists and adds contents to the file list dictionary
-# try:
-#     with open(file_path, "r") as file:
-#         print(read_file_msg)
-
-#         file_: list[str] = file.readlines()
-
-#         title_content: list[str] = tdl_utility.get_title_content(file_)
-#         desc_content: list[str] = tdl_utility.get_desc_content(file_)
-
-#         zipped = list(zip(title_content, desc_content))
-
-#         contents: list[tuple[str, str]] = zipped[:max_length]
-
-#         leftover: list[tuple[str, str]] = zipped[max_length:]
-
-#         if len(zipped) <= max_length:
-#             tdl_utility.resetting_file(contents, file_path)
-#         else:
-#             print(leftover_file_msg)
-#             tdl_utility.resetting_file(leftover, file_path_leftover)
-
-#         tasks.clear()
-#         task_desc.clear()
-
-#         # Adds lists to program's main lists
-#         tasks = [title for title, _ in contents]
-#         task_desc = [desc for _, desc in contents]
-
-# except FileNotFoundError:
-#     print(f"Path to file: {file_path} could not be found, creating a new one...\n")
-#     # creating file
-#     with open(file_path, "x") as file:
-#         file.writelines([])
+# Check if directory exists, if not create it.
+os.makedirs("docs/", exist_ok=True)
 
 
-def add_tasks() -> None:
-    msg = "You have expended all your space for creating tasks, you can either view, update, or delete tasks for more space.\n"
+class TODOLISTAPP:
+    def __init__(self):
+        self.tasks: list[str] = []
+        self.max_length = 10
+        self.__file_name = "Tasks"
+        self.path_to_file: str = f"docs/{self.file_name}.txt"
+        self.get_file_contents()
 
-    if len(tasks) >= max_length:
-        print(msg)
-        return
+    @property
+    def file_name(self) -> str:
+        return self.__file_name
 
-    create_task: str = ask_for_task("Create", "Task")
+    @file_name.setter
+    def file_name(self, file_name: str):
+        self.__file_name: str = file_name
 
-    # Add task title and task description
-    tasks.append(create_task.strip())
+    def add_tasks(self):
+        msg = "You have expended all your space for creating tasks, you can either view, update, or delete tasks for more space.\n"
 
-    print("\nTasks created successfully...\n")
+        if len(self.tasks) >= self.max_length:
+            print(msg)
+            return
 
+        create_task: str = self.ask_for_task("Create", "Task")
 
-def view_tasks() -> None:
-    check_if_task_empty("view")
+        # Add task title and task description
+        self.tasks.append(create_task.strip())
 
-    for index, task in enumerate(tasks, start=1):
-        print(f"\nTask {index}. {task} ")
+        print("\nTasks created successfully...\n")
 
+    def view_tasks(self):
+        if self.is_tasks_empty("view"):
+            return
 
-def update_tasks() -> None:
-    if check_if_task_empty("update") is None:
-        return None
+        for index, task in enumerate(self.tasks, start=1):
+            print(f"\nTask {index}. {task} ")
 
-    index: int = ask_for_index("update", len(tasks))
+    def update_tasks(self):
+        if self.is_tasks_empty("update"):
+            return
 
-    close_func(index, "Update")
+        index: int = self.ask_for_index("update", len(self.tasks))
 
-    update_task: str = ask_for_task("Update", "Task")
+        if index == 0:
+            print("\nClosing update tasks...\n")
 
-    # Update title and description
-    tasks[int(index)] = update_task
+        update_task: str = self.ask_for_task("Update", "Task")
 
-    print("\nTask updated successfully...\n")
+        # Update title and description
+        self.tasks[int(index)] = update_task
 
+        print("\nTask updated successfully...\n")
 
-def remove_tasks() -> None:
-    if check_if_task_empty("remove") is None:
-        return None
+    def remove_tasks(self):
+        if self.is_tasks_empty("remove"):
+            return
 
-    index: int = ask_for_index("remove", len(tasks))
+        index: int = self.ask_for_index("remove", len(self.tasks))
 
-    close_func(index, "Remove")
+        if index == 0:
+            print("\nClosing remove tasks...\n")
 
-    # Removes tasks
-    tasks.pop(int(index))
+        # Removes tasks
+        self.tasks.pop(int(index))
 
-    print("\nTask deleted successfully...\n")
+        print("\nTask deleted successfully...\n")
 
+    def save_tasks(self):
+        if self.is_tasks_empty("save"):
+            return
 
-# def save_tasks() -> None:
-#     print("Thanks for using the app. GoodBye!")
-#     if (len(tasks) or len(task_desc)) == 0:
-#         return None
+        file_name: str = self.file_name
+        try:
+            with open(self.path_to_file, "a") as file:
+                for index, task in enumerate(self.tasks, start=1):
+                    file.writelines(f"Task {index}. {task}\n")
+            print(f"Tasks saved to {file_name}.txt successfully")
+        except FileNotFoundError:
+            print(f"Error: File {file_name}.txt not found")
 
-#     if len(self.zipped) <= self.max_length:
-#         try:
-#             with open(self.file_path, "a") as file:
-#                 for title, desc in zip(self.tasks, self.task_desc):
-#                     file.writelines(f"Title:{title}\nDescription:{desc}\n")
-#                 print(
-#                     f"Tasks saved to file with path: {self.file_path}, Program ends successfully..."
-#                 )
-#         except FileNotFoundError:
-#             print("file not found")
-#     else:
-#         try:
-#             with open(self.file_path_leftover, "a") as file:
-#                 for title, desc in zip(self.tasks, self.task_desc):
-#                     file.writelines(f"Title:{title}\nDescription:{desc}\n")
+    def get_file_contents(self):
+        try:
+            with open(f"{self.path_to_file}", "r") as file:
+                _file: list[str] = file.readlines()
 
-#                 print(
-#                     f"Tasks saved to file with path: {self.file_path_leftover}, Program ends successfully..."
-#                 )
-#         except FileNotFoundError:
-#             print("File is not found")
+                # if len(_file) == 0:
+                #     print("No content found")
+                #     return
 
+                if len(_file) <= self.max_length:
+                    self.tasks.extend(_file)
+                else:
+                    print("File contents exceeds program limit")
+                    print("Creating new file...")
+                    self.create_new_file()
+            print("File read successfully")
+        except FileNotFoundError:
+            print("Error: No File found")
+            print("Creating new file...")
+            self.create_task_file()
 
-def close_func(index: int, func_name: str) -> None:
-    if index == 0:
-        print(f"\nClosing {func_name} tasks...\n")
+    def create_task_file(self):
+        try:
+            with open(f"docs/{self.file_name}.txt", "x") as file:
+                file.writelines([])
+            print(f"File {self.file_name} created successfully")
+        except FileExistsError:
+            print(
+                f"Error: File {self.file_name}.txt already exist.\nHint: Use a different name"
+            )
 
+    def create_new_file(self):
+        while (
+            user_input := input("Please give the file a name(No spaces in between): ")
+            .title()
+            .strip()
+        ):
+            if not user_input.isalpha():
+                print(f"Error: {user_input} is not a valid file name")
+                continue
 
-def check_if_task_empty(func_name: str) -> None:
-    msg: str = f"You dont have any tasks, create some to {func_name}.\n"
+            try:
+                with open(f"docs/{user_input}.txt", "x") as file:
+                    file.writelines([])
+                print(f"File {user_input} created successfully")
+                break
+            except FileExistsError:
+                print(
+                    f"Error: File {user_input}.txt already exist.\nHint: Use a different name"
+                )
+        self.file_name = user_input
 
-    if len(tasks) == 0:
-        print(msg)
+    def is_tasks_empty(self, func_name: str) -> bool:
+        msg: str = f"You dont have any tasks, create some to {func_name}.\n"
 
+        if len(self.tasks) == 0:
+            print(msg)
+            return True
+        return False
 
-def ask_for_task(method_name: str, action_word: str) -> str:
-    while not (user_input := input(f"{method_name} {action_word}: ").strip()):
-        print(f"\n{action_word} cannot be empty.\n")
-    return user_input
+    def ask_for_task(self, method_name: str, action_word: str) -> str:
+        while not (user_input := input(f"{method_name} {action_word}: ").strip()):
+            print(f"\n{action_word} cannot be empty.\n")
+        return user_input
 
+    def ask_for_index(self, action_word: str, list_length: int) -> int:
+        prompt: str = f"What task would you like to {action_word} or 'Q' to quit: "
+        err_msg: str = f"\nPlease choose a valid index between 1 and {list_length}.\n"
 
-def ask_for_index(action_word: str, list_length: int) -> int:
-    prompt: str = f"What task would you like to {action_word} or 'Q' to quit: "
-    err_msg: str = f"\nPlease choose a valid index between 1 and {list_length}.\n"
+        while (user_input := input(prompt).upper().strip()) != "Q":
+            if not user_input.isdigit():
+                print("Not an integer")
+                continue
 
-    while (user_input := input(prompt).upper().strip()) != "Q":
-        if not user_input.isdigit():
-            print("Not an integer")
-            continue
+            user_input = int(user_input) - 1
+            if user_input in range(list_length):
+                return user_input
+            else:
+                print(err_msg)
 
-        user_input = int(user_input) - 1
-        if user_input in range(list_length):
-            return user_input
-        else:
-            print(err_msg)
-
-    return 0
+        return 0
 
 
 # Starts here
 if __name__ == "__main__":
+    # create_new_file()
+    app = TODOLISTAPP()
+    print(app.tasks)
     ...
     # app = App(10, "cmd/docs/Tasks.txt")

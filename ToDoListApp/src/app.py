@@ -1,4 +1,4 @@
-import main as mn
+from main import TODOLISTAPP
 
 print("\nProgram starts...\n")
 
@@ -17,21 +17,23 @@ Here are the options:
 
 
 def main() -> None:
+    app = TODOLISTAPP()
+
     # Loop to take input and catch errors
     while (user_input := input(prompt_action_to_take + "What do you chose:")) != "6":
         if user_input.isdigit():
             match user_input := int(user_input):
                 case 1:
-                    mn.add_tasks()
+                    app.add_tasks()
                 case 2:
-                    mn.view_tasks()
+                    app.view_tasks()
                 case 3:
-                    mn.update_tasks()
+                    app.update_tasks()
                 case 4:
-                    mn.remove_tasks()
+                    app.remove_tasks()
                 case 5:
-                    # mn.save_tasks()
-                    ...
+                    app.save_tasks()
+                    break
                 case _:
                     print("Error: Invalid range")
         else:
