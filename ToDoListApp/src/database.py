@@ -1,9 +1,9 @@
 import sqlite3
-import os
 from typing import Any
+from sqlite3_constants import sql
 import traceback
-
-os.makedirs("src/", exist_ok=True)
+# import os
+# os.makedirs("src/", exist_ok=True)
 
 
 class DBMS:
@@ -13,136 +13,146 @@ class DBMS:
         Args:
             db_name (str): Database name.
         """
-        self.db_name = db_name
-        self.connection = sqlite3.connect(f"{db_name}.db")
-        self.cursor = self.connection.cursor()
 
-        print(f"Connection to {db_name}.db successfully opened...")
+        self.db_name = db_name
+        try:
+            print(f"Connecting to {db_name}.db", end=" ... ")
+            self.connection = sqlite3.connect(f"{db_name}.db")
+            self.cursor = self.connection.cursor()
+            print("Successful")
+        except sqlite3.Error:
+            self.get_traceback()
 
     def close_db(self):
-        print(f"Connection to {self.db_name}.db successfully closed...")
-        return self.cursor.close()
+        try:
+            print(f"Closing {self.db_name}.db", end=" ... ")
+            self.cursor.close()
+            self.connection.close()
+            print("Successful")
+        except sqlite3.Error:
+            self.get_traceback()
 
-    def commit(self):
-        return self.connection.commit()
-
-    def execute(self, query: str, optional_param=None) -> sqlite3.Cursor:
-        """_summary_
-
-        Args:
-            query (str): _description_
-            optional_param (_type_, optional): _description_. Defaults to None.
-
-        Returns:
-            sqlite3.Cursor: _description_
-        """
-        return (
-            self.cursor.execute(query)
-            if not optional_param
-            else self.cursor.execute(query, optional_param)
-        )
-
-    def create_table(self, table_name: str, schema: str):
+    def create_table(self, table: str, schema: str):
         """Create table for db.
 
         Args:
-            table_name (str): Name the table.
+            table (str): Name the table.
             schema (str): SQL schema for the table.
         """
-        query = f"CREATE TABLE IF NOT EXISTS {table_name} ({schema})"
-
-        try:
-            print(f"Executing query: {query}")
-            self.execute(query)
-            print(f"Table: {table_name} has been created")
-        except sqlite3.Error:
-            self.error_handling()
-        self.commit()
+        query = f"CREATE TABLE IF NOT EXISTS {table} ({schema})"
+        if self.executing(query):
+            print(f"Table '{table}' has been created")
 
     def insert_data(
         self,
+        table: str,
+        columns: str | list[str],
+        values: list[str],
+    ):
+        """_summary_
+
+        Args:
+            table (str): _description_
+            columns (list[str]): _description_
+            values (list[str]): _description_
+        """
+
+        _columns = ",".join(columns)
+        placeholders = ",".join("?" * len(columns))
+        query = f"INSERT INTO {table} ({_columns}) VALUES ({placeholders})"
+
+        if self.executing(query, values):
+            print("Values inserted successfully...")
+
+    def get_traceback(self):
+        print(" Failed\n")
+        traceback.print_exc()
+
+    def fetch_table(
+        self,
+        table: str,
+        columns: list[str] | None = None,
+        condition: str | None = None,
+        values: list[Any] | None = None,
+    ) -> list[Any]:
+        """_summary_
+
+        Args:
+            table (str): _description_
+            columns (list[str] | None, optional): _description_. Defaults to None.
+            condition (str | None, optional): _description_. Defaults to None.
+            values (list[Any] | None, optional): _description_. Defaults to None.
+
+        Returns:
+            list[Any]: _description_
+        """
+
+        query = f"SELECT * FROM {table} "
+
+        if columns:
+            _columns = ",".join(columns)
+            query = f"SELECT ({_columns}) FROM {table} "
+
+        if condition:
+            query += f"WHERE {condition} "
+            self.executing(query, values)
+        self.executing(query)
+        return self.cursor.fetchall()
+
+    def drop_table(self, table: str):
+        query = f"DROP TABLE {table}"
+        if self.executing(query):
+            print(f"Table '{table}' dropped successfully")
+
+    def executing(self, query: str, params=None) -> bool:
+        try:
+            print(f"Executing query: {query}", end="... ")
+            if params:
+                self.cursor.execute(query, params)
+            else:
+                self.cursor.execute(query)
+            print("Successful")
+            self.connection.commit()
+            print("Transaction committed")
+            return True
+        except sqlite3.Error:
+            self.get_traceback()
+            self.connection.rollback()
+            print("\nTransaction has been rolled back")
+            return False
+
+    def update_table(
+        self,
         table_name: str,
-        columns: tuple[str, ...] = (),
-        params: tuple[str, ...] = (),
+        column_to_change: str | list[str],
+        condition: str,
+        values: list[str],
     ):
         """_summary_
 
         Args:
             table_name (str): _description_
-            columns (tuple[str, ...], optional): _description_. Defaults to ().
-            params (tuple[str, ...], optional): _description_. Defaults to ().
+            column_to_change (str | list[str]): _description_
+            condition (str): _description_
+            values (tuple[str] | tuple[str, ...]): _description_
         """
-        query = f"""
-            INSERT INTO {table_name} ({",".join(columns)}) 
-            VALUES ({",".join("?" * len(columns))})
-            """
-        try:
-            print(f"Executing query: {query}")
-            self.execute(query, params)
-            print("Values inserted successfully...")
-        except sqlite3.Error:
-            self.error_handling()
-        self.commit()
-
-    def error_handling(self):
-        return traceback.print_exc()
-
-    def fetch_data(
-        self,
-        table_name: str,
-        column_name: tuple[str, ...] = (),
-        condition: str | None = None,
-        condition_params: tuple[str, ...] = (),
-    ):
-        """_summary_
-
-        Args:
-            table_name (str): Name of the table.
-            column_name (tuple[str, ...], optional): _description_. Defaults to ().
-            condition (str | None, optional): _description_. Defaults to None.
-            condition_params (tuple[str, ...], optional): _description_. Defaults to ().
-        """
-        if not column_name:
-            query = f"SELECT * FROM {table_name} "
-        else:
-            query = f"SELECT {','.join(column_name)} FROM {table_name} "
-
-        if condition:
-            query += f"WHERE {condition} {condition_params}"
-
-        try:
-            print(f"Executing query: {query}")
-            self.execute(query)
-            row = self.cursor.fetchall()
-            for _ in row:
-                print(_)
-        except sqlite3.Error:
-            self.error_handling()
-        self.commit()
-
-    def drop_table(self, table_name: str):
-        query = f"DROP TABLE {table_name}"
-        try:
-            print(f"Executing query: {query}")
-            self.execute(query)
-        except sqlite3.Error:
-            self.error_handling()
-        self.commit()
-    
-    def update_table(self):
-        
-        ...
+        query = f"UPDATE {table_name} SET {column_to_change} WHERE {condition}"
+        self.executing(query, values)
 
 
 if __name__ == "__main__":
     db = DBMS("Tasks")
     # db.create_table(
-    #     "users",
-    #     """
-    #     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    #     tasks TEXT NOT NULL UNIQUE
+    #     "boom",
+    #     f"""
+    #     id {sql.INTEGER} {sql.PRIMARY_KEY},
+    #     tasks {sql.TEXT} {sql.NOT_NULL} {sql.UNIQUE}
     #     """,
     # )
-    db.insert_data("users", ("tasks",), ("hi chiwendu",))
-    db.fetch_data("users", ())
+    # db.insert_data("boom", "tasks", ["hi chiwendu"])
+    # db.update_table("users", "tasks = ?", "id = ?", ["nkechi", "4"])
+    # row = db.fetch_table("users")
+    # for _ in row:
+    #     print(_)
+    db.drop_table("example")
     db.close_db()
