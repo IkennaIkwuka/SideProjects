@@ -68,57 +68,6 @@ class DBMS:
             columns (list[str]): _description_
             values (list[str]): _description_
         """
-        # print(len(schema))
-        # for _ in schema:
-        #     print(f"_:{_}")
-        #     for i in _:
-        #         print(f"i:{i}")
-
-        # print(len(schema))
-        # # box =[]
-        self.validate_insert_data(schema)
-
-    def validate_insert_data(self, schema:list[tuple[list[str], list[str]]]):
-        columns = []
-        values = []
-        for column_name, column_values in schema:
-            if len(column_name) > 1:
-                _ = ", ".join(column_name)
-                msg = f"Multiple Values '{_}' must only have one value"
-                raise ValueError(msg)
-
-            if not column_name:
-                _ = ", ".join(column_values)
-                msg = f"Column of values '{_}' cannot be empty"
-                raise ValueError(msg)
-
-            for col in column_name:
-                if not isinstance(col, str):
-                    msg = f"Column name '{col}' must be a string"
-                    raise ValueError(msg)
-
-                if not col.strip():
-                    _ = ", ".join(column_values)
-                    msg = f"Column of values '{_}' cannot be empty"
-                    raise ValueError(msg)
-
-                if not col.isupper():
-                    msg = f"'{col}' must be in all caps"
-                    raise ValueError(msg)
-
-                if col not in self.column_names:
-                    msg = f"'{col}' is not a valid column name"
-                    raise ValueError(msg)
-
-                columns.append(col)
-
-            for val in column_values:
-                if not isinstance(val, str):
-                    msg = f"Value name '{val}' must be a string"
-                    raise ValueError(msg)
-
-                values.append(val)
-        return columns, values
         # for value in values:
 
         # if column_name not in self.column_names:
@@ -140,6 +89,66 @@ class DBMS:
 
         # if self.executing(query, values):
         #     print("Values inserted successfully...")
+
+        # print(len(schema))
+        # for _ in schema:
+        #     print(f"_:{_}")
+        #     for i in _:
+        #         print(f"i:{i}")
+
+        # print(len(schema))
+        # # box =[]
+        self.validate_insert_data(schema)
+
+    def validate_insert_data(self, schema: list[tuple[list[str], list[str]]]):
+        columns = []
+        values = []
+        for column_name, column_values in schema:
+            self.validate_insert_column(column_name, column_values)
+
+            for col in column_name:
+                self.validate_insert_column_value(column_values, col)
+                columns.append(col)
+
+            for val in column_values:
+                self.validate_insert_values(val)
+                values.append(val)
+
+        return columns, values
+
+    def validate_insert_values(self, val: str):
+        if not isinstance(val, str):
+            msg = f"Value name '{val}' must be a string"
+            raise ValueError(msg)
+
+    def validate_insert_column_value(self, column_values: list[str], col: str):
+        if not isinstance(col, str):
+            msg = f"Column name '{col}' must be a string"
+            raise ValueError(msg)
+
+        if not col.strip():
+            _ = ", ".join(column_values)
+            msg = f"Column of values '{_}' cannot be empty"
+            raise ValueError(msg)
+
+        if not col.isupper():
+            msg = f"'{col}' must be in all caps"
+            raise ValueError(msg)
+
+        if col not in self.column_names:
+            msg = f"'{col}' is not a valid column name"
+            raise ValueError(msg)
+
+    def validate_insert_column(self, column_name: list[str], column_values: list[str]):
+        if len(column_name) > 1:
+            _ = ", ".join(column_name)
+            msg = f"Multiple Values '{_}' must only have one value"
+            raise ValueError(msg)
+
+        if not column_name:
+            _ = ", ".join(column_values)
+            msg = f"Column of values '{_}' cannot be empty"
+            raise ValueError(msg)
 
     def get_traceback(self):
         print(" Failed\n")
