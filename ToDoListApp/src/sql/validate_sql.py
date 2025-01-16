@@ -16,16 +16,19 @@ BLOB = "BLOB"
 NULL = "NULL"
 
 
-class Valid:
+class Validate:
     def __init__(self) -> None:
         self.constraints = [PK, UNIQUE, NOT_NULL, AUTO, FK, REF, CHK, DEF]
         self.datatypes = [INT, TXT, REAL, BLOB, NULL]
         self.valid_columns = []
 
-    def _create(self, schema: list[tuple[str, str, list[str]]]):
-        rows = [""]
+    def _create(self, schema: list[tuple[str, str, list[str]]]) -> list[str]:
+        rows = []
         for col_name, col_type, col_constraint in schema:
             self.valid_columns.append(col_name)
+
+            col_type = col_type.upper()
+            col_constraint = [_.upper() for _ in col_constraint]
 
             if col_type not in self.datatypes:
                 msg = f"Type '{col_type}' is invalid for column '{col_name}'"
@@ -66,61 +69,53 @@ class Valid:
         _ = suggestions.get(col_constraint[0])
         return f"Did you mean '{_}'?" if _ is not None else ""
 
-    def _insert(self, schema: list[tuple[list[str], list[str]]]):
-        columns, values = [""], [""]
+    def _insert(self, schema: list[tuple[list[str], list[str]]]) -> tuple[list[str], list[str]]:
+        columns, values = [], []
+
+        self.__parse_insert_param(schema)
 
         for column_name, column_values in schema:
-            col_name = ", ".join(column_name)
-            col_val = ", ".join(column_values)
+            for _ in column_name:
+                if _.upper() not in self.valid_columns:
+                    msg = f"Invalid column name. '{_}'"
+                    raise ValueError(msg)
+                columns.append(_)
 
-            # if not isinstance(column_name, list) or not isinstance(column_values, list):
-            #     msg = "sus"
-            #     raise ValueError(msg)
+            values.extend(column_values)
 
-            if len(column_name) != 1 or len(column_values) != 1:
-                msg = f"Size mismatch expected 1 value\nColumn name: '{col_name}'\nColumn value: '{col_val}'"
+        return columns, values
+
+    def __parse_insert_param(self, param: list[tuple[list[str], list[str]]]):
+        # Check if the object is a list
+        if not isinstance(param, list):
+            raise ValueError("Invalid object type. The object must be a list.")
+
+        # Iterate over each element in the list with its index
+        for index, item in enumerate(param):
+            # Check if each element is a tuple
+            if not isinstance(item, tuple) or len(item) != 2:
+                msg = f"Invalid object type. Element at index {index} is not a tuple of length 2: {item}"
                 raise ValueError(msg)
 
-            if not column_name or not column_values:
-                msg = f"Cannot be empty\nColumn name: '{col_name}'\nColumn value: '{col_val}'"
+            # Dynamically validate each tuple's elements using index
+            for sub_index, sub_element in enumerate(item):
+                if not isinstance(sub_element, list) or not all(
+                    isinstance(subitem, str) for subitem in sub_element
+                ):
+                    msg = f"Invalid object type. Element at index {index} in the tuple (sub-index {sub_index}) must be a list of strings. Found: {sub_element}"
+                    raise ValueError(msg)
+
+                self.__parse_insert_missing_value(index, sub_index, sub_element)
+
+    @staticmethod
+    def __parse_insert_missing_value(index, sub_index, sub_element):
+        # Check if the list is not empty
+        if not sub_element:
+            msg = f"Missing value. Element at index {index} in the tuple (sub-index {sub_index}) cannot be an empty list."
+            raise ValueError(msg)
+
+        # Check if string is empty in list
+        for string in sub_element:
+            if not string.strip():
+                msg = f"Missing value. Element at index {index} in the tuple (sub-index {sub_index}) cannot be an empty string."
                 raise ValueError(msg)
-
-            for col in column_name:
-                self.__insert_columns(column_values, col, self.valid_columns)
-                columns.append(col)
-
-            for val in column_values:
-                self.__insert_values(val, column_name)
-                values.append(val)
-
-        # Remove empty string '{""}'
-        column = [_ for _ in columns if _.strip()]
-        value = [_ for _ in values if _.strip()]
-
-        return column, value
-
-    @staticmethod
-    def __insert_columns(column_values: list[str], col: str, column_names: list[str]):
-        if not isinstance(col, str):
-            msg = f"Column name '{col}' must be a string"
-            raise ValueError(msg)
-
-        if not col.strip():
-            _ = ", ".join(column_values)
-            msg = f"Column of values '{_}' cannot be empty"
-            raise ValueError(msg)
-
-        if col.upper() not in column_names:
-            msg = f"'{col}' is not a valid column name"
-            raise ValueError(msg)
-
-    @staticmethod
-    def __insert_values(val: str, column_name: list[str]):
-        if not isinstance(val, str):
-            msg = f"Value name '{val}' must be a string"
-            raise ValueError(msg)
-
-        if not val.strip():
-            _ = ", ".join(column_name)
-            msg = f"Column '{_}' cannot be empty"
-            raise ValueError(msg)

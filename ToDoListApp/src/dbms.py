@@ -1,5 +1,4 @@
 import sqlite3
-import traceback
 from sql import db_ops, valid_sql
 from sql.constants import *
 # import os
@@ -14,8 +13,6 @@ class DBMS:
             db_name (str): Database name.
         """
         self.db_name = db_name
-        # self.constraints = [PK, UNIQUE, NOT_NULL, AUTO, FK, REF, CHK, DEF]
-        # self.datatypes = [INT, TXT, REAL, BLOB, NULL]
 
         self.valid_columns = []
         try:
@@ -25,7 +22,6 @@ class DBMS:
             print(f"Connection to {db_name}.db successful")
         except Exception as e:
             print(f"Unexpected error: {e}")
-            traceback.print_exc()
 
     # Transactional operations
     def _commit(self):
@@ -49,7 +45,6 @@ class DBMS:
             table (str): Table name
             schema (list[tuple[str, str, list[str]]]): List of tuple of str and list[str] to hold the column's name, types and constraints.
         """
-
         table_row = valid_sql._create(schema)
 
         sql = ",\n\t".join(table_row)
@@ -68,14 +63,21 @@ class DBMS:
             columns (list[str]): _description_
             values (list[str]): _description_
         """
+        print("Validating schema...")
         columns, values = valid_sql._insert(schema)
-        col = ", ".join(columns)
-        val = ", ".join("?" * len(values))
+        stripped_columns = [_.strip() for _ in columns]
+        stripped_values = [_.strip() for _ in values]
+
+        col = ", ".join(stripped_columns)
+        val = ", ".join("?" * len(stripped_values))
         query = f"INSERT INTO {table} ({col}) VALUES ({val})"
+
         print(f"\nExecuting query: \n{query}")
         self.cursor.execute(query, values)
         print(f"Values: '{', '.join(values)}' inserted into table '{table}'")
 
+    # Todo
+    # stopped here
     def fetch(
         self,
         table: str,
@@ -222,16 +224,20 @@ if __name__ == "__main__":
     db_name = "Main"
     table = "MASTER"
     db = DBMS(db_name.title())
+    # while (user_input := input("Close connection?")) not in ["y", "n"]:
+    #     if user_input == "n":
+    #         break
+
+    # print("not a valid input")
 
     schema = [
-        ("ID", INT, [PK, AUTO]),
-        ("TASKS", TXT, [UNIQUE, NOT_NULL]),
-        ("USERS", TXT, [UNIQUE]),
+        ("ID", "INteger", ["primary key", "autoincrement"]),
+        ("TASKS", "text", ["unique", "not null"]),
+        ("USERS", "text", ["unique"]),
     ]
     db.create(table, schema)
 
-    schema = [(["TASKS"], ["hi ugonna"]), (["USERS"], [gd])]
-    # print(len(schema[1]))
+    schema = [(["TASKS"], ["hi ugonna"]), ([""], ["ggff"])]
     db.insert(table, schema)
     # column = ["TASKS", "USERS"]
     # schema = [(["ID = ?"], [2])]
