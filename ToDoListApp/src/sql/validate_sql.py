@@ -1,4 +1,6 @@
 # Constraints
+
+
 PK = "PRIMARY KEY"
 UNIQUE = "UNIQUE"
 NOT_NULL = "NOT NULL"
@@ -17,42 +19,76 @@ NULL = "NULL"
 
 
 class Validate:
-    def __init__(self) -> None:
-        self.constraints = [PK, UNIQUE, NOT_NULL, AUTO, FK, REF, CHK, DEF]
-        self.datatypes = [INT, TXT, REAL, BLOB, NULL]
-        self.valid_columns = []
+    __constraints = [PK, UNIQUE, NOT_NULL, AUTO, FK, REF, CHK, DEF]
+    __datatypes = [INT, TXT, REAL, BLOB, NULL]
+    __valid_columns = []
 
-    def _create(self, schema: list[tuple[str, str, list[str]]]) -> list[str]:
+    @staticmethod
+    def _create(schema: list[tuple[str, str, list[str]]]) -> list[str]:
+        Validate.__validate_create(schema)
+
         rows = []
-        for col_name, col_type, col_constraint in schema:
-            self.valid_columns.append(col_name)
+        for idx, (columns) in enumerate(schema):
+            col_name, col_type, col_constraint = columns
+            Validate.__valid_columns.append(col_name)
 
+            col_name = col_name.upper()
             col_type = col_type.upper()
             col_constraint = [_.upper() for _ in col_constraint]
 
-            if col_type not in self.datatypes:
-                msg = f"Type '{col_type}' is invalid for column '{col_name}'"
-                suggestion = self.__type_suggestion(col_type)
+            if col_type not in Validate.__datatypes:
+                msg = f"Invalid type. Column type in tuple of index {idx} is not a valid Sqlite3 datatype. Found: {col_type}"
+                suggestion = Validate.__type_suggestion(col_type)
                 raise ValueError(f"{msg}\n{suggestion}")
 
-            if not col_constraint:
-                continue
+            for const_idx, (col_const) in enumerate(col_constraint):
+                if not col_const:
+                    continue
 
-            for col_const in col_constraint:
-                if col_const not in self.constraints:
-                    msg = f"Constraint '{col_const}' is invalid for column '{col_name}'"
-                    suggestion = self.__constraint_suggestion(col_const)
+                if col_const not in Validate.__constraints:
+                    msg = f"Invalid constraint. Column constraint in tuple of {idx} (sub-index {const_idx}) is not a valid Sqlite3 constraint. Found: {col_const}"
+                    suggestion = Validate.__constraint_suggestion(col_const)
                     raise ValueError(f"{msg}\n{suggestion}")
 
-            col_const = " ".join(col_constraint)
-            rows.append(f"{col_name} {col_type} {col_const}")
-        return [_ for _ in rows if _.strip()]
+            const = " ".join(col_constraint)
+            rows.append(
+                f"{col_name} {col_type}"
+                if not const
+                else f"{col_name} {col_type} {const.strip()}"
+            )
+        return rows
+
+    @staticmethod
+    def __validate_create(schema: list[tuple[str, str, list[str]]]):
+        if not isinstance(schema, list):
+            msg = "Invalid object type. The schema must be a list of tuples."
+            raise ValueError(msg)
+
+        # Iterate over each element in the list with its index
+        for idx, (columns) in enumerate(schema):
+            # Check if each element is a tuple
+            if not isinstance(columns, tuple) or len(columns) != 3:
+                msg = f"Invalid object type. Column in tuple of {idx} is not a tuple of (name, type, constrains): {columns}"
+                raise ValueError(msg)
+
+            col_name, col_type, col_constraint = columns
+            if not isinstance(col_name, str) or not col_name:
+                msg = f"Invalid object type. Column name in tuple of {idx} must be a string (non-empty)"
+                raise ValueError(msg)
+            if not isinstance(col_type, str) or not col_type:
+                msg = f"Invalid object type. Column type in tuple of {idx} must be a string (non-empty)."
+                raise ValueError(msg)
+            if not isinstance(col_constraint, list) or not all(
+                isinstance(const, str) for const in col_constraint
+            ):
+                msg = f"Invalid object type. Column constraint in tuple of {idx} must be List of strings."
+                raise ValueError(msg)
 
     @staticmethod
     def __type_suggestion(col_type: str) -> str:
         suggestions = {"I": INT, "R": REAL, "T": TXT, "N": NULL}
-        _ = suggestions.get(col_type[0])
-        return f"Did you mean '{_}'?" if _ is not None else ""
+        suggestion = suggestions.get(col_type[0])
+        return f"Did you mean '{suggestion}'?" if suggestion is not None else ""
 
     @staticmethod
     def __constraint_suggestion(col_constraint: str) -> str:
@@ -66,56 +102,73 @@ class Validate:
             "C": CHK,
             "D": DEF,
         }
-        _ = suggestions.get(col_constraint[0])
-        return f"Did you mean '{_}'?" if _ is not None else ""
+        if col_constraint:
+            suggestion = suggestions.get(col_constraint[0])
+            return f"Did you mean '{suggestion}'?" if suggestion is not None else ""
+        return ""
 
-    def _insert(self, schema: list[tuple[list[str], list[str]]]) -> tuple[list[str], list[str]]:
+    @staticmethod
+    def _insert(
+        schema: list[tuple[list[str], list[str]]],
+    ) -> tuple[list[str], list[str]]:
+        Validate.__validate_insert(schema)
+
         columns, values = [], []
+        for idx, items in enumerate(schema):
+            column, value = items
 
-        self.__parse_insert_param(schema)
-
-        for column_name, column_values in schema:
-            for _ in column_name:
-                if _.upper() not in self.valid_columns:
-                    msg = f"Invalid column name. '{_}'"
+            for sub_idx, name in enumerate(column):
+                name = name.upper()
+                if name not in Validate.__valid_columns:
+                    msg = f"'{name}' at index {idx}, sub-index {sub_idx} is not a valid column name in the table."
                     raise ValueError(msg)
-                columns.append(_)
 
-            values.extend(column_values)
+            columns.extend(column)
+            values.extend(value)
 
         return columns, values
 
-    def __parse_insert_param(self, param: list[tuple[list[str], list[str]]]):
+    @staticmethod
+    def __validate_insert(schema: list[tuple[list[str], list[str]]]):
         # Check if the object is a list
-        if not isinstance(param, list):
-            raise ValueError("Invalid object type. The object must be a list.")
+        if not isinstance(schema, list):
+            raise ValueError(
+                "Invalid object type. The schema must be a list of tuples."
+            )
 
         # Iterate over each element in the list with its index
-        for index, item in enumerate(param):
+        for idx, items in enumerate(schema):
             # Check if each element is a tuple
-            if not isinstance(item, tuple) or len(item) != 2:
-                msg = f"Invalid object type. Element at index {index} is not a tuple of length 2: {item}"
+            if not isinstance(items, tuple) or len(items) != 2:
+                msg = f"Invalid object type. tuple at index {idx} must be a tuple of two list ([],[]). Found: {items}"
                 raise ValueError(msg)
 
             # Dynamically validate each tuple's elements using index
-            for sub_index, sub_element in enumerate(item):
-                if not isinstance(sub_element, list) or not all(
-                    isinstance(subitem, str) for subitem in sub_element
-                ):
-                    msg = f"Invalid object type. Element at index {index} in the tuple (sub-index {sub_index}) must be a list of strings. Found: {sub_element}"
-                    raise ValueError(msg)
+            for sub_idx, (sub_element) in enumerate(items):
+                Validate.__validate_insert_inner_list(idx, sub_idx, sub_element, items)
 
-                self.__parse_insert_missing_value(index, sub_index, sub_element)
+                # Check if string is empty in list
+                for string in sub_element:
+                    if not string.strip():
+                        msg = f"Missing value. Element in tuple of {idx} in the tuple (sub-index {sub_idx}) cannot be an empty string."
+                        raise ValueError(msg)
 
     @staticmethod
-    def __parse_insert_missing_value(index, sub_index, sub_element):
-        # Check if the list is not empty
-        if not sub_element:
-            msg = f"Missing value. Element at index {index} in the tuple (sub-index {sub_index}) cannot be an empty list."
+    def __validate_insert_inner_list(
+        idx: int, sub_idx: int, sub_element: list, items: tuple[list[str], list[str]]
+    ):
+        list1, _ = items
+
+        if not isinstance(sub_element, list) or not all(
+            isinstance(subitem, str) for subitem in sub_element
+        ):
+            msg = f"Invalid object type. Element in tuple of {idx} in the tuple (sub-index {sub_idx}) must be a list of strings. Found: {sub_element}"
             raise ValueError(msg)
 
-        # Check if string is empty in list
-        for string in sub_element:
-            if not string.strip():
-                msg = f"Missing value. Element at index {index} in the tuple (sub-index {sub_index}) cannot be an empty string."
-                raise ValueError(msg)
+        # Check if the list is not empty
+        if not sub_element:
+            msg = f"Missing value. Element in tuple of {idx} in the tuple (sub-index {sub_idx}) cannot be an empty list."
+            raise ValueError(msg)
+        if len(list1) != 1:
+            msg = f"Too many values. Tuple of list with index {idx} (sub-index {sub_idx}) Must have only one value. Found: '{list1}'"
+            raise ValueError(msg)
