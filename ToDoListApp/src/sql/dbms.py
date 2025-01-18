@@ -1,18 +1,30 @@
 import sqlite3
-from sql import db_ops, valid_sql, AbsDatabaseManagementSystem
+# from sql import db_ops, AbsDatabaseManagementSystem,Validate
+# from sql import
+
 # from sql.constants import *
+import sys
+import os
+
+# Add the project root directory to sys.path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+
 from src.sql.validate_sql import Validate
+
+# from src.sql.validate_sql import Validate
 # import os
-# os.makedirs("src/", exist_ok=True)
+
+# os.makedirs("/src/sql/validate_sql", exist_ok=True)
 
 
-class DBMS(AbsDatabaseManagementSystem, Validate):
+class DBMS:
     def __init__(self, db_name: str) -> None:
         """Connects to Database of name provided. if it does not exists create one.
 
         Args:
             db_name (str): Database name.
         """
+        # self.v_sql = Validate()
         self.db_name = db_name
 
         self.valid_columns = []
@@ -24,10 +36,21 @@ class DBMS(AbsDatabaseManagementSystem, Validate):
         except Exception as e:
             print(f"Unexpected error: {e}")
 
+    def __execute_query(self, query: str, params=None):
+        try:
+            print(f"Executing query: {query}")
+            self.cursor.execute(query, params if params else ())
+            self._commit()
+            # return self.cursor.fetchall()
+        except sqlite3.Error as e:
+            print(f"SQLite error: {e}")
+            self._rollback()
+            raise
+
     # Transactional operations
     def _commit(self):
         self.connection.commit()
-        print("Transaction commit")
+        print("Transaction committed")
 
     def _rollback(self):
         self.connection.rollback()
@@ -38,7 +61,7 @@ class DBMS(AbsDatabaseManagementSystem, Validate):
         self.connection.close()
         print(f"Connection to {self.db_name}.db closed")
 
-    @db_ops
+    # @db_ops
     def create(self, table: str, schema: list[tuple[str, str, list[str]]]):
         """Create database table
 
@@ -46,16 +69,17 @@ class DBMS(AbsDatabaseManagementSystem, Validate):
             table (str): Table name
             schema (list[tuple[str, str, list[str]]]): List of tuple of str and list[str] to hold the column's name, types and constraints.
         """
-        table_row = valid_sql._create(schema)
+        table_row = Validate._create(schema)
 
         sql = ",\n\t".join(table_row)
         query = f"CREATE TABLE IF NOT EXISTS {table} (\n\t{sql}\n)"
 
         print(f"\nExecuting query: \n{query}")
-        self.cursor.execute(query)
+        self.__execute_query(query)
+        # self.cursor.execute(query)
         print(f"Table '{table}' has been created")
 
-    @db_ops
+    # @db_ops
     def insert(self, table: str, schema: list[tuple[list[str], list[str]]]):
         """_summary_
 
@@ -74,7 +98,8 @@ class DBMS(AbsDatabaseManagementSystem, Validate):
         query = f"INSERT INTO {table} ({col}) VALUES ({val})"
 
         print(f"\nExecuting query: \n{query}")
-        self.cursor.execute(query, values)
+        self.__execute_query(query, values)
+        # self.cursor.execute(query, values)
         print(f"Values: '{', '.join(values)}' inserted into table '{table}'")
 
     # Todo
@@ -210,7 +235,7 @@ class DBMS(AbsDatabaseManagementSystem, Validate):
             values (tuple[str] | tuple[str, ...]): _description_
         """
         query = f"UPDATE {table_name} SET {column_to_change} WHERE {condition}"
-        self.executing(query, values)
+        # self.executing(query, values)
 
     def drop(self, table: str):
         query = f"DROP TABLE IF EXISTS {table}"
@@ -222,6 +247,16 @@ class DBMS(AbsDatabaseManagementSystem, Validate):
 
 
 if __name__ == "__main__":
+    # schema: list[dict[str, str | list[str]]] = [
+    #     {"name": "hi", "type": "integer", "constraint": ["lion"]},
+    #     {"name": "hello", "type": "interger", "constraint": ["book"]},
+    # ]
+    # print(schema)
+    # for idx, items in enumerate(schema):
+    #     print(f"constraint at index :{idx}::{items.get('constraint')}")
+    #     for sub_items in items:
+    #         print(f"sub-items:{sub_items}")
+
     db_name = "Main"
     table = "MASTER"
     db = DBMS(db_name.title())
@@ -231,18 +266,23 @@ if __name__ == "__main__":
 
     # print("not a valid input")
 
-    schema = [
-        ("ID", "INteger", ["primary key", "autoincrement"]),
-        ("TASKS", "text", ["unique", "NoT null"]),
-        ("USERS", "text", ["unique"]),
-    ]
-    db.create(table, schema)
-
-    # valid_sql._Validate__parse_create_param(schema)
-    # valid_sql._create(schema)
-    schema = [(["TASKS"], ["hi ugonna"]), (["users"], ["ggff"])]
-    # valid_sql._parse_insert_param(schema)
-    db.insert(table, schema)
+    # schema = [
+    #     ("ID", "INteger", ["primary key", "autoincrement"]),
+    #     ("TASKS", "text", ["unique", "NoT null"]),
+    #     ("USERS", "text", ["unique"]),
+    # ]
+    # db.create(table, schema)
+    schema = f"PRAGMA table info({table})"
+    db._DBMS__execute_query(schema)
+    dbs= db.cursor.fetchone()
+    print(dbs)
+    # for i in dbs:
+    #     print(i)
+    # # Validate()._Validate__parse_create_param(schema)
+    # # valid_sql._create(schema)
+    # schema = [(["TASKS"], ["hi ugonna"]), (["users"], ["ggff"])]
+    # # valid_sql._parse_insert_param(schema)
+    # db.insert(table, schema)
     # column = ["TASKS", "USERS"]
     # schema = [(["ID = ?"], [2])]
     # rows = db.fetch(table, column, schema)

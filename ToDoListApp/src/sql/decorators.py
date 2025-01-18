@@ -3,7 +3,6 @@ from functools import wraps
 import traceback
 
 
-@staticmethod
 def db_ops(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):

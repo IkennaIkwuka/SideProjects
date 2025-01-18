@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 class AbsDatabaseManagementSystem(ABC):
     # @abstractmethod
     # def connecting(self, db_name): ...
-
+    
     @abstractmethod
     def create(self, table: str, schema: list[tuple[str, str, list[str]]]): ...
 

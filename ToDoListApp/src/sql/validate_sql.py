@@ -1,3 +1,7 @@
+import os
+
+os.makedirs("/sql", exist_ok=True)
+
 # Constraints
 
 
@@ -23,31 +27,39 @@ class Validate:
     __datatypes = [INT, TXT, REAL, BLOB, NULL]
     __valid_columns = []
 
-    @staticmethod
-    def _create(schema: list[tuple[str, str, list[str]]]) -> list[str]:
-        Validate.__validate_create(schema)
+    @classmethod
+    def constraints(cls):
+        return cls.__constraints
+
+    @classmethod
+    def datatypes(cls):
+        return cls.__datatypes
+
+    @classmethod
+    def _create(cls, schema: list[tuple[str, str, list[str]]]) -> list[str]:
+        cls.__validate_create(schema)
 
         rows = []
         for idx, (columns) in enumerate(schema):
             col_name, col_type, col_constraint = columns
-            Validate.__valid_columns.append(col_name)
+            cls.__valid_columns.append(col_name)
 
             col_name = col_name.upper()
             col_type = col_type.upper()
             col_constraint = [_.upper() for _ in col_constraint]
 
-            if col_type not in Validate.__datatypes:
+            if col_type not in cls.__datatypes:
                 msg = f"Invalid type. Column type in tuple of index {idx} is not a valid Sqlite3 datatype. Found: {col_type}"
-                suggestion = Validate.__type_suggestion(col_type)
+                suggestion = cls.__type_suggestion(col_type)
                 raise ValueError(f"{msg}\n{suggestion}")
 
             for const_idx, (col_const) in enumerate(col_constraint):
                 if not col_const:
                     continue
 
-                if col_const not in Validate.__constraints:
+                if col_const not in cls.__constraints:
                     msg = f"Invalid constraint. Column constraint in tuple of {idx} (sub-index {const_idx}) is not a valid Sqlite3 constraint. Found: {col_const}"
-                    suggestion = Validate.__constraint_suggestion(col_const)
+                    suggestion = cls.__constraint_suggestion(col_const)
                     raise ValueError(f"{msg}\n{suggestion}")
 
             const = " ".join(col_constraint)
@@ -107,11 +119,12 @@ class Validate:
             return f"Did you mean '{suggestion}'?" if suggestion is not None else ""
         return ""
 
-    @staticmethod
+    @classmethod
     def _insert(
+        cls,
         schema: list[tuple[list[str], list[str]]],
     ) -> tuple[list[str], list[str]]:
-        Validate.__validate_insert(schema)
+        cls.__validate_insert(schema)
 
         columns, values = [], []
         for idx, items in enumerate(schema):
@@ -119,7 +132,7 @@ class Validate:
 
             for sub_idx, name in enumerate(column):
                 name = name.upper()
-                if name not in Validate.__valid_columns:
+                if name not in cls.__valid_columns:
                     msg = f"'{name}' at index {idx}, sub-index {sub_idx} is not a valid column name in the table."
                     raise ValueError(msg)
 
