@@ -1,26 +1,25 @@
-from main import TODOLISTAPP
+from src.main2 import TodolistApp
 
 print("\nProgram starts...\n")
 
 # Displays options
-prompt_action_to_take = """
+prompt = """
 To-Do List App by Ikenna Nicholas Ikwuka
 Here are the options: 
 1. Add a task.
 2. View your tasks.
 3. Update a task.
 4. Remove a task.
-5. Save tasks.
-6. Quit the program.
+5. Quit the program.
 
 """
 
 
 def main() -> None:
-    app = TODOLISTAPP()
+    app = TodolistApp()
 
     # Loop to take input and catch errors
-    while (user_input := input(prompt_action_to_take + "What do you chose:")) != "6":
+    while (user_input := input(prompt + "What do you chose:")) != "5":
         if user_input.isdigit():
             match user_input := int(user_input):
                 case 1:
@@ -31,14 +30,12 @@ def main() -> None:
                     app.update_tasks()
                 case 4:
                     app.remove_tasks()
-                case 5:
-                    app.save_tasks()
-                    break
                 case _:
-                    print("Error: Invalid range")
+                    print("Error: Invalid range.")
         else:
-            print("Error: Invalid Integer")
-    print("Thanks for using the app, Goodbye")
+            print("Error: Invalid input\nHint: 'Q' to quit.")
+    print("Thanks for using the app, Goodbye.")
+    app.save_tasks()
 
 
 if __name__ == "__main__":

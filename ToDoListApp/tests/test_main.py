@@ -55,15 +55,20 @@ def test_ask_index(action_word: str, list_length: int):
             print(err_msg)
 
     return 0
-    #     print("yes")
-    # if user_input in range(list_length):
-    #     return user_input
-    # else:
-    #     print("Not in range")
-    # return user_input
-    # user_input = int(user_input)
+
+class Example:
+    def __init__(self) -> None:
+        ...
+    def say_name(self):
+            print("Hello")
+    def say_name(self,string:str):
+        print(f"Hello {string}")    
+
+
 
 
 if __name__ == "__main__":
     # test_ask_ftd("create", "title")
-    test_ask_index("create")
+    # test_ask_index("create")
+    rx = Example()
+    rx.say_name("ikenna")
