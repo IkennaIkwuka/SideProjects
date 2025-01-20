@@ -1,9 +1,10 @@
+package com.rps.terminal;
 
 import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
 
-public class Terminal {
+public class App {
 
     private static final Scanner scanner = new Scanner(System.in);
     private static final String ROCK = "Rock";
@@ -16,7 +17,7 @@ public class Terminal {
     public static void main(String[] args) {
         // Code Starts
         try (scanner) {
-            Terminal app = new Terminal();
+            App app = new App();
             Random random = new Random();
 
             boolean continueGameLoop;
@@ -36,7 +37,7 @@ public class Terminal {
                 String computerChoice = OPTIONS[computerInput];
 
                 // Determine result;
-                String result = Terminal.getResult(userChoice, computerChoice);
+                String result = App.getResult(userChoice, computerChoice);
 
                 // Show Result;
                 System.out.println(
