@@ -18,46 +18,46 @@ public class App {
     private static final String[] subjects = { "English", "Maths", "Computer Science", "Physics", "Chemistry" };
 
     public static void main(String[] args) {
-        ArrayList<Integer> scores = new ArrayList<>();
-        App app = new App();
+        try (scanner) {
+            ArrayList<Integer> scores = new ArrayList<>();
+            App app = new App();
 
-        for (String subject : subjects) {
-            int score = app.getUserScores(subject);
-            scores.add(score);
+            for (String subject : subjects) {
+                int score = app.getUserScores(subject);
+                scores.add(score);
+            }
+
+            int sumOfScores = 0;
+
+            for (int score : scores) {
+                sumOfScores += score;
+            }
+
+            int scoreCount = scores.size();
+
+            double average = (double) sumOfScores / scoreCount;
+
+            System.out.println("\nCompiling results...");
+            for (int i = 0; i < subjects.length; i++) {
+                String subject = subjects[i];
+                int score = scores.get(i); // Match the score to the subject
+                System.out.println("For " + subject + " you got " + score);
+            }
+
+            System.out.println("\nMeaning you had an average of " + average);
+
+            if (average >= 100) {
+                System.out.println("Wow!. perfect score");
+            } else if (average >= 70) {
+                System.out.println("Wow!. A very good score");
+            } else if (average >= 50) {
+                System.out.println("Meh! Pretty average I guess");
+            } else if (average >= 30) {
+                System.out.println("You almost made average, don't give up");
+            } else {
+                System.out.println("Bruh!");
+            }
         }
-
-        int sumOfScores = 0;
-
-        for (int score : scores) {
-            sumOfScores += score;
-        }
-
-        int scoreCount = scores.size();
-
-        double average = (double) sumOfScores / scoreCount;
-
-        System.out.println("\nCompiling results...");
-        for (int i = 0; i < subjects.length; i++) {
-            String subject = subjects[i];
-            int score = scores.get(i); // Match the score to the subject
-            System.out.println("For " + subject + " you got " + score);
-        }
-
-        System.out.println("\nMeaning you had an average of " + average);
-
-        if (average >= 100) {
-            System.out.println("Wow!. perfect score");
-        } else if (average >= 70) {
-            System.out.println("Wow!. A very good score");
-        } else if (average >= 50) {
-            System.out.println("Meh! Pretty average I guess");
-        } else if (average >= 30) {
-            System.out.println("You almost made average, don't give up");
-        } else {
-            System.out.println("Bruh!");
-        }
-
-        scanner.close();
     }
 
     private int getUserScores(String subject) {
