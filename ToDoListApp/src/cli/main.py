@@ -5,7 +5,7 @@ os.makedirs("docs", exist_ok=True)
 
 
 # class of todolistapp
-class Todolistapp:
+class ToDoListApp:
     def __init__(self, file_name, max_file_length: int) -> None:
         self.max = max_file_length
         self.file_name = file_name
@@ -120,7 +120,7 @@ class Todolistapp:
 # display index, tasks .. in tasks list
 def main():
     file_name = "docs/Tasks.txt"
-    app = Todolistapp(file_name, 10)
+    app = ToDoListApp(file_name, 10)
 
     print("\nToDoList App")
 
