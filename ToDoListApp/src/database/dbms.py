@@ -9,7 +9,7 @@ import os
 # Add the project root directory to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
-from src.sql.validate_sql import Validate
+from src.database.validate_sql import Validate
 
 # from src.sql.validate_sql import Validate
 # import os
