@@ -1,4 +1,4 @@
-package com.rps.terminal;
+package com.cli;
 
 import java.util.InputMismatchException;
 import java.util.Random;

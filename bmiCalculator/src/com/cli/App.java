@@ -1,4 +1,4 @@
-package com.bmi.terminal;
+package com.cli;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -54,7 +54,7 @@ public class App {
 
     private int getSystemType() {
         while (true) {
-            System.out.println("1. Metric \n2. Imperial system\nWhat do you prefer?: ");
+            System.out.print("1. Metric\t2. Imperial system\nWhat do you prefer?: ");
             try {
                 int systemType = userInput.nextInt();
                 if (systemType == 1 || systemType == 2) {
@@ -85,16 +85,16 @@ public class App {
         String result = "\n";
 
         if (bmi < 18.5) {
-            result = msg + bmi
+            result = msg + String.format("%.2f", bmi)
                     + " you are Underweight as classified by the (WHO) World Health Organization. Try eating some shit.";
         } else if (bmi >= 18.5 && bmi <= 24.9) {
-            result = msg + bmi
+            result = msg + String.format("%.2f", bmi)
                     + " you are at the Normal Weight as classified by the (WHO) World Health Organization. Good shit.";
         } else if (bmi >= 25 && bmi <= 29.9) {
-            result = msg + bmi
+            result = msg + String.format("%.2f", bmi)
                     + " you are Overweight as classified by the (WHO) World Health Organization. Maybe you should stop eating so much bro.";
         } else if (bmi >= 30) {
-            result = msg + bmi
+            result = msg + String.format("%.2f", bmi)
                     + " you are Obese as classified by the (WHO) World Health Organization. You're fat bro lmao. ";
         }
         return result;

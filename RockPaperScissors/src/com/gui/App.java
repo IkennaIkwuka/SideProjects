@@ -1,4 +1,4 @@
-package com.rps.gui;
+package com.gui;
 
 public class App {
     public static void main(String[] args) {

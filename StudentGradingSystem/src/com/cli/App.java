@@ -1,4 +1,4 @@
-package com.sgs.terminal;
+package com.cli;
 
 import java.util.ArrayList;
 import java.util.InputMismatchException;

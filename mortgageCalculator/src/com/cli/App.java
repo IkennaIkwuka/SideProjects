@@ -1,3 +1,4 @@
+package com.cli;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -13,7 +14,7 @@ public class App {
             interest = (interest / 100) / 12;
 
             // Number of Payment
-            int numberOfPayment = getUserInput("Enter the number of years you will be paying the loan: ");
+            double numberOfPayment = getUserInput("Enter the number of years you will be paying the loan: ");
             numberOfPayment = numberOfPayment * 12;
 
             double numerator = interest * (Math.pow((1 + interest), numberOfPayment));
@@ -23,7 +24,7 @@ public class App {
             double mortgage = principal * (numerator / denominator);
 
             // Principal
-            System.out.println("Monthly payment: $" + mortgage);
+            System.out.printf("Monthly payment: $%.2f", mortgage);
         }
     }
 
