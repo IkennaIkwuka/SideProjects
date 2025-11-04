@@ -54,7 +54,7 @@ public class Main {
 
     private int getSystemType() {
         while (true) {
-            System.out.print("1. Metric\t2. Imperial system\nWhat do you prefer?: ");
+            System.out.print("1. Metric\t2. Imperial system\nWhat do you prefer?\n: ");
             try {
                 int systemType = userInput.nextInt();
                 if (systemType == 1 || systemType == 2) {
