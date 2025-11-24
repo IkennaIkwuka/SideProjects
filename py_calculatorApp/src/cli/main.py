@@ -1,11 +1,12 @@
 # Full Basic Calculator App Project
 
-# Libs
+# ---Libs---
 import sys
 import time
 from decimal import Decimal  # noqa: F401
 
 
+# ---Utils---
 def typewriteEffect(text: str, delay=0.005):
     for char in text:
         sys.stdout.write(char)
@@ -25,9 +26,7 @@ class calc_app:
 
         user_input = input(prompt).strip()
 
-        operands, operators = self.validate_str(user_input)
-
-        expr: str = self.eval_str(operands, operators)
+        expr = self.validate_str(user_input)
 
         try:
             result = eval(expr)
@@ -35,6 +34,7 @@ class calc_app:
         except OverflowError:
             self.fix_str(expr)
 
+    # ---method to fix overflowError---
     def fix_str(self, expr: str):
         typewriteEffect("\nYour expression ran into an overflow error.")
         typewriteEffect("\nThis can be due to:")
@@ -48,7 +48,7 @@ class calc_app:
         values = expr.split()
 
         for i in range(0, len(values), 2):
-            # adds Decimal() wrap to operands to prevent overflow
+            # ---adds Decimal() wrap to operands to prevent overflow---
             values[i] = f"Decimal({values[i]})"
 
         print("\nSuccessful")
@@ -58,19 +58,6 @@ class calc_app:
         result = eval(expr)
 
         typewriteEffect(f"\n{expr} = {result}", 0.05)
-
-    def eval_str(self, operands: list[str], operators: list[str]):
-        expr = ""
-
-        for ops, opt in zip(operands, operators):
-            expr += ops + " " + opt + " "
-
-        expr += f"{operands[-1]}"
-
-        # converts "^" to "**" for eval() to work with "^" in python
-        expr = expr.replace("^", "**")
-
-        return expr
 
     def check_operator(self, operator: str):
         standalone = {"+", "*", "-", "/"}
@@ -128,8 +115,31 @@ class calc_app:
                     )
                 operators.append(val)
 
-        return operands, operators
+        expr = ""
+
+        for ops, opt in zip(operands, operators):
+            expr += ops + " " + opt + " "
+
+        expr += f"{operands[-1]}"
+
+        # converts "^" to "**" for eval() to work with "^" in python
+        expr = expr.replace("^", "**")
+
+        return expr
 
 
 if __name__ == "__main__":
     calc_app()
+    # gg: str = """
+    # teokyry
+    # ryokoyr
+    # yryrpokykr
+    # rkypokyroky
+    # """
+    # print(gg.split())
+    # for i in gg.split():
+    #     # print(f"i:{i}")
+    #     typewriteEffect(i, 0.05)
+    # print(gg.splitlines())
+    # for g in gg.splitlines():
+    #     print(f"g:{g}")
