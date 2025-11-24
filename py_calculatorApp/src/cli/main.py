@@ -1,7 +1,7 @@
 # Full Basic Calculator App Project
 
 # ---Libs---
-from python_utils.timeUtils import typewriteEffect as twe_
+from utils.pyTimeUtils import typewriteEffect as twe_
 import textwrap  # ---lib to remove whitespace before each printed line---
 from decimal import Decimal  # noqa: F401
 
