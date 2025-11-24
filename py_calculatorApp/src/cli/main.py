@@ -73,7 +73,7 @@ class calc_app:
             return True
 
         if operand == "/":
-            return True
+            return False  # ---fix for duplicate last value error---
 
         inner_sep = {".", "%", "^", "/"}
 
@@ -88,34 +88,35 @@ class calc_app:
             continue
         return False
 
+    # ---validates user input---
     def validate_str(self, user_input: str):
         values = user_input.split()
         operands: list[str] = []
         operators: list[str] = []
+        expr = ""
 
-        # checks whether last inputted value is not a number or not
+        # ---checks whether last value is not an operand or not---
         if not self.check_operand(values[-1]):
             raise ValueError(
                 f"Input: {values}\n\tError: You cannot end with '{values[-1]}'"
             )
 
+        # ---checks the order of values inputted alternating operands/operator by order of operand | operator | operand | operator | etc---
         for i, val in enumerate(values):
-            # checks the order of values inputted alternating operands/operator
-            # By order of operand | operator | operand | operator | etc
             if i % 2 == 0:
                 if not self.check_operand(val):
                     raise ValueError(
-                        f"Input: {values}\n\tError: Value number {i}. {values[i]} is invalid and must follow the order of 'operand | operator | operand | operator | etc'"
+                        f"Input: {values}\n\tError: Value number {i}. {values[i]} is invalid."
+                        "Expected an operand."
                     )
                 operands.append(val)
             else:
                 if not self.check_operator(val):
                     raise ValueError(
-                        f"Input: {values}\n\tError: Value number {i}. {values[i]} is invalid and must follow the order of 'operand | operator | operand | operator | etc'"
+                        f"Input: {values}\n\tError: Value number {i}. {values[i]} is invalid."
+                        "Expected an operator."
                     )
                 operators.append(val)
-
-        expr = ""
 
         for ops, opt in zip(operands, operators):
             expr += ops + " " + opt + " "
@@ -130,16 +131,3 @@ class calc_app:
 
 if __name__ == "__main__":
     calc_app()
-    # gg: str = """
-    # teokyry
-    # ryokoyr
-    # yryrpokykr
-    # rkypokyroky
-    # """
-    # print(gg.split())
-    # for i in gg.split():
-    #     # print(f"i:{i}")
-    #     typewriteEffect(i, 0.05)
-    # print(gg.splitlines())
-    # for g in gg.splitlines():
-    #     print(f"g:{g}")
