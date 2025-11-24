@@ -1,5 +1,7 @@
 # Full Basic Calculator App Project
 
+# TODO -- add a loop functionality that allows the user to write another expression to calculate or type 'q' to quit.
+
 # ---Libs---
 from utils.pyTimeUtils import typewriteEffect as twe_
 import textwrap  # ---lib to remove whitespace before each printed line---
@@ -33,7 +35,14 @@ class calc_app:
 
         prompt = "What do you want to calculate?\n:  "
 
-        user_input = input(prompt).strip()
+        expr = ""
+
+        # while True:
+        # TODO do that here
+        user_input = input(prompt).strip().lower()
+
+        # if user_input == "q":
+        #     return False
 
         expr = self.validate_str(user_input)
 
