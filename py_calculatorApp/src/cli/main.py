@@ -1,19 +1,9 @@
 # Full Basic Calculator App Project
 
 # ---Libs---
-import sys
+from python_utils.timeUtils import typewriteEffect as twe_
 import textwrap  # ---lib to remove whitespace before each printed line---
-import time
 from decimal import Decimal  # noqa: F401
-
-
-# ---Utils---
-def typewriteEffect(text: str, delay=0.005):
-    for char in text:
-        sys.stdout.write(char)
-        sys.stdout.flush()
-        time.sleep(delay)
-    print()
 
 
 class calc_app:
@@ -39,7 +29,7 @@ class calc_app:
         
         Letters are absolutely not allowed. Enjoy!!
         """
-        typewriteEffect(textwrap.dedent(_), 0.0005)
+        twe_(textwrap.dedent(_), 0.0005)
 
         prompt = "What do you want to calculate?\n:  "
 
@@ -48,13 +38,13 @@ class calc_app:
         expr = self.validate_str(user_input)
 
         try:
-            typewriteEffect(f"\nUser's expression:\n{expr}")
-            typewriteEffect("\nEvaluating...")
+            twe_(f"\nUser's expression:\n{expr}")
+            twe_("\nEvaluating...")
 
             result = eval(expr)
 
-            typewriteEffect("\n...Success")
-            typewriteEffect(f"\nResult = {result}", 0.05)
+            twe_("\n...Success")
+            twe_(f"\nResult = {result}", 0.05)
         except OverflowError:
             self.fix_str(expr)
 
@@ -69,9 +59,9 @@ class calc_app:
         
         The program will now 'fix' your expression.
         """
-        typewriteEffect(textwrap.dedent(error_msg))
+        twe_(textwrap.dedent(error_msg))
 
-        typewriteEffect("Wrapping operands in 'Decimal()'...", 0.05)
+        twe_("Wrapping operands in 'Decimal()'...", 0.05)
 
         values = expr.split()
 
@@ -79,17 +69,17 @@ class calc_app:
             # ---adds Decimal() wrap to operands to prevent overflow---
             values[i] = f"Decimal({values[i]})"
 
-        typewriteEffect("\n...Success")
+        twe_("\n...Success")
 
         expr = " ".join(values)
 
-        typewriteEffect(f"\nUser's fixed expression:\n{expr}")
-        typewriteEffect("\nEvaluating...")
+        twe_(f"\nUser's fixed expression:\n{expr}")
+        twe_("\nEvaluating...")
 
         result = eval(expr)
 
-        typewriteEffect("\n...Success")
-        typewriteEffect(f"\nResult = {result}", 0.05)
+        twe_("\n...Success")
+        twe_(f"\nResult = {result}", 0.05)
 
     def check_operator(self, operator: str):
         standalone = {"+", "*", "-", "/"}
