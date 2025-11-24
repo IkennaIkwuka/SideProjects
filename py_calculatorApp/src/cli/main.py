@@ -2,6 +2,7 @@
 
 # ---Libs---
 import sys
+import textwrap  # ---lib to remove whitespace before each printed line---
 import time
 from decimal import Decimal  # noqa: F401
 
@@ -17,31 +18,60 @@ def typewriteEffect(text: str, delay=0.005):
 
 class calc_app:
     def __init__(self) -> None:
-        typewriteEffect("App Starts...\n")
-        typewriteEffect("Welcome to the Basic Calculator Terminal App\n")
+        _ = """
+        App Starts...
+        
+        Welcome to the Basic Calculator Terminal App...
+        
+        Apart from the accepted symbols; fractions and decimals are allowed and must be written in together e.g 12/4, 34.22.
 
-        prompt = "What do you want to calculate\n:  "
+        Accepted symbols:-
+        Addition        >   +
+        Subtraction     >   -
+        Multiplication  >   *
+        Division        >   /
+        Exponentiation  >   ^
+        Modulus         >   %
+        
+        The user's expression must follow the order of operand | operator | operand | operator...
+        
+        where '|' is the space in between.
+        
+        Letters are absolutely not allowed. Enjoy!!
+        """
+        typewriteEffect(textwrap.dedent(_), 0.0005)
+
+        prompt = "What do you want to calculate?\n:  "
 
         user_input = input(prompt).strip()
 
         expr = self.validate_str(user_input)
 
         try:
+            typewriteEffect(f"\nUser's expression:\n{expr}")
+            typewriteEffect("\nEvaluating...")
+
             result = eval(expr)
-            typewriteEffect(f"\n{expr} = {result}", 0.05)
+
+            typewriteEffect("\n...Success")
+            typewriteEffect(f"\nResult = {result}", 0.05)
         except OverflowError:
             self.fix_str(expr)
 
     # ---method to fix overflowError---
     def fix_str(self, expr: str):
-        typewriteEffect("\nYour expression ran into an overflow error.")
-        typewriteEffect("\nThis can be due to:")
-        typewriteEffect("  - Huge exponent")
-        typewriteEffect("  - Combined with true division '/'")
-        typewriteEffect("\nThe program will now 'fix' your expression.")
+        error_msg = """
+        OverflowError: Your expression ran into an overflow error.
+        
+        This can be due to:
+            - Huge exponent.
+            - Combined with true division '/'.
+        
+        The program will now 'fix' your expression.
+        """
+        typewriteEffect(textwrap.dedent(error_msg))
 
-        typewriteEffect("\n...Wrapping operands in 'Decimal()' function", 0.01)
-        time.sleep(2)
+        typewriteEffect("Wrapping operands in 'Decimal()'...", 0.05)
 
         values = expr.split()
 
@@ -49,13 +79,17 @@ class calc_app:
             # ---adds Decimal() wrap to operands to prevent overflow---
             values[i] = f"Decimal({values[i]})"
 
-        print("\nSuccessful")
+        typewriteEffect("\n...Success")
 
         expr = " ".join(values)
 
+        typewriteEffect(f"\nUser's fixed expression:\n{expr}")
+        typewriteEffect("\nEvaluating...")
+
         result = eval(expr)
 
-        typewriteEffect(f"\n{expr} = {result}", 0.05)
+        typewriteEffect("\n...Success")
+        typewriteEffect(f"\nResult = {result}", 0.05)
 
     def check_operator(self, operator: str):
         standalone = {"+", "*", "-", "/"}
