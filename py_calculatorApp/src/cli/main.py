@@ -16,8 +16,6 @@ def typewriteEffect(text: str, delay=0.005):
 
 
 class calc_app:
-    SYMBOLS = ("+", "-", "*", "/", "^", "%")
-
     def __init__(self) -> None:
         typewriteEffect("App Starts...\n")
         typewriteEffect("Welcome to the Basic Calculator Terminal App\n")
@@ -123,7 +121,7 @@ class calc_app:
 
         expr += f"{operands[-1]}"
 
-        # converts "^" to "**" for eval() to work with "^" in python
+        # ---converts "^" to "**" for eval() to work with "^" in python---
         expr = expr.replace("^", "**")
 
         return expr
