@@ -1,11 +1,6 @@
-from pathlib import Path
+from utils.python import project_path
 
-# Go two levels up from main.py → project root
-tskFile = Path(__file__).resolve().parents[2] / "docs" / "Tasks_file.txt"
-
-# Ensure file and directory exist
-tskFile.parent.mkdir(parents=True, exist_ok=True)
-tskFile.touch(exist_ok=True)
+tskFile = project_path(__file__, "docs", "Tasks.txt")
 
 
 class ToDoListApp:

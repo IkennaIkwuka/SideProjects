@@ -3,7 +3,7 @@
 # TODO -- add a loop functionality that allows the user to write another expression to calculate or type 'q' to quit.
 
 # ---Libs---
-from utils.pyTimeUtils import typewriteEffect as twe_
+from utils.python import twe_
 import textwrap  # ---lib to remove whitespace before each printed line---
 from decimal import Decimal  # noqa: F401
 

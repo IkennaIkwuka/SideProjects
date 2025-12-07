@@ -1,7 +1,38 @@
+# CHANGELOG
+
 DATE FORMAT -- YEAR-MONTH-DAY -- 2302-12-23
 
+Types of changes
 
-2025-10-18 - "src/cli" directory
+    Added - for new features.
+    Changed - for changes in existing functionality.
+    Deprecated - for soon-to-be removed features.
+    Removed - for now removed features.
+    Fixed - for any bug fixes.
+    Security - in case of vulnerabilities
+
+## 2025-12-07 - project
+
+### Added
+
+- "python.py" module in SideProjects/utils directory.
+- "project_path" function in "python.py" module.
+
+### Changed
+
+- moved "typeWriterEffect" function to "python.py" module.
+- improved changelog format.
+- refactored file imports in "py_todolistApp" project due to improvement from "project_path" function.
+- changed location of changelog.md
+- renamed app.todo to todo.md and change its location
+
+### Removed
+
+- removed unnecessary imports/code/comments
+- changelog from each project and merged into one changelog.md in "sideProjects" repo
+- todo.md from each project and merged it into one in "sideProjects" repo.
+
+## 2025-10-18 - project - py_todolistApp
 
     Added functionality to set a limit when trying to add tasks to file and a limit for file size.
 
@@ -27,7 +58,7 @@ DATE FORMAT -- YEAR-MONTH-DAY -- 2302-12-23
 
     Removed methods "load_tasks()", "save_tasks()", "display_tasks()" as well as their functionality as they proved redundant.
 
-    Added "display_menu()", "view_tasks()" methods and streamlined functionality. 
+    Added "display_menu()", "view_tasks()" methods and streamlined functionality.
 
     Renamed method "update_tasks()" to "edit_tasks()" and improved functionality.
 
@@ -35,23 +66,28 @@ DATE FORMAT -- YEAR-MONTH-DAY -- 2302-12-23
 
     Improved functionality of the core methods streamlining them to reduce cognitive complexity.
 
-    
-2024-12-16 - "src/cli" directory
+## 2025-09-18 - project - py_numberguessingGame
+
+- Added "Ewo" difficulty
+- Streamlined "game_logic()" method's functionality
+- Removed unnecessary/redundant methods
+- Renamed module to "py_number_guessing_game"
+
+## 2024-12-16 - project - py_todolistApp
 
     Created package of app operations.
-    
+
     Removed classes from "crud_operations" and "utility_operations".
-    
+
     Refactored "create_tasks()" function to reduce complexity.
-    
+
     Implemented save tasks functionality in "create_tasks()" function.
-    
+
     Created "ask_to_save()" and "ask_task_amount()" function in "utility_operations" module to reduce cognitive complexity of "create_tasks()" function in "crud_operations" module.
 
     Refactored "task_list" to be a global variable to be accessed by other functions in "crud_operations" module.
 
-
-2024-12-15 - "src/cli" directory
+## 2024-12-15 - directory - py_todolistApp
 
     Added classes to implement Object Oriented Programming (OOP).
 
