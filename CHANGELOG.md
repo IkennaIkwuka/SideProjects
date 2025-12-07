@@ -4,12 +4,12 @@ DATE FORMAT -- YEAR-MONTH-DAY -- 2302-12-23
 
 Types of changes
 
-    Added - for new features.
-    Changed - for changes in existing functionality.
-    Deprecated - for soon-to-be removed features.
-    Removed - for now removed features.
-    Fixed - for any bug fixes.
-    Security - in case of vulnerabilities
+- Added - for new features.
+- Changed - for changes in existing functionality.
+- Deprecated - for soon-to-be removed features.
+- Removed - for now removed features.
+- Fixed - for any bug fixes.
+- Security - in case of vulnerabilities
 
 ## 2025-12-07 - project
 
@@ -34,61 +34,68 @@ Types of changes
 
 ## 2025-10-18 - project - py_todolistApp
 
-    Added functionality to set a limit when trying to add tasks to file and a limit for file size.
+### Added
 
-    Implemented functionality to check for duplicates when creating a task.
+- Added functionality to set a limit when trying to add tasks to file and a limit for file size.
+- Implemented functionality to check for duplicates when creating a task.
+- Added a method with functionality to remove tasks from file.
+- Employed the use of indexes.
+- Added a functionality to remove all tasks at once.
+- Added functionality that saves the current edited task list to file.
+- Added a method to edit tasks in file.
 
-    Added a method with functionality to remove tasks from file.
+### Fixed
 
-    Employed the use of indexes.
+- Fixed incorrect imports.
+- Resolved path to file issues.
 
-    Added a functionality to remove all tasks at once.
+### Changed
 
-    Added functionality that saves the current edited task list to file.
+- Renamed and changed the functionality of the constructor parameters of the class "ToDoListApp".
+- Renamed module "ToDoListApp" to "py_todolist_app".
+- Renamed method "update_tasks()" to "edit_tasks()" and improved functionality.
+- Restructured order of methods for improved user experience.
+- Improved functionality of the core methods streamlining them to reduce cognitive complexity.
 
-    Added a method to edit tasks in file.
+### Removed
 
-    Fixed incorrect imports.
-
-    Resolved path to file issues.
-
-    Renamed and changed the functionality of the constructor parameters of the class "ToDoListApp".
-
-    Renamed module "ToDoListApp" to "py_todolist_app".
-
-    Removed methods "load_tasks()", "save_tasks()", "display_tasks()" as well as their functionality as they proved redundant.
-
-    Added "display_menu()", "view_tasks()" methods and streamlined functionality.
-
-    Renamed method "update_tasks()" to "edit_tasks()" and improved functionality.
-
-    Restructured order of methods for improved user experience.
-
-    Improved functionality of the core methods streamlining them to reduce cognitive complexity.
+- Removed methods "load_tasks()", "save_tasks()", "display_tasks()" as well as their functionality as they proved redundant.
 
 ## 2025-09-18 - project - py_numberguessingGame
 
-- Added "Ewo" difficulty
-- Streamlined "game_logic()" method's functionality
-- Removed unnecessary/redundant methods
-- Renamed module to "py_number_guessing_game"
+### Added
+
+- Added "Ewo" difficulty.
+
+### Changed
+
+- Streamlined "game_logic()" method's functionality.
+- Renamed module to "py_number_guessing_game".
+
+### Removed
+
+- Removed unnecessary/redundant methods.
 
 ## 2024-12-16 - project - py_todolistApp
 
-    Created package of app operations.
+### Added
 
-    Removed classes from "crud_operations" and "utility_operations".
+- Created package of app operations.
+- Implemented save tasks functionality in "create_tasks()" function.
+- Created "ask_to_save()" and "ask_task_amount()" function in "utility_operations" module.
 
-    Refactored "create_tasks()" function to reduce complexity.
+### Changed
 
-    Implemented save tasks functionality in "create_tasks()" function.
+- Refactored "create_tasks()" function to reduce complexity.
+- Refactored "task_list" to be a global variable for access across "crud_operations" module.
 
-    Created "ask_to_save()" and "ask_task_amount()" function in "utility_operations" module to reduce cognitive complexity of "create_tasks()" function in "crud_operations" module.
+### Removed
 
-    Refactored "task_list" to be a global variable to be accessed by other functions in "crud_operations" module.
+- Removed classes from "crud_operations" and "utility_operations".
 
 ## 2024-12-15 - directory - py_todolistApp
 
-    Added classes to implement Object Oriented Programming (OOP).
+### Added
 
-    Created modules for "CRUD operations" and "utility operations".
+- Added classes to implement Object Oriented Programming (OOP).
+- Created modules for "CRUD operations" and "utility operations".
