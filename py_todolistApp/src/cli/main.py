@@ -1,17 +1,19 @@
+# TODOLIST APP
+
 from utils.python import project_path
 
-tskFile = project_path(__file__, "docs", "Tasks.txt")
+TASK_FILE = project_path(__file__, "docs", "Tasks.txt")
 
 
 class ToDoListApp:
     def __init__(self, menu: str, menu_length: int, max_file_size):
-        self.tasks_file = tskFile
         self.max_file_size = max_file_size
         self.menu = menu
         self.menu_length = menu_length
 
         self.tasks_list = []
-        with open(self.tasks_file, "r") as f:
+
+        with open(TASK_FILE, "r") as f:
             for _ in f.readlines():
                 self.tasks_list.append(_.strip())
 
@@ -23,7 +25,7 @@ class ToDoListApp:
         print(self.menu)
 
         while True:
-            prompt = "What do you want to do? ('Q' to Quit)...\n: "
+            prompt = "What do you want to do? ('Q' to Quit)...\n> "
             user_input = input(prompt).strip().upper()
 
             if user_input != "Q" and not user_input.isdigit():
@@ -60,7 +62,7 @@ class ToDoListApp:
             print("You have no tasks.\n")
             return
 
-        with open(self.tasks_file, "r") as f:
+        with open(TASK_FILE, "r") as f:
             print("Viewing tasks list...\n")
 
             view = f.readlines()
@@ -87,7 +89,7 @@ class ToDoListApp:
                 print(f"Task: '{user_input}' already exists.\n")
                 continue
 
-            with open(self.tasks_file, "a") as f:
+            with open(TASK_FILE, "a") as f:
                 f.write(user_input + "\n")
                 self.tasks_list.append(user_input)
                 prompt = "Add another? ('Q' to quit)\n: "
@@ -135,7 +137,7 @@ class ToDoListApp:
 
             prompt = "Remove more? ('0' to remove all tasks, 'Q' to quit)\n: "
 
-            with open(self.tasks_file, "w") as f:
+            with open(TASK_FILE, "w") as f:
                 for i in self.tasks_list:
                     f.write(f"{i}\n")
 
@@ -184,7 +186,7 @@ class ToDoListApp:
 
             prompt = "Edit another task? ('Q' to Quit)...\n: "
 
-            with open(self.tasks_file, "w") as f:
+            with open(TASK_FILE, "w") as f:
                 for i in self.tasks_list:
                     f.write(f"{i}\n")
 
