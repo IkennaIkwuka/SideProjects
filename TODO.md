@@ -10,6 +10,7 @@ project
 - [x] Fix game_logic functionality
 - [x] Add a game difficulty setting
 - [ ] Add a way to determine the number of users and a score board
+- [ ] Refactor code as its been a while
 
 ## py_todoListApp
 
@@ -23,3 +24,7 @@ project
 - [x] Method to update tasks in file
 - [ ] add time feature
 - [x] fix core methods
+
+## py_calculatorApp
+
+- [ ] Add a loop feature for user to keep using calculator

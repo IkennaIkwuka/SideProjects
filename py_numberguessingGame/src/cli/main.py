@@ -14,7 +14,7 @@ class Game:
 
     def set_game_difficulty(self) -> int:
         game_difficulties = (10, 30, 50, 100, 1000, 10000)
-        game_difficulties_length = 5
+        game_difficulties_length = len(game_difficulties)
         while True:
             try:
                 difficulty = int(input("Choose a game difficulty: ")) - 1
@@ -87,4 +87,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    ...

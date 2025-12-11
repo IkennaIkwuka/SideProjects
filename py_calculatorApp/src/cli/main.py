@@ -161,5 +161,10 @@ class calc_app:
         return expr
 
 
-if __name__ == "__main__":
+def run():
     calc_app()
+
+
+if __name__ == "__main__":
+    # run()
+    ...
