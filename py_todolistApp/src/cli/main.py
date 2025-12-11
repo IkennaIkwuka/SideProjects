@@ -60,7 +60,9 @@ class ToDoListApp:
         print(textwrap.dedent(menu))
 
         while True:
-            user_input = input("\nWhat do you want to do? ('q' to Quit)\n>   ").strip()
+            user_input = input(
+                "\nWhat do you want to do? ('q' to Quit)\n\n>   "
+            ).strip()
 
             print()
 
@@ -75,7 +77,7 @@ class ToDoListApp:
                 self.edit_tasks,
             )
 
-            error_msg = f"'{user_input}' is invalid. Please choose between '1' ~ '4' ('q' to Quit)\n"
+            error_msg = f"'{user_input}' is invalid. Please choose between '1' ~ '4'\n"
 
             if user_input.isdigit():
                 user_input = int(user_input)
@@ -107,7 +109,7 @@ class ToDoListApp:
 
     def add_tasks(self):
         while True:
-            user_input = input("\nTask to add ('q' to Quit)\n>    ").strip()
+            user_input = input("\nTask to add ('q' to Quit)\n\n>    ").strip()
 
             if user_input in ["Q", "q"]:
                 print("\nClosing... Returning to menu\n")
@@ -122,50 +124,43 @@ class ToDoListApp:
             print(f"\n'{user_input}' has been added to task list")
 
     def remove_tasks(self):
-        list_length = len(self.tasks_list)
-
-        if list_length == 0:
-            print("Cannot remove task as there are no tasks.\n")
+        if len(self.tasks_list) == 0:
+            print("Cannot remove task as there are no tasks, create some.\n")
             return
 
-        prompt = "Give the index of the task you would like to remove ('0' to remove all tasks, 'Q' to quit)\n: "
-
         while True:
-            user_input = input(prompt).strip()
+            prompt = input(
+                "\nTask index to remove ('-1' to remove all, '0' to view tasks, 'q' to Quit)\n\n>    "
+            ).strip()
 
-            if user_input == "Q" or user_input == "q":
-                print("Closing 'Remove Tasks' returning to menu...\n")
+            if prompt in ["Q", "q"]:
+                print("\nClosing... Returning to menu\n")
                 return
 
-            if (user_input != "Q" or user_input != "q") and not user_input.isdigit():
-                print(
-                    f"'{user_input}' is invalid. Please give a valid index ('0' to remove all tasks, 'Q' to quit)\n"
-                )
+            try:
+                user_input = int(prompt)
+            except ValueError:
+                print(f"\n'{prompt}' is invalid. Please provide a valid index")
                 continue
 
-            index = int(user_input)
+            if user_input == 0:
+                self.view_tasks()
+                continue
 
-            if index == 0:
+            if user_input == -1:
                 self.tasks_list.clear()
-                print("Clearing all tasks...\n")
-                print("All tasks have been cleared. Returning to menu...\n")
+                print("\nAll tasks have been cleared. Returning to menu...")
                 return
 
-            if index - 1 not in range(list_length):
-                print(
-                    f"{index} is invalid. Please give a valid index 1 ~ {list_length} ('0' to remove all tasks, 'Q' to quit)\n"
-                )
+            if user_input not in range(1, len(self.tasks_list) + 1):
+                print(f"\n'{user_input}' is invalid. Please provide a valid index")
                 continue
 
-            print(f"Task: '{index}. {self.tasks_list[index - 1]}' has been removed\n")
+            val = self.tasks_list[user_input - 1]
 
-            self.tasks_list.pop(index - 1)
+            self.tasks_list.pop(user_input - 1)
 
-            prompt = "Remove more? ('0' to remove all tasks, 'Q' to quit)\n: "
-
-            with open(TASK_FILE, "w") as f:
-                for i in self.tasks_list:
-                    f.write(f"{i}\n")
+            print(f"\nTask: '{val}' has been removed")
 
     def edit_tasks(self):
         list_length = len(self.tasks_list)
