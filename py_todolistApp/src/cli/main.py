@@ -6,9 +6,20 @@ from utils.python import project_path
 TASK_FILE = project_path(__file__, "docs", "Tasks.txt")
 
 
+def read_file(file):
+    with open(file, "r") as f:
+        for line in f:
+            yield line
+
+
 class ToDoListApp:
-    def __init__(self, max_file_size):
-        self.menu = """
+    def __init__(self):
+        self.tasks_list = [line.strip() for line in read_file(TASK_FILE)]
+
+        self.display_menu()
+
+    def display_menu(self):
+        menu = """
         ToDoList App
         
         1. View Tasks
@@ -19,52 +30,39 @@ class ToDoListApp:
         
         4. Edit Tasks
         """
-
-        self.max_file_size = max_file_size
-
-        self.tasks_list = []
-
-        with open(TASK_FILE, "r") as f:
-            for line in f.readlines():
-                self.tasks_list.append(line.strip())
-
-        self.display_menu()
-
-    def display_menu(self):
-        print(textwrap.dedent(self.menu))
+        print(textwrap.dedent(menu))
 
         while True:
-            prompt = "What do you want to do? ('Q' to Quit)...\n> "
-            user_input = input(prompt).strip().upper()
+            user_input = (
+                input("What do you want to do? ('q' to Quit)...\n>   ").strip().lower()
+            )
 
-            if user_input != "Q" and not user_input.isdigit():
-                print(
-                    f"'{user_input}' is invalid. Please give a valid option or 'Q' to Quit\n"
-                )
-                continue
-
-            if user_input == "Q":
+            if user_input == "q":
                 print("Closing Todo List App, goodbye!...")
                 return
 
-            index = int(user_input)
-
-            if index not in range(1, 5):
-                print(
-                    f"'{index}' is invalid. Please choose a valid option ('Q' to quit)...\n"
-                )
-                continue
-
-            methods = [
+            methods = (
                 self.view_tasks,
                 self.add_tasks,
                 self.remove_tasks,
                 self.edit_tasks,
-            ]
+            )
 
-            if index in range(1, len(methods) + 1):
-                methods[index - 1]()  # calls the selected method
-                print(textwrap.dedent(self.menu))
+            if user_input.isdigit():
+                user_input = int(user_input)
+
+                if user_input in range(1, 5):
+                    methods[user_input - 1]()  # calls the selected method
+                    print(textwrap.dedent(menu))
+                else:
+                    print(
+                        f"'{user_input}' is invalid. Please choose a valid option ('Q' to quit)...\n"
+                    )
+
+            else:
+                print(
+                    f"'{user_input}' is invalid. Please give a valid option or 'Q' to Quit\n"
+                )
 
     def view_tasks(self):
         if len(self.tasks_list) == 0:
@@ -81,10 +79,6 @@ class ToDoListApp:
             print("\nEnd of task list returning to menu...\n")
 
     def add_tasks(self):
-        if len(self.tasks_list) > self.max_file_size:
-            print("Tasks file is full.")
-            return
-
         prompt = "Provide a task you would like to add ('Q' to quit)\n: "
 
         while True:
@@ -200,7 +194,7 @@ class ToDoListApp:
 
 # main method to run program
 def run():
-    ToDoListApp(10)
+    ToDoListApp()
 
 
 if __name__ == "__main__":
