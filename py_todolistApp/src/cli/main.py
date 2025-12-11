@@ -1,28 +1,37 @@
 # TODOLIST APP
 
+import textwrap
 from utils.python import project_path
 
 TASK_FILE = project_path(__file__, "docs", "Tasks.txt")
 
 
 class ToDoListApp:
-    def __init__(self, menu: str, menu_length: int, max_file_size):
+    def __init__(self, max_file_size):
+        self.menu = """
+        ToDoList App
+        
+        1. View Tasks
+        
+        2. Add Tasks
+        
+        3. Remove Tasks
+        
+        4. Edit Tasks
+        """
+
         self.max_file_size = max_file_size
-        self.menu = menu
-        self.menu_length = menu_length
 
         self.tasks_list = []
 
         with open(TASK_FILE, "r") as f:
-            for _ in f.readlines():
-                self.tasks_list.append(_.strip())
+            for line in f.readlines():
+                self.tasks_list.append(line.strip())
 
         self.display_menu()
 
     def display_menu(self):
-        menu_range = self.menu_length
-
-        print(self.menu)
+        print(textwrap.dedent(self.menu))
 
         while True:
             prompt = "What do you want to do? ('Q' to Quit)...\n> "
@@ -40,9 +49,9 @@ class ToDoListApp:
 
             index = int(user_input)
 
-            if index not in range(menu_range + 1):
+            if index not in range(1, 5):
                 print(
-                    f"'{index}' is invalid. Please choose a valid option (1 ~ {menu_range}) ('Q' to quit)...\n"
+                    f"'{index}' is invalid. Please choose a valid option ('Q' to quit)...\n"
                 )
                 continue
 
@@ -55,7 +64,7 @@ class ToDoListApp:
 
             if index in range(1, len(methods) + 1):
                 methods[index - 1]()  # calls the selected method
-                print(self.menu)
+                print(textwrap.dedent(self.menu))
 
     def view_tasks(self):
         if len(self.tasks_list) == 0:
@@ -180,9 +189,7 @@ class ToDoListApp:
                 f"Task: '{index}. {self.tasks_list[index - 1]}' has been updated to '{updated_task}'\n"
             )
 
-            self.tasks_list.pop(index - 1)
-
-            self.tasks_list.insert(index - 1, updated_task)
+            self.tasks_list[index - 1] = updated_task
 
             prompt = "Edit another task? ('Q' to Quit)...\n: "
 
@@ -193,16 +200,7 @@ class ToDoListApp:
 
 # main method to run program
 def run():
-    menu = """
-        \rToDoList App
-        1. View Tasks
-        2. Add Tasks
-        3. Remove Tasks
-        4. Edit Tasks\n"""
-
-    menu_length = 4
-
-    ToDoListApp(menu, menu_length, 10)
+    ToDoListApp(10)
 
 
 if __name__ == "__main__":
