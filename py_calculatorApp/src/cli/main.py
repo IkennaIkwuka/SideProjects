@@ -3,12 +3,14 @@
 # TODO -- add a loop functionality that allows the user to write another expression to calculate or type 'q' to quit.
 
 # ---Libs---
-from utils.python import twe_
+from utils.python import type_writer_effect as twe_
 import textwrap  # ---lib to remove whitespace before each printed line---
 from decimal import Decimal  # noqa: F401
 
 
 class calc_app:
+    SUCCESS_MSG = "\n...Success"
+
     def __init__(self) -> None:
         _ = """
         App Starts...
@@ -52,7 +54,7 @@ class calc_app:
 
             result = eval(expr)
 
-            twe_("\n...Success")
+            twe_(self.SUCCESS_MSG)
             twe_(f"\nResult = {result}", 0.05)
         except OverflowError:
             self.fix_str(expr)
@@ -78,7 +80,7 @@ class calc_app:
             # ---adds Decimal() wrap to operands to prevent overflow---
             values[i] = f"Decimal({values[i]})"
 
-        twe_("\n...Success")
+        twe_(self.SUCCESS_MSG)
 
         expr = " ".join(values)
 
@@ -96,7 +98,7 @@ class calc_app:
         for sep in standalone:
             if operator == sep:
                 return True
-            continue
+
         return False
 
     def check_operand(self, operand: str):
@@ -116,7 +118,6 @@ class calc_app:
                 if left.isdigit() and right.isdigit():
                     return True
                 return False
-            continue
         return False
 
     # ---validates user input---
