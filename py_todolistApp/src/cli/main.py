@@ -1,6 +1,5 @@
 # TODOLIST APP
 
-# At the top of your file, add:
 import textwrap
 from utils.python import interminal_text_editor, project_path, write_to_file, read_file
 
