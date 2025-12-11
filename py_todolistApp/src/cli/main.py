@@ -70,7 +70,7 @@ class ToDoListApp:
                 if user_input in range(1, 5):
                     methods[user_input - 1]()  # calls the selected method
 
-                    if len(self.tasks_list) <= 10:
+                    if len(self.tasks_list) >= 10:
                         print(textwrap.dedent(menu))
                     print()
 
@@ -92,14 +92,14 @@ class ToDoListApp:
 
     def add_tasks(self):
         while True:
-            user_input = input("Task to add ('q' to Quit)\n>    ").strip()
+            user_input = input("\nTask to add ('q' to Quit)\n>    ").strip()
 
             if user_input in ["Q", "q"]:
-                print("Closing... Returning to menu")
+                print("\nClosing... Returning to menu\n")
                 return
 
             if user_input in self.tasks_list:
-                print(f"Task: '{user_input}' already exists.\n")
+                print(f"\nTask: '{user_input}' already exists.")
                 continue
 
             self.tasks_list.append(user_input)
