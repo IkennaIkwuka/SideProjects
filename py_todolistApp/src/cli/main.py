@@ -7,6 +7,19 @@ TASK_FILE = project_path(__file__, "docs", "Tasks.txt")
 
 
 def read_file(file):
+    """
+    Read a file line by line.
+    This is a generator function that reads a file and yields each line,
+    allowing for memory-efficient processing of large files.
+    Args:
+        file (str): The path to the file to be read.
+    Yields:
+        str: Each line from the file, including the newline character.
+    Example:
+        >>> for line in read_file('example.txt'):
+        ...     print(line.strip())
+    """
+
     with open(file, "r") as f:
         for line in f:
             yield line
@@ -16,9 +29,9 @@ class ToDoListApp:
     def __init__(self):
         self.tasks_list = [line.strip() for line in read_file(TASK_FILE)]
 
-        self.display_menu()
+        self.control_hub()
 
-    def display_menu(self):
+    def control_hub(self):
         menu = """
         ToDoList App
         
@@ -30,12 +43,15 @@ class ToDoListApp:
         
         4. Edit Tasks
         """
+
         print(textwrap.dedent(menu))
 
         while True:
             user_input = (
-                input("What do you want to do? ('q' to Quit)...\n>   ").strip().lower()
+                input("\nWhat do you want to do? ('q' to Quit)\n>   ").strip().lower()
             )
+
+            print()
 
             if user_input == "q":
                 print("Closing Todo List App, goodbye!...")
@@ -48,35 +64,33 @@ class ToDoListApp:
                 self.edit_tasks,
             )
 
+            error_msg = f"'{user_input}' is invalid. Please choose between '1' ~ '4' ('q' to Quit)\n"
+
             if user_input.isdigit():
                 user_input = int(user_input)
 
                 if user_input in range(1, 5):
                     methods[user_input - 1]()  # calls the selected method
-                    print(textwrap.dedent(menu))
+
+                    if len(self.tasks_list) <= 10:
+                        print(textwrap.dedent(menu))
+                    print()
+
                 else:
-                    print(
-                        f"'{user_input}' is invalid. Please choose a valid option ('Q' to quit)...\n"
-                    )
+                    print(error_msg)
 
             else:
-                print(
-                    f"'{user_input}' is invalid. Please give a valid option or 'Q' to Quit\n"
-                )
+                print(error_msg)
 
     def view_tasks(self):
         if len(self.tasks_list) == 0:
-            print("You have no tasks.\n")
+            print("You have no tasks to view, create some.\n")
             return
 
-        with open(TASK_FILE, "r") as f:
-            print("Viewing tasks list...\n")
+        print("Viewing tasks list...\n")
 
-            view = f.readlines()
-            for idx, val in enumerate(view, start=1):
-                print(f"{idx}. {val.strip()}\n")
-
-            print("\nEnd of task list returning to menu...\n")
+        for idx, val in enumerate(self.tasks_list, start=1):
+            print(f"{idx}. {val}\n")
 
     def add_tasks(self):
         prompt = "Provide a task you would like to add ('Q' to quit)\n: "
