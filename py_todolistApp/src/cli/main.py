@@ -47,13 +47,11 @@ class ToDoListApp:
         print(textwrap.dedent(menu))
 
         while True:
-            user_input = (
-                input("\nWhat do you want to do? ('q' to Quit)\n>   ").strip().lower()
-            )
+            user_input = input("\nWhat do you want to do? ('q' to Quit)\n>   ").strip()
 
             print()
 
-            if user_input == "q":
+            if user_input in ["Q", "q"]:
                 print("Closing Todo List App, goodbye!...")
                 return
 
@@ -93,24 +91,20 @@ class ToDoListApp:
             print(f"{idx}. {val}\n")
 
     def add_tasks(self):
-        prompt = "Provide a task you would like to add ('Q' to quit)\n: "
-
         while True:
-            user_input = input(prompt).strip()
+            user_input = input("Task to add ('q' to Quit)\n>    ").strip()
 
-            if user_input == "Q" or user_input == "q":
-                print("Closing 'Add Tasks' returning to menu...\n")
+            if user_input in ["Q", "q"]:
+                print("Closing... Returning to menu")
                 return
 
             if user_input in self.tasks_list:
                 print(f"Task: '{user_input}' already exists.\n")
                 continue
 
-            with open(TASK_FILE, "a") as f:
-                f.write(user_input + "\n")
-                self.tasks_list.append(user_input)
-                prompt = "Add another? ('Q' to quit)\n: "
-                print(f"'{user_input}' has been added to task list\n")
+            self.tasks_list.append(user_input)
+
+            print(f"\n'{user_input}' has been added to task list")
 
     def remove_tasks(self):
         list_length = len(self.tasks_list)
