@@ -1,28 +1,41 @@
 # TODOLIST APP
 
+from pathlib import Path
 import textwrap
 from utils.python import project_path
 
 TASK_FILE = project_path(__file__, "docs", "Tasks.txt")
 
 
-def read_file(file):
+def read_file(file: Path | str):
     """
-    Read a file line by line.
-    This is a generator function that reads a file and yields each line,
-    allowing for memory-efficient processing of large files.
-    Args:
-        file (str): The path to the file to be read.
-    Yields:
-        str: Each line from the file, including the newline character.
-    Example:
-        >>> for line in read_file('example.txt'):
-        ...     print(line.strip())
-    """
+    The function `read_file` reads a file line by line and yields each line as a string.
 
+    :param file: The `file` parameter in the `read_file` function can accept either a `Path` object or a
+    string representing the file path
+    :type file: Path | str
+    """
     with open(file, "r") as f:
         for line in f:
             yield line
+
+
+def write_to_file(file: Path | str, list: list[str]):
+    """
+    The function writes a list of strings to a file, with each string on a new line.
+
+    :param file: The `file` parameter in the `write_to_file` function is the path to the file where you
+    want to write the list of strings. It can be either a `Path` object or a string representing the
+    file path
+    :type file: Path | str
+    :param list: The `list` parameter in the `write_to_file` function is a list of strings that you want
+    to write to the specified file. Each string in the list will be written to the file on a new line
+    :type list: list[str]
+    """
+
+    with open(file, "w") as f:
+        for val in list:
+            f.write(f"{val}\n")
 
 
 class ToDoListApp:
@@ -53,7 +66,7 @@ class ToDoListApp:
 
             if user_input in ["Q", "q"]:
                 print("Closing Todo List App, goodbye!...")
-                return
+                break
 
             methods = (
                 self.view_tasks,
@@ -79,6 +92,8 @@ class ToDoListApp:
 
             else:
                 print(error_msg)
+
+        write_to_file(TASK_FILE, self.tasks_list)
 
     def view_tasks(self):
         if len(self.tasks_list) == 0:
