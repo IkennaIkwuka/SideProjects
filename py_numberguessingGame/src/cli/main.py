@@ -1,32 +1,46 @@
+#
+
 import random
+
+print("Hi!, Welcome to the Number Guessing Game.")
 
 
 class Game:
     def __init__(self):
-        self.difficulty_level: int = self.set_game_difficulty()
+        print("What game difficulty would you like?:\n  ")
 
-        self.computer_input: int = self.get_computer_input(self.difficulty_level)
+        levels = {"easy": 10, "hard": 50, "insane": 100}
+
+        for idx, (k, v) in enumerate(levels.items(), start=1):
+            print(f"Level {idx}: {k.title()} (1 ~ {v})\n")
+
+        if game_level := self.get_user_level(levels) == "q":
+            print("Closing game...")
+        else:
+            self.game_logic(self.get_computer_input(game_level))
+
+    def get_user_level(self, levels: dict[str, int]):
+        while True:
+            prompt_input = input(
+                "Please choose a game difficulty number ('q' to Quit)\n\n>    "
+            ).strip()
+
+            if prompt_input.lower() == "q":
+                return "q"
+
+            try:
+                user_input = int(prompt_input)
+            except ValueError:
+                print(f"'{prompt_input}' is not a number")
+                continue
+
+            if user_input not in range(1, len(levels.values()) + 1):
+                print(f"'{prompt_input}' is not a valid difficulty number.")
+            else:
+                return user_input
 
     def get_computer_input(self, game_level: int) -> int:
-        computer_input: int = random.randrange(1, game_level)
-
-        return computer_input
-
-    def set_game_difficulty(self) -> int:
-        game_difficulties = (10, 30, 50, 100, 1000, 10000)
-        game_difficulties_length = len(game_difficulties)
-        while True:
-            try:
-                difficulty = int(input("Choose a game difficulty: ")) - 1
-
-                if difficulty in range(game_difficulties_length):
-                    return game_difficulties[difficulty]
-                else:
-                    print(
-                        f"Error: Please choose a difficulty between 1 ~ {game_difficulties_length}"
-                    )
-            except ValueError:
-                print("Error: Please type a number ")
+        return random.randint(1, game_level)
 
     def game_logic(self):
         max_value = self.difficulty_level
@@ -73,8 +87,6 @@ class Game:
 
 
 def main():
-    print("\nHi!, Welcome to the Number Guessing Game.\n")
-    print("What game difficulty would you like?:\n  ")
     print("1. Easy: 1 ~ 10")
     print("2. Medium: 1 ~ 30")
     print("3. Hard: 1 ~ 50")
@@ -83,9 +95,9 @@ def main():
     print("6. Ewo: 1 ~ 10000\n")
 
     game = Game()
-    game.game_logic()
+    # game.game_logic()
 
 
 if __name__ == "__main__":
-    # main()
+    main()
     ...
