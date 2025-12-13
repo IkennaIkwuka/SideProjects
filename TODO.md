@@ -11,7 +11,7 @@ project
 - [x] Add a game difficulty setting
 - [ ] Add a way to determine the number of users and a score board
 - [x] Refactor code as its been a while
-
+- [ ] Add feature that allows you to create a difficulty
 
 ## py_todoListApp
 

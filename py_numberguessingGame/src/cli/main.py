@@ -85,23 +85,9 @@ class Game:
 
 
 def main():
-    # print("1. Easy: 1 ~ 10")
-    # print("2. Medium: 1 ~ 30")
-    # print("3. Hard: 1 ~ 50")
-    # print("4. Insane: 1 ~ 100")
-    # print("5. Omo: 1 ~ 1000")
-    # print("6. Ewo: 1 ~ 10000\n")
-
-    game = Game()
-    # game.game_logic()
+    Game()
 
 
 if __name__ == "__main__":
-    main()
-    # levels = {"easy": 10, "hard": 50, "insane": 100}
-    # print(len(levels))
-    # print(levels.items())
-    # print(levels.keys())
-    # print(levels.values())
-    # print(levels.get("easy"))
+    # main()
     ...
