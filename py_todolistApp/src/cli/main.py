@@ -8,13 +8,12 @@ CLOSING_MESSAGE = "\nClosing... Returning to menu\n"
 
 def read_file(file):
     with open(file, "r") as f:
-        for line in f:
-            yield line
+        yield from f
 
 
-def write_to_file(file, list: list[str]):
+def write_to_file(file, tasks: list[str]):
     with open(file, "w") as f:
-        for val in list:
+        for val in tasks:
             f.write(f"{val}\n")
 
 
@@ -42,41 +41,43 @@ class ToDoListApp:
 
         print(textwrap.dedent(menu))
 
+        methods = (
+            self.view_tasks,
+            self.add_tasks,
+            self.remove_tasks,
+            self.edit_tasks,
+        )
+
         while True:
-            user_input = input(
-                "\nWhat do you want to do? ('q' to Quit)\n\n>   "
+            prompt_input = input(
+                "\nWhat do you want to do? ('q' to Quit, 'm' for Menu)\n\n>   "
             ).strip()
 
             print()
 
-            if user_input.lower() == "q":
+            if not prompt_input:
+                print("Input cannot be empty")
+                continue
+
+            if prompt_input.lower() == "q":
                 print("Closing Todo List App, goodbye!...")
                 break
 
-            methods = (
-                self.view_tasks,
-                self.add_tasks,
-                self.remove_tasks,
-                self.edit_tasks,
-            )
+            if prompt_input.lower() == "m":
+                print(textwrap.dedent(menu))
+                continue
 
-            error_msg = f"'{user_input}' is invalid. Please choose between '1' ~ '4'\n"
+            try:
+                user_input = int(prompt_input)
+            except ValueError:
+                print(f"'{prompt_input}' is invalid. Please choose between '1' ~ '4'\n")
+                continue
 
-            if user_input.isdigit():
-                user_input = int(user_input)
-
-                if user_input in range(1, 5):
-                    methods[user_input - 1]()  # calls the selected method
-
-                    if len(self.tasks_list) >= 10:
-                        print(textwrap.dedent(menu))
-                    print()
-
-                else:
-                    print(error_msg)
-
+            if user_input in range(1, 5):
+                methods[user_input - 1]()  # calls the selected method
+                print()
             else:
-                print(error_msg)
+                print(f"'{user_input}' is invalid. Please choose between '1' ~ '4'\n")
 
         write_to_file(self.task_file, self.tasks_list)
 
@@ -93,6 +94,10 @@ class ToDoListApp:
     def add_tasks(self):
         while True:
             user_input = input("\nTask to add ('q' to Quit)\n\n>    ").strip()
+
+            if not user_input:
+                print("input cannot be empty")
+                continue
 
             if user_input.lower() == "q":
                 print(CLOSING_MESSAGE)
@@ -155,6 +160,10 @@ class ToDoListApp:
                 "\nIndex of task to edit ('0' to view tasks, 'q' to Quit)\n\n>    "
             ).strip()
 
+            if not prompt_input:
+                print("Input cannot be empty")
+                continue
+
             if prompt_input.lower() == "q":
                 print(CLOSING_MESSAGE)
                 return
@@ -183,12 +192,12 @@ class ToDoListApp:
 
 
 # main method to run program
-def app():
+def run_app():
     task_file = project_path_finder(__file__, "docs", "Tasks.txt")
     app = ToDoListApp(task_file)
     app.run()
 
 
 if __name__ == "__main__":
-    app()
+    run_app()
     ...
