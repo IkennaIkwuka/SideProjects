@@ -3,7 +3,6 @@
 import textwrap
 from utils.python import interminal_text_editor, project_path_finder
 
-TASK_FILE = project_path_finder(__file__, "docs", "Tasks.txt")
 CLOSING_MESSAGE = "\nClosing... Returning to menu\n"
 
 
@@ -20,9 +19,12 @@ def write_to_file(file, list: list[str]):
 
 
 class ToDoListApp:
-    def __init__(self):
-        self.tasks_list = [line.strip() for line in read_file(TASK_FILE)]
+    def __init__(self, task_file):
+        self.task_file = task_file
 
+        self.tasks_list = [line.strip() for line in read_file(task_file)]
+
+    def run(self):
         self.control_hub()
 
     def control_hub(self):
@@ -76,7 +78,7 @@ class ToDoListApp:
             else:
                 print(error_msg)
 
-        write_to_file(TASK_FILE, self.tasks_list)
+        write_to_file(self.task_file, self.tasks_list)
 
     def view_tasks(self):
         if len(self.tasks_list) == 0:
@@ -181,10 +183,12 @@ class ToDoListApp:
 
 
 # main method to run program
-def run():
-    ToDoListApp()
+def app():
+    task_file = project_path_finder(__file__, "docs", "Tasks.txt")
+    app = ToDoListApp(task_file)
+    app.run()
 
 
 if __name__ == "__main__":
-    # run()
+    app()
     ...
