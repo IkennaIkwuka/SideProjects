@@ -1,10 +1,22 @@
 # TODOLIST APP
 
 import textwrap
-from utils.python import interminal_text_editor, project_path, write_to_file, read_file
+from utils.python import interminal_text_editor, project_path_finder
 
-TASK_FILE = project_path(__file__, "docs", "Tasks.txt")
+TASK_FILE = project_path_finder(__file__, "docs", "Tasks.txt")
 CLOSING_MESSAGE = "\nClosing... Returning to menu\n"
+
+
+def read_file(file):
+    with open(file, "r") as f:
+        for line in f:
+            yield line
+
+
+def write_to_file(file, list: list[str]):
+    with open(file, "w") as f:
+        for val in list:
+            f.write(f"{val}\n")
 
 
 class ToDoListApp:

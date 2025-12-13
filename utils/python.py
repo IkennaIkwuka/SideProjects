@@ -4,37 +4,6 @@ import sys
 import time
 
 
-def read_file(file: Path | str):
-    """
-    The function `read_file` reads a file line by line and yields each line as a string.
-
-    :param file: The `file` parameter in the `read_file` function can accept either a `Path` object or a
-    string representing the file path
-    :type file: Path | str
-    """
-    with open(file, "r") as f:
-        for line in f:
-            yield line
-
-
-def write_to_file(file: Path | str, list: list[str]):
-    """
-    The function writes a list of strings to a file, with each string on a new line.
-
-    :param file: The `file` parameter in the `write_to_file` function is the path to the file where you
-    want to write the list of strings. It can be either a `Path` object or a string representing the
-    file path
-    :type file: Path | str
-    :param list: The `list` parameter in the `write_to_file` function is a list of strings that you want
-    to write to the specified file. Each string in the list will be written to the file on a new line
-    :type list: list[str]
-    """
-
-    with open(file, "w") as f:
-        for val in list:
-            f.write(f"{val}\n")
-
-
 def interminal_text_editor(label: str, text: str) -> str:
     """
     Opens an editable terminal prompt with the text already pre-filled.
@@ -67,7 +36,7 @@ def type_writer_effect(text: str, delay=0.005):
     print()
 
 
-def project_path(file: str, *relative_parts: str) -> Path:
+def project_path_finder(file: str, *relative_parts: str) -> Path:
     """
     Construct a project-relative path from the calling module's location.
 
