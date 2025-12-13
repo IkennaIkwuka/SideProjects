@@ -10,7 +10,8 @@ project
 - [x] Fix game_logic functionality
 - [x] Add a game difficulty setting
 - [ ] Add a way to determine the number of users and a score board
-- [ ] Refactor code as its been a while
+- [x] Refactor code as its been a while
+
 
 ## py_todoListApp
 
