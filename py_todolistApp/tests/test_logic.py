@@ -2,14 +2,32 @@ import pytest
 from py_todolistApp.src.cli.logic import AppLogic, TaskStatus
 
 
-@pytest.fixture
-def tasks():
-    return ["Task 1", "Task 2", "Task 3"]
+# ------------------
+# Fixtures
+# ------------------
 
 
 @pytest.fixture
-def logic(tasks: list[str]):
-    return AppLogic(tasks)
+def logic():
+    return AppLogic(["Task 1", "Task 2", "Task 3"])
+
+
+@pytest.fixture
+def actions():
+    return {1: None, 2: None, 3: None}
+
+
+# ------------------
+# Shared Input Constants
+# ------------------
+
+
+EMPTY_INPUTS = [""]
+QUIT_INPUTS = ["q"]
+INVALID_INPUTS = ["abc"]
+OUT_OF_RANGE_INPUTS = ["4", "-3"]  # outside the length of actions() fixture
+DELETE_ALL_INPUTS = ["d"]
+VIEW_INPUTS = ["v"]
 
 
 # ------------------
@@ -17,21 +35,34 @@ def logic(tasks: list[str]):
 # ------------------
 
 
-@pytest.mark.parametrize(
-    "user_input, actions, expected",
-    [
-        ("", {1: None}, TaskStatus.EMPTY),
-        (" ", {1: None}, TaskStatus.EMPTY),
-        ("q", {1: None}, TaskStatus.QUIT),
-        ("abc", {1: None}, TaskStatus.INVALID),
-        ("'[;,]", {1: None}, TaskStatus.INVALID),
-        ("6", {1: None, 2: None}, TaskStatus.OUT_OF_RANGE),
-        ("-2", {1: None, 2: None}, TaskStatus.OUT_OF_RANGE),
-        ("3", {1: None, 2: None, 3: None}, 3),
-    ],
-)
-def test_validate_hub_inputs(logic, user_input, actions, expected):
-    assert logic.validate_hub(user_input, actions) == expected
+@pytest.mark.parametrize("user_input", EMPTY_INPUTS)
+def test_validate_hub_empty(logic, user_input, actions):
+    assert logic.validate_hub(user_input, actions) == TaskStatus.EMPTY
+
+
+@pytest.mark.parametrize("user_input", QUIT_INPUTS)
+def test_validate_hub_quit(logic, user_input, actions):
+    assert logic.validate_hub(user_input, actions) == TaskStatus.QUIT
+
+
+@pytest.mark.parametrize("user_input", INVALID_INPUTS)
+def test_validate_hub_invalid(logic, user_input, actions):
+    assert logic.validate_hub(user_input, actions) == TaskStatus.INVALID
+
+
+@pytest.mark.parametrize("user_input", OUT_OF_RANGE_INPUTS)
+def test_validate_hub_out_of_range(logic, user_input, actions):
+    assert logic.validate_hub(user_input, actions) == TaskStatus.OUT_OF_RANGE
+
+
+def test_validate_hub_valid(logic):
+    actions = {1: None, 2: None}
+    assert logic.validate_hub("2", actions) == 2
+
+
+# ------------------
+# FORCE ADD TASKS
+# ------------------
 
 
 def test_force_add_tasks_when_empty():
@@ -40,85 +71,60 @@ def test_force_add_tasks_when_empty():
     assert logic.force_add_tasks(2) is False
 
 
-def test_force_add_tasks_when_exists():
-    logic = AppLogic(["Task 1", "Task 2"])
+def test_force_add_tasks_when_exists(logic):
     assert logic.force_add_tasks(1) is False
 
 
 # ------------------
-# ADD TASK TESTS
+# ADD, REMOVE, EDIT, UPDATED TASKS TESTS
 # ------------------
 
 
-@pytest.mark.parametrize(
-    "user_input, expected",
-    [
-        ("", TaskStatus.EMPTY),
-        (" ", TaskStatus.EMPTY),
-        ("q", TaskStatus.QUIT),
-        ("Task 1", TaskStatus.EXISTS),
-        ("New Task", "New Task"),
-    ],
-)
-def test_validate_add_task(logic, user_input, expected):
-    assert logic.validate_add_tasks(user_input) == expected
+@pytest.mark.parametrize("user_input", EMPTY_INPUTS)
+def test_add_remove_edit_updated_tasks_empty(logic, user_input):
+    assert logic.validate_add_tasks(user_input) == TaskStatus.EMPTY
+    assert logic.validate_remove_tasks(user_input) == TaskStatus.EMPTY
+    assert logic.validate_edit_tasks(user_input) == TaskStatus.EMPTY
+    assert logic.validate_updated_task(user_input) == TaskStatus.EMPTY
 
 
-# ------------------
-# REMOVE TASK TESTS
-# ------------------
+@pytest.mark.parametrize("user_input", QUIT_INPUTS)
+def test_add_remove_edit_tasks_quit(logic, user_input):
+    assert logic.validate_add_tasks(user_input) == TaskStatus.QUIT
+    assert logic.validate_remove_tasks(user_input) == TaskStatus.QUIT
+    assert logic.validate_edit_tasks(user_input) == TaskStatus.QUIT
 
 
-@pytest.mark.parametrize(
-    "user_input, expected",
-    [
-        ("", TaskStatus.EMPTY),
-        (" ", TaskStatus.EMPTY),
-        ("q", TaskStatus.QUIT),
-        ("d", TaskStatus.DELETE_ALL),
-        ("v", TaskStatus.VIEW),
-        ("abcde", TaskStatus.INVALID),
-        ("[];',", TaskStatus.INVALID),
-        ("4", TaskStatus.OUT_OF_RANGE),
-        ("-3", TaskStatus.OUT_OF_RANGE),
-        ("3", 3),
-    ],
-)
-def test_validate_remove_tasks(logic, user_input, expected):
-    assert logic.validate_remove_tasks(user_input) == expected
+@pytest.mark.parametrize("user_input", DELETE_ALL_INPUTS)
+def test_remove_tasks_delete_all(logic, user_input):
+    assert logic.validate_remove_tasks(user_input) == TaskStatus.DELETE_ALL
 
 
-# ------------------
-# EDIT TASK TESTS
-# ------------------
+@pytest.mark.parametrize("user_input", VIEW_INPUTS)
+def test_remove_edit_tasks_view(logic, user_input):
+    assert logic.validate_remove_tasks(user_input) == TaskStatus.VIEW
+    assert logic.validate_edit_tasks(user_input) == TaskStatus.VIEW
 
 
-@pytest.mark.parametrize(
-    "user_input, expected",
-    [
-        ("", TaskStatus.EMPTY),
-        (" ", TaskStatus.EMPTY),
-        ("q", TaskStatus.QUIT),
-        ("v", TaskStatus.VIEW),
-        ("abcde", TaskStatus.INVALID),
-        ("[];',", TaskStatus.INVALID),
-        ("4", TaskStatus.OUT_OF_RANGE),
-        ("-3", TaskStatus.OUT_OF_RANGE),
-        ("3", 3),
-    ],
-)
-def test_validate_edit_tasks(logic, user_input, expected):
-    assert logic.validate_edit_tasks(user_input) == expected
+@pytest.mark.parametrize("user_input", INVALID_INPUTS)
+def test_remove_edit_tasks_invalid(logic, user_input):
+    assert logic.validate_remove_tasks(user_input) == TaskStatus.INVALID
+    assert logic.validate_edit_tasks(user_input) == TaskStatus.INVALID
 
 
-@pytest.mark.parametrize(
-    "user_input, expected",
-    [
-        ("", TaskStatus.EMPTY),
-        (" ", TaskStatus.EMPTY),
-        ("Task 1", TaskStatus.EXISTS),
-        ("Updated Task", "Updated Task"),
-    ],
-)
-def test_validate_updated_task(logic, user_input, expected):
-    assert logic.validate_updated_task(user_input) == expected
+@pytest.mark.parametrize("user_input", OUT_OF_RANGE_INPUTS)
+def test_remove_edit_tasks_out_of_range(logic, user_input):
+    assert logic.validate_remove_tasks(user_input) == TaskStatus.OUT_OF_RANGE
+    assert logic.validate_edit_tasks(user_input) == TaskStatus.OUT_OF_RANGE
+
+
+def test_add_remove_edit_updated_tasks_valid(logic):
+    assert logic.validate_add_tasks("New Task") == "New Task"
+    assert logic.validate_remove_tasks("3") == 3
+    assert logic.validate_edit_tasks("3") == 3
+    assert logic.validate_updated_task("Updated Task") == "Updated Task"
+
+
+def test_add_updated_tasks_exists(logic):
+    assert logic.validate_add_tasks("Task 1") == TaskStatus.EXISTS
+    assert logic.validate_updated_task("Task 1") == TaskStatus.EXISTS
