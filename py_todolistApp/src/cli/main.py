@@ -4,7 +4,15 @@ import textwrap
 
 from prompt_toolkit import prompt
 from utils.python import project_path_finder
-from py_todolistApp.src.cli.logic import AppLogic
+from py_todolistApp.src.cli.logic import AppLogic, TaskStatus
+
+SHELL_OUTPUTS = {
+    TaskStatus.QUIT: "\nClosing... Returning to menu\n",
+    TaskStatus.EMPTY: "Input cannot be empty",
+    TaskStatus.OUT_OF_RANGE: "\nOut of index range.",
+    TaskStatus.INVALID: "\nInvalid input for index.",
+    TaskStatus.EXISTS: "\nTask already exists.",
+}
 
 
 def read_file(file):
@@ -29,8 +37,19 @@ class ToDoListApp:
 
         self.logic = AppLogic(self.tasks_list)
 
-        self.menu = textwrap.dedent("""
-        ToDoList App
+    def run(self):
+        self.hub()
+        write_to_file(self.task_file, self.tasks_list)
+
+    def hub(self):
+        actions = {
+            1: self.view_tasks,
+            2: self.add_tasks,
+            3: self.remove_tasks,
+            4: self.edit_tasks,
+        }
+        menu = textwrap.dedent("""
+        ToDoList App ('q' to Quit)
         
         1. View Tasks
         
@@ -39,131 +58,107 @@ class ToDoListApp:
         3. Remove Tasks
         
         4. Edit Tasks
+        
         """)
-
-        self.output_returns = {
-            "quit": "\nClosing... Returning to menu\n",
-            "empty": "Input cannot be empty",
-            "out of range": "\nOut of index range.",
-            "invalid": "\nInvalid input for index.",
-            "exists": "\nTask already exists.",
-        }
-
-        self.actions = {
-            1: self.view_tasks,
-            2: self.add_tasks,
-            3: self.remove_tasks,
-            4: self.edit_tasks,
-        }
-
-    def run(self):
-        self.control_hub()
-        write_to_file(self.task_file, self.tasks_list)
-
-    def control_hub(self):
         while True:
-            print(self.menu)
+            print(menu)
 
-            user_input = input(
-                "\nProvide the index of what you want to do? ('q' to Quit)\n\n>   "
-            ).strip()
+            user_input = input("> ").strip()
 
-            output = self.logic._handle_control_hub(user_input, self.actions)
+            result = self.logic.validate_hub(user_input, actions)
 
-            if output == "quit":
-                print(self.output_returns["quit"])
-                break
-            elif isinstance(output, int):
-                if not self.tasks_list:
-                    print("There are no tasks, add some first.\n")
-                    self.actions[2]()
-                else:
-                    self.actions[output]()
+            if isinstance(result, TaskStatus):
+                if result == TaskStatus.QUIT:
+                    print(SHELL_OUTPUTS[result])
+                    break
+                print(SHELL_OUTPUTS[result])
             else:
-                print(self.output_returns[output])
+                if self.logic.force_add_tasks(result):
+                    print("There are no tasks, add some first.\n")
+                    self.add_tasks()
+                else:
+                    actions[result]()
 
     def view_tasks(self):
         print("\nViewing tasks list...\n")
-
-        for idx, val in enumerate(self.tasks_list, start=1):
-            print(f"{idx}. {val}\n")
+        for idx, task in enumerate(self.tasks_list, start=1):
+            print(f"{idx}. {task}\n")
 
     def add_tasks(self):
         while True:
-            user_input = input("\nTask to add ('q' to Quit)\n\n>    ").strip()
+            user_input = input("\nTask to add ('q' to Quit)\n\n> ").strip()
 
-            output = self.logic._handle_add_tasks(user_input)
+            result = self.logic.validate_add_tasks(user_input)
 
-            if output == "quit":
-                print(self.output_returns["quit"])
-                break
-            elif output in self.output_returns:
-                print(self.output_returns[output])
+            if isinstance(result, TaskStatus):
+                print(SHELL_OUTPUTS[result])
+                if result == TaskStatus.QUIT:
+                    break
             else:
-                self.tasks_list.append(output)
+                self.tasks_list.append(result)
                 print("\nTask added")
 
     def remove_tasks(self):
         while True:
             user_input = input(
-                "\nIndex of task to remove ('d' to remove all tasks, 'v' to view all tasks, 'q' to Quit)\n\n>    "
+                "\nIndex to remove ('d' delete all, 'v' view tasks, 'q' to Quit)\n\n>    "
             ).strip()
 
-            output = self.logic._handle_remove_tasks(user_input)
+            result = self.logic.validate_remove_tasks(user_input)
 
-            if output == "quit":
-                print(self.output_returns["quit"])
-                break
-            elif output == "del":
-                self.tasks_list.clear()
-                print("\nAll tasks have been deleted.")
-                break
-            elif output == "view":
-                self.actions[1]()
-            elif isinstance(output, int):
-                index = output
-                self.tasks_list.pop(index - 1)
-                print("\nTask removed.")
+            if isinstance(result, TaskStatus):
+                if result == TaskStatus.QUIT:
+                    print(SHELL_OUTPUTS[result])
+                    break
+
+                if result == TaskStatus.DELETE_ALL:
+                    self.tasks_list.clear()
+                    print("\nAll tasks have been deleted.")
+                    break
+
+                if result == TaskStatus.VIEW:
+                    self.view_tasks()
             else:
-                print(self.output_returns[output])
+                self.tasks_list.pop(result - 1)
+                print("\nTask removed.")
 
     def edit_tasks(self):
         while True:
             user_input = input(
-                "\nIndex of task to edit ('v' to view tasks, 'q' to Quit)\n\n>    "
+                "\nIndex to edit ('v' view tasks, 'q' to Quit)\n\n>    "
             ).strip()
 
-            output = self.logic._handle_edit_tasks(user_input)
+            result = self.logic.validate_edit_tasks(user_input)
 
-            if output == "quit":
-                print(self.output_returns["quit"])
-                break
-            elif output == "view":
-                self.actions[1]()
-            elif isinstance(output, int):
-                index = output
-                self.tasks_list[index - 1] = self._get_updated_task(index)
-                print("\nTask updated.")
+            if isinstance(result, TaskStatus):
+                if result == TaskStatus.QUIT:
+                    print(SHELL_OUTPUTS[result])
+                    break
+
+                if result == TaskStatus.VIEW:
+                    self.view_tasks()
             else:
-                print(self.output_returns[output])
+                self.tasks_list[result - 1] = self._updated_task(result)
+                print("\nTask updated.")
 
-    def _get_updated_task(self, index):
+    def _updated_task(self, index: int):
         while True:
             updated_task = prompt(
                 f"\nEditing Task {index}: ", default=self.tasks_list[index - 1]
             )
 
-            if not updated_task:
-                self.output_returns["empty"]
+            result = self.logic.validate_updated_task(updated_task)
+
+            if isinstance(result, TaskStatus):
+                print(SHELL_OUTPUTS[result])
             else:
-                return updated_task
+                return result
 
 
 # main method to run program
 def run_app():
     task_file = project_path_finder(__file__, "docs", "Tasks.txt")
-    app = ToDoListApp(task_file)
-    app.run()
+    ToDoListApp(task_file).run()
 
 
 if __name__ == "__main__":

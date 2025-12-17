@@ -1,5 +1,7 @@
-# Define constants for return codes
-class TaskStatus:
+from enum import Enum
+
+
+class TaskStatus(str, Enum):
     EMPTY = "empty"
     QUIT = "quit"
     INVALID = "invalid"
@@ -11,10 +13,10 @@ class TaskStatus:
 
 class AppLogic:
     def __init__(self, tasks: list[str] | None = None):
-        self.tasks_list = tasks or []
+        self.tasks = tasks or []
 
-    def _handle_control_hub(self, user_input: str, actions: dict):
-        if not user_input:
+    def validate_hub(self, user_input: str, actions: dict):
+        if not user_input.strip():
             return TaskStatus.EMPTY
         if user_input.lower() == "q":
             return TaskStatus.QUIT
@@ -26,45 +28,47 @@ class AppLogic:
             return TaskStatus.OUT_OF_RANGE
         return index
 
-    def _handle_add_tasks(self, user_input: str):
-        if not user_input:
+    def force_add_tasks(self, selected_action: int):
+        if not self.tasks and selected_action != 2:
+            return True
+        return False
+
+    def validate_add_tasks(self, user_input: str):
+        if not user_input.strip():
             return TaskStatus.EMPTY
         if user_input.lower() == "q":
             return TaskStatus.QUIT
-        if user_input in self.tasks_list:
+        if user_input in self.tasks:
             return TaskStatus.EXISTS
         return user_input
 
-    def _handle_remove_tasks(self, user_input: str):
-        if not user_input:
+    def _validate_return_index(self, user_input: str, delete_all=True):
+        if not user_input.strip():
             return TaskStatus.EMPTY
-        if user_input.lower() == "q":
+        lowered = user_input.lower().strip()
+        if lowered == "q":
             return TaskStatus.QUIT
-        if user_input.lower() == "d":
+        if delete_all and lowered == "d":
             return TaskStatus.DELETE_ALL
-        if user_input.lower() == "v":
+        if lowered == "v":
             return TaskStatus.VIEW
-        if user_input in self.tasks_list:
-            return TaskStatus.EXISTS
         try:
             index = int(user_input)
         except ValueError:
             return TaskStatus.INVALID
-        if not 1 <= index <= len(self.tasks_list):
+        if not 1 <= index <= len(self.tasks):
             return TaskStatus.OUT_OF_RANGE
         return index
 
-    def _handle_edit_tasks(self, user_input: str):
-        if not user_input:
+    def validate_remove_tasks(self, user_input: str):
+        return self._validate_return_index(user_input, delete_all=True)
+
+    def validate_edit_tasks(self, user_input: str):
+        return self._validate_return_index(user_input, delete_all=False)
+
+    def validate_updated_task(self, user_input: str):
+        if not user_input.strip():
             return TaskStatus.EMPTY
-        if user_input.lower() == "q":
-            return TaskStatus.QUIT
-        if user_input.lower() == "v":
-            return TaskStatus.VIEW
-        try:
-            index = int(user_input)
-        except ValueError:
-            return TaskStatus.INVALID
-        if not 1 <= index <= len(self.tasks_list):
-            return TaskStatus.OUT_OF_RANGE
-        return index
+        if user_input in self.tasks:
+            return TaskStatus.EXISTS
+        return user_input
