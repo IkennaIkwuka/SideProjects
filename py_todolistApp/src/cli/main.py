@@ -4,6 +4,7 @@ import textwrap
 
 from prompt_toolkit import prompt
 from utils.python import project_path_finder
+from py_todolistApp.src.cli.logic import AppLogic
 
 
 def read_file(file):
@@ -26,6 +27,8 @@ class ToDoListApp:
         else:
             self.tasks_list = []
 
+        self.logic = AppLogic(self.tasks_list)
+
         self.menu = textwrap.dedent("""
         ToDoList App
         
@@ -46,7 +49,7 @@ class ToDoListApp:
             "exists": "\nTask already exists.",
         }
 
-        self.methods = {
+        self.actions = {
             1: self.view_tasks,
             2: self.add_tasks,
             3: self.remove_tasks,
@@ -65,7 +68,7 @@ class ToDoListApp:
                 "\nProvide the index of what you want to do? ('q' to Quit)\n\n>   "
             ).strip()
 
-            output = self._handle_control_hub(user_input, self.methods)
+            output = self.logic._handle_control_hub(user_input, self.actions)
 
             if output == "quit":
                 print(self.output_returns["quit"])
@@ -73,24 +76,11 @@ class ToDoListApp:
             elif isinstance(output, int):
                 if not self.tasks_list:
                     print("There are no tasks, add some first.\n")
-                    self.methods[2]()
+                    self.actions[2]()
                 else:
-                    self.methods[output]()
+                    self.actions[output]()
             else:
                 print(self.output_returns[output])
-
-    def _handle_control_hub(self, user_input, methods_list):
-        if not user_input:
-            return "empty"
-        if user_input.lower() == "q":
-            return "quit"
-        try:
-            index = int(user_input)
-        except ValueError:
-            return "invalid"
-        if not 1 <= index <= len(methods_list):
-            return "out of range"
-        return index
 
     def view_tasks(self):
         print("\nViewing tasks list...\n")
@@ -102,7 +92,7 @@ class ToDoListApp:
         while True:
             user_input = input("\nTask to add ('q' to Quit)\n\n>    ").strip()
 
-            output = self._handle_add_tasks(user_input)
+            output = self.logic._handle_add_tasks(user_input)
 
             if output == "quit":
                 print(self.output_returns["quit"])
@@ -113,22 +103,13 @@ class ToDoListApp:
                 self.tasks_list.append(output)
                 print("\nTask added")
 
-    def _handle_add_tasks(self, user_input: str):
-        if not user_input:
-            return "empty"
-        if user_input.lower() == "q":
-            return "quit"
-        if user_input in self.tasks_list:
-            return "exists"
-        return user_input
-
     def remove_tasks(self):
         while True:
             user_input = input(
                 "\nIndex of task to remove ('d' to remove all tasks, 'v' to view all tasks, 'q' to Quit)\n\n>    "
             ).strip()
 
-            output = self._handle_remove_tasks(user_input)
+            output = self.logic._handle_remove_tasks(user_input)
 
             if output == "quit":
                 print(self.output_returns["quit"])
@@ -138,7 +119,7 @@ class ToDoListApp:
                 print("\nAll tasks have been deleted.")
                 break
             elif output == "view":
-                self.methods[1]()
+                self.actions[1]()
             elif isinstance(output, int):
                 index = output
                 self.tasks_list.pop(index - 1)
@@ -146,61 +127,25 @@ class ToDoListApp:
             else:
                 print(self.output_returns[output])
 
-    def _handle_remove_tasks(self, user_input):
-        if not user_input:
-            return "empty"
-        if user_input.lower() == "q":
-            return "quit"
-        if user_input.lower() == "d":
-            return "del"
-        if user_input.lower() == "v":
-            return "view"
-        if user_input in self.tasks_list:
-            return "exists"
-        try:
-            index = int(user_input)
-        except ValueError:
-            return "invalid"
-
-        if not 1 <= index <= len(self.tasks_list):
-            return "out of range"
-        return index
-
     def edit_tasks(self):
         while True:
             user_input = input(
                 "\nIndex of task to edit ('v' to view tasks, 'q' to Quit)\n\n>    "
             ).strip()
 
-            output = self._handle_edit_tasks(user_input)
+            output = self.logic._handle_edit_tasks(user_input)
 
             if output == "quit":
                 print(self.output_returns["quit"])
                 break
             elif output == "view":
-                self.methods[1]()
+                self.actions[1]()
             elif isinstance(output, int):
                 index = output
                 self.tasks_list[index - 1] = self._get_updated_task(index)
                 print("\nTask updated.")
             else:
                 print(self.output_returns[output])
-
-    def _handle_edit_tasks(self, user_input):
-        if not user_input:
-            return "empty"
-        if user_input.lower() == "q":
-            return "quit"
-        if user_input.lower() == "v":
-            return "view"
-        try:
-            index = int(user_input)
-        except ValueError:
-            return "invalid"
-
-        if not 1 <= index <= len(self.tasks_list):
-            return "out of range"
-        return index
 
     def _get_updated_task(self, index):
         while True:
