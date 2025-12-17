@@ -1,9 +1,9 @@
 # TODOLIST APP
 
 import textwrap
-from utils.python import interminal_text_editor, project_path_finder
 
-CLOSING_MESSAGE = "\nClosing... Returning to menu\n"
+from prompt_toolkit import prompt
+from utils.python import project_path_finder
 
 
 def read_file(file):
@@ -21,13 +21,12 @@ class ToDoListApp:
     def __init__(self, task_file):
         self.task_file = task_file
 
-        self.tasks_list = [line.strip() for line in read_file(task_file)]
+        if task_file.exists():
+            self.tasks_list = [line.strip() for line in read_file(task_file)]
+        else:
+            self.tasks_list = []
 
-    def run(self):
-        self.control_hub()
-
-    def control_hub(self):
-        menu = """
+        self.menu = textwrap.dedent("""
         ToDoList App
         
         1. View Tasks
@@ -37,56 +36,64 @@ class ToDoListApp:
         3. Remove Tasks
         
         4. Edit Tasks
-        """
+        """)
 
-        print(textwrap.dedent(menu))
+        self.output_returns = {
+            "quit": "\nClosing... Returning to menu\n",
+            "empty": "Input cannot be empty",
+            "out of range": "\nOut of index range.",
+            "invalid": "\nInvalid input for index.",
+            "exists": "\nTask already exists.",
+        }
 
-        methods = (
-            self.view_tasks,
-            self.add_tasks,
-            self.remove_tasks,
-            self.edit_tasks,
-        )
+        self.methods = {
+            1: self.view_tasks,
+            2: self.add_tasks,
+            3: self.remove_tasks,
+            4: self.edit_tasks,
+        }
 
-        while True:
-            prompt_input = input(
-                "\nWhat do you want to do? ('q' to Quit, 'm' for Menu)\n\n>   "
-            ).strip()
-
-            print()
-
-            if not prompt_input:
-                print("Input cannot be empty")
-                continue
-
-            if prompt_input.lower() == "q":
-                print("Closing Todo List App, goodbye!...")
-                break
-
-            if prompt_input.lower() == "m":
-                print(textwrap.dedent(menu))
-                continue
-
-            try:
-                user_input = int(prompt_input)
-            except ValueError:
-                print(f"'{prompt_input}' is invalid. Please choose between '1' ~ '4'\n")
-                continue
-
-            if user_input in range(1, 5):
-                methods[user_input - 1]()  # calls the selected method
-                print()
-            else:
-                print(f"'{user_input}' is invalid. Please choose between '1' ~ '4'\n")
-
+    def run(self):
+        self.control_hub()
         write_to_file(self.task_file, self.tasks_list)
 
-    def view_tasks(self):
-        if len(self.tasks_list) == 0:
-            print("You have no tasks to view, create some.\n")
-            return
+    def control_hub(self):
+        while True:
+            print(self.menu)
 
-        print("Viewing tasks list...\n")
+            user_input = input(
+                "\nProvide the index of what you want to do? ('q' to Quit)\n\n>   "
+            ).strip()
+
+            output = self._handle_control_hub(user_input, self.methods)
+
+            if output == "quit":
+                print(self.output_returns["quit"])
+                break
+            elif isinstance(output, int):
+                if not self.tasks_list:
+                    print("There are no tasks, add some first.\n")
+                    self.methods[2]()
+                else:
+                    self.methods[output]()
+            else:
+                print(self.output_returns[output])
+
+    def _handle_control_hub(self, user_input, methods_list):
+        if not user_input:
+            return "empty"
+        if user_input.lower() == "q":
+            return "quit"
+        try:
+            index = int(user_input)
+        except ValueError:
+            return "invalid"
+        if not 1 <= index <= len(methods_list):
+            return "out of range"
+        return index
+
+    def view_tasks(self):
+        print("\nViewing tasks list...\n")
 
         for idx, val in enumerate(self.tasks_list, start=1):
             print(f"{idx}. {val}\n")
@@ -95,100 +102,116 @@ class ToDoListApp:
         while True:
             user_input = input("\nTask to add ('q' to Quit)\n\n>    ").strip()
 
-            if not user_input:
-                print("input cannot be empty")
-                continue
+            output = self._handle_add_tasks(user_input)
 
-            if user_input.lower() == "q":
-                print(CLOSING_MESSAGE)
-                return
+            if output == "quit":
+                print(self.output_returns["quit"])
+                break
+            elif output in self.output_returns:
+                print(self.output_returns[output])
+            else:
+                self.tasks_list.append(output)
+                print("\nTask added")
 
-            if user_input in self.tasks_list:
-                print(f"\nTask: '{user_input}' already exists.")
-                continue
-
-            self.tasks_list.append(user_input)
-
-            print(f"\n'{user_input}' has been added to task list")
+    def _handle_add_tasks(self, user_input: str):
+        if not user_input:
+            return "empty"
+        if user_input.lower() == "q":
+            return "quit"
+        if user_input in self.tasks_list:
+            return "exists"
+        return user_input
 
     def remove_tasks(self):
-        if len(self.tasks_list) == 0:
-            print("Cannot remove task as there are no tasks, create some.\n")
-            return
-
         while True:
-            prompt_input = input(
-                "\nIndex of task to remove ('-1' to remove all, '0' to view tasks, 'q' to Quit)\n\n>    "
+            user_input = input(
+                "\nIndex of task to remove ('d' to remove all tasks, 'v' to view all tasks, 'q' to Quit)\n\n>    "
             ).strip()
 
-            if prompt_input.lower() == "q":
-                print(CLOSING_MESSAGE)
-                return
+            output = self._handle_remove_tasks(user_input)
 
-            try:
-                user_input = int(prompt_input)
-            except ValueError:
-                print(f"\n'{prompt_input}' is invalid. Please provide a valid index")
-                continue
-
-            if user_input == 0:
-                self.view_tasks()
-                continue
-
-            if user_input == -1:
+            if output == "quit":
+                print(self.output_returns["quit"])
+                break
+            elif output == "del":
                 self.tasks_list.clear()
-                print("\nAll tasks have been cleared. Returning to menu...")
-                return
+                print("\nAll tasks have been deleted.")
+                break
+            elif output == "view":
+                self.methods[1]()
+            elif isinstance(output, int):
+                index = output
+                self.tasks_list.pop(index - 1)
+                print("\nTask removed.")
+            else:
+                print(self.output_returns[output])
 
-            if user_input not in range(1, len(self.tasks_list) + 1):
-                print(f"\n'{user_input}' is invalid. Please provide a valid index")
-                continue
+    def _handle_remove_tasks(self, user_input):
+        if not user_input:
+            return "empty"
+        if user_input.lower() == "q":
+            return "quit"
+        if user_input.lower() == "d":
+            return "del"
+        if user_input.lower() == "v":
+            return "view"
+        if user_input in self.tasks_list:
+            return "exists"
+        try:
+            index = int(user_input)
+        except ValueError:
+            return "invalid"
 
-            val = self.tasks_list[user_input - 1]
-
-            self.tasks_list.pop(user_input - 1)
-
-            print(f"\nTask: '{val}' has been removed")
+        if not 1 <= index <= len(self.tasks_list):
+            return "out of range"
+        return index
 
     def edit_tasks(self):
-        if len(self.tasks_list) == 0:
-            print("There are no tasks to edit, create some.\n")
-            return
-
         while True:
-            prompt_input = input(
-                "\nIndex of task to edit ('0' to view tasks, 'q' to Quit)\n\n>    "
+            user_input = input(
+                "\nIndex of task to edit ('v' to view tasks, 'q' to Quit)\n\n>    "
             ).strip()
 
-            if not prompt_input:
-                print("Input cannot be empty")
-                continue
+            output = self._handle_edit_tasks(user_input)
 
-            if prompt_input.lower() == "q":
-                print(CLOSING_MESSAGE)
-                return
+            if output == "quit":
+                print(self.output_returns["quit"])
+                break
+            elif output == "view":
+                self.methods[1]()
+            elif isinstance(output, int):
+                index = output
+                self.tasks_list[index - 1] = self._get_updated_task(index)
+                print("\nTask updated.")
+            else:
+                print(self.output_returns[output])
 
-            try:
-                user_input = int(prompt_input)
-            except ValueError:
-                print(f"\n'{prompt_input}' is invalid. Please provide a valid index")
-                continue
+    def _handle_edit_tasks(self, user_input):
+        if not user_input:
+            return "empty"
+        if user_input.lower() == "q":
+            return "quit"
+        if user_input.lower() == "v":
+            return "view"
+        try:
+            index = int(user_input)
+        except ValueError:
+            return "invalid"
 
-            if user_input == 0:
-                self.view_tasks()
-                continue
+        if not 1 <= index <= len(self.tasks_list):
+            return "out of range"
+        return index
 
-            if user_input not in range(1, len(self.tasks_list) + 1):
-                print(f"\n'{user_input}' is invalid. Please provide a valid index")
-                continue
-
-            updated_task = interminal_text_editor(
-                f"\nEditing Task {user_input}: ", self.tasks_list[user_input - 1]
+    def _get_updated_task(self, index):
+        while True:
+            updated_task = prompt(
+                f"\nEditing Task {index}: ", default=self.tasks_list[index - 1]
             )
 
-            self.tasks_list[user_input - 1] = updated_task
-
-            print(f"\nTask {user_input} updated to: '{updated_task}'")
+            if not updated_task:
+                self.output_returns["empty"]
+            else:
+                return updated_task
 
 
 # main method to run program

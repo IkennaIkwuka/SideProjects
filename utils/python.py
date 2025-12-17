@@ -4,17 +4,17 @@ import sys
 import time
 
 
-def interminal_text_editor(label: str, text: str) -> str:
-    """
-    Opens an editable terminal prompt with the text already pre-filled.
+# def interminal_text_editor(label: str, text: str) -> str:
+#     """
+#     Opens an editable terminal prompt with the text already pre-filled.
 
-    :param label: The initial text label to show before the text to edit
-    :param text: What i want to edit
-    :return: The edited text as a string
-    """
-    return prompt(
-        label, default=text
-    )  # Use prompt_toolkit to pre-fill the input with the existing task
+#     :param label: The initial text label to show before the text to edit
+#     :param text: What i want to edit
+#     :return: The edited text as a string
+#     """
+#     return prompt(
+#         label, default=text
+#     )  # Use prompt_toolkit to pre-fill the input with the existing task
 
 
 def type_writer_effect(text: str, delay=0.005):
