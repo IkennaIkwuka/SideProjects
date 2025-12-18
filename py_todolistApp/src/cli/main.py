@@ -31,15 +31,15 @@ class ToDoListApp:
         self.task_file = task_file
 
         if task_file.exists():
-            self.tasks_list = [line.strip() for line in read_file(task_file)]
+            self.tasks = [line.strip() for line in read_file(task_file)]
         else:
-            self.tasks_list = []
+            self.tasks = []
 
-        self.logic = AppLogic(self.tasks_list)
+        self.logic = AppLogic(self.tasks)
 
     def run(self):
         self.hub()
-        write_to_file(self.task_file, self.tasks_list)
+        # write_to_file(self.task_file, self.tasks)
 
     def hub(self):
         actions = {
@@ -75,13 +75,15 @@ class ToDoListApp:
             else:
                 if self.logic.force_add_tasks(result):
                     print("There are no tasks, add some first.\n")
-                    self.add_tasks()
+                    self.add_tasks() # TODO fix loop bug
+                    # write_to_file(self.task_file, self.tasks)
                 else:
                     actions[result]()
+                    write_to_file(self.task_file, self.tasks)
 
     def view_tasks(self):
         print("\nViewing tasks list...\n")
-        for idx, task in enumerate(self.tasks_list, start=1):
+        for idx, task in enumerate(self.tasks, start=1):
             print(f"{idx}. {task}\n")
 
     def add_tasks(self):
@@ -91,12 +93,14 @@ class ToDoListApp:
             result = self.logic.validate_add_tasks(user_input)
 
             if isinstance(result, TaskStatus):
-                print(SHELL_OUTPUTS[result])
                 if result == TaskStatus.QUIT:
+                    print(SHELL_OUTPUTS[result])
                     break
-            else:
-                self.tasks_list.append(result)
+                print(SHELL_OUTPUTS[result])
+            elif isinstance(result, str):
+                self.tasks.append(result)
                 print("\nTask added")
+                write_to_file(self.task_file, self.tasks)
 
     def remove_tasks(self):
         while True:
@@ -112,14 +116,15 @@ class ToDoListApp:
                     break
 
                 if result == TaskStatus.DELETE_ALL:
-                    self.tasks_list.clear()
+                    self.tasks.clear()
                     print("\nAll tasks have been deleted.")
                     break
 
                 if result == TaskStatus.VIEW:
                     self.view_tasks()
-            else:
-                self.tasks_list.pop(result - 1)
+            elif isinstance(result, int):
+                self.tasks.pop(result - 1)
+                # write_to_file(self.task_file, self.tasks)
                 print("\nTask removed.")
 
     def edit_tasks(self):
@@ -137,21 +142,23 @@ class ToDoListApp:
 
                 if result == TaskStatus.VIEW:
                     self.view_tasks()
-            else:
-                self.tasks_list[result - 1] = self._updated_task(result)
+            elif isinstance(result, int):
+                self.tasks[result - 1] = self._updated_task(result)
+                # write_to_file(self.task_file, self.tasks)
+
                 print("\nTask updated.")
 
     def _updated_task(self, index: int):
         while True:
             updated_task = prompt(
-                f"\nEditing Task {index}: ", default=self.tasks_list[index - 1]
+                f"\nEditing Task {index}: ", default=self.tasks[index - 1]
             )
 
             result = self.logic.validate_updated_task(updated_task)
 
             if isinstance(result, TaskStatus):
                 print(SHELL_OUTPUTS[result])
-            else:
+            elif isinstance(result, str):
                 return result
 
 
