@@ -47,10 +47,18 @@ class AppLogic:
         - allow_delete_all: if True, allows 'd' for delete all (for remove)
         - allow_view: if True, allows 'v' for view (for remove)
         """
-        if not user_input.strip():
+
+        user_input = user_input.strip()
+
+        if not user_input:
             return TaskStatus.EMPTY
 
-        lowered = user_input.lower().strip()
+        if return_str and user_input != "q":
+            if user_input in self.tasks:
+                return TaskStatus.EXISTS
+            return user_input
+
+        lowered = user_input.lower()
 
         if lowered == "q":
             return TaskStatus.QUIT
@@ -60,11 +68,6 @@ class AppLogic:
 
         if allow_view and lowered == "v":
             return TaskStatus.VIEW
-
-        if return_str:
-            if user_input in self.tasks:
-                return TaskStatus.EXISTS
-            return user_input
 
         # Try converting to index (for remove/edit)
         try:
@@ -87,43 +90,3 @@ class AppLogic:
 
     def validate_updated_task(self, user_input: str):
         return self._validate_input(user_input, return_str=True)
-
-    # def validate_add_tasks(self, user_input: str):
-    #     if not user_input.strip():
-    #         return TaskStatus.EMPTY
-    #     if user_input.lower() == "q":
-    #         return TaskStatus.QUIT
-    #     if user_input in self.tasks:
-    #         return TaskStatus.EXISTS
-    #     return user_input
-
-    # def _validate_return_index(self, user_input: str, delete_all=True):
-    #     if not user_input.strip():
-    #         return TaskStatus.EMPTY
-    #     lowered = user_input.lower().strip()
-    #     if lowered == "q":
-    #         return TaskStatus.QUIT
-    #     if delete_all and lowered == "d":
-    #         return TaskStatus.DELETE_ALL
-    #     if lowered == "v":
-    #         return TaskStatus.VIEW
-    #     try:
-    #         index = int(user_input)
-    #     except ValueError:
-    #         return TaskStatus.INVALID
-    #     if not 1 <= index <= len(self.tasks):
-    #         return TaskStatus.OUT_OF_RANGE
-    #     return index
-
-    # def validate_remove_tasks(self, user_input: str):
-    #     return self._validate_return_index(user_input, delete_all=True)
-
-    # def validate_edit_tasks(self, user_input: str):
-    #     return self._validate_return_index(user_input, delete_all=False)
-
-    # def validate_updated_task(self, user_input: str):
-    #     if not user_input.strip():
-    #         return TaskStatus.EMPTY
-    #     if user_input in self.tasks:
-    #         return TaskStatus.EXISTS
-    #     return user_input
