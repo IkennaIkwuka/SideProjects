@@ -9,7 +9,7 @@ from py_todolistApp.src.cli.logic import AppLogic, TaskStatus
 
 SHELL_OUTPUTS = {
     TaskStatus.QUIT: "\nClosing... Returning to menu\n",
-    TaskStatus.EMPTY: "Input cannot be empty",
+    TaskStatus.EMPTY: "\nInput cannot be empty",
     TaskStatus.OUT_OF_RANGE: "\nOut of index range.",
     TaskStatus.INVALID: "\nInvalid input for index.",
     TaskStatus.EXISTS: "\nTask already exists.",
@@ -102,7 +102,7 @@ class ToDoListApp:
                     print(SHELL_OUTPUTS[result])
             elif isinstance(result, str):
                 self.tasks.append(result)
-                print("\nTask added\n")
+                print("\nTask added")
 
     def remove_tasks(self):
         if not self.tasks:
@@ -130,7 +130,7 @@ class ToDoListApp:
                     print(SHELL_OUTPUTS[result])
             elif isinstance(result, int):
                 self.tasks.pop(result - 1)
-                print("\nTask removed.\n")
+                print("\nTask removed.")
 
     def edit_tasks(self):
         if not self.tasks:
@@ -154,7 +154,7 @@ class ToDoListApp:
                     print(SHELL_OUTPUTS[result])
             elif isinstance(result, int):
                 self.tasks[result - 1] = self._updated_task(result)
-                print("\nTask updated.\n")
+                print("\nTask updated.")
 
     def _updated_task(self, index: int):
         while True:
