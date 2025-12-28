@@ -28,11 +28,6 @@ class AppLogic:
             return TaskStatus.OUT_OF_RANGE
         return index
 
-    def force_add_tasks(self, selected_action: int):
-        if not self.tasks and selected_action != 2:
-            return True
-        return False
-
     def _validate_input(
         self,
         user_input: str,
@@ -53,11 +48,6 @@ class AppLogic:
         if not user_input:
             return TaskStatus.EMPTY
 
-        if return_str and user_input != "q":
-            if user_input in self.tasks:
-                return TaskStatus.EXISTS
-            return user_input
-
         lowered = user_input.lower()
 
         if lowered == "q":
@@ -68,6 +58,11 @@ class AppLogic:
 
         if allow_view and lowered == "v":
             return TaskStatus.VIEW
+
+        if return_str:
+            if user_input in self.tasks:
+                return TaskStatus.EXISTS
+            return user_input
 
         # Try converting to index (for remove/edit)
         try:

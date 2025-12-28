@@ -61,21 +61,6 @@ def test_validate_hub_valid(logic):
 
 
 # ------------------
-# FORCE ADD TASKS
-# ------------------
-
-
-def test_force_add_tasks_when_empty():
-    logic = AppLogic([])
-    assert logic.force_add_tasks(1) is True
-    assert logic.force_add_tasks(2) is False
-
-
-def test_force_add_tasks_when_exists(logic):
-    assert logic.force_add_tasks(1) is False
-
-
-# ------------------
 # ADD, REMOVE, EDIT, UPDATED TASKS TESTS
 # ------------------
 

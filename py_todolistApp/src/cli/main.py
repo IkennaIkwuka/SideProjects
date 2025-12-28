@@ -4,10 +4,9 @@ from pathlib import Path
 import textwrap
 
 from prompt_toolkit import prompt
-from utils.python import project_path_finder
 from py_todolistApp.src.cli.logic import AppLogic, TaskStatus
 
-SHELL_OUTPUTS = {
+MESSAGES = {
     TaskStatus.QUIT: "\nClosing... Returning to menu\n",
     TaskStatus.EMPTY: "\nInput cannot be empty",
     TaskStatus.OUT_OF_RANGE: "\nOut of index range.",
@@ -68,16 +67,13 @@ class ToDoListApp:
 
             if isinstance(result, TaskStatus):
                 if result == TaskStatus.QUIT:
-                    print(SHELL_OUTPUTS[TaskStatus.QUIT])
+                    print(MESSAGES[TaskStatus.QUIT])
                     return
                 else:
-                    print(SHELL_OUTPUTS[result])
+                    print(MESSAGES[result])
             else:
-                if self.logic.force_add_tasks(result):
-                    print("\nThere are no tasks, add some first.\n")
-                else:
-                    actions[result]()
-                    save_file(self.task_file, self.tasks)
+                actions[result]()
+                save_file(self.task_file, self.tasks)
 
     def view_tasks(self):
         if not self.tasks:
@@ -96,10 +92,10 @@ class ToDoListApp:
 
             if isinstance(result, TaskStatus):
                 if result == TaskStatus.QUIT:
-                    print(SHELL_OUTPUTS[TaskStatus.QUIT])
+                    print(MESSAGES[TaskStatus.QUIT])
                     return
                 else:
-                    print(SHELL_OUTPUTS[result])
+                    print(MESSAGES[result])
             elif isinstance(result, str):
                 self.tasks.append(result)
                 print("\nTask added")
@@ -118,16 +114,26 @@ class ToDoListApp:
 
             if isinstance(result, TaskStatus):
                 if result == TaskStatus.QUIT:
-                    print(SHELL_OUTPUTS[TaskStatus.QUIT])
+                    print(MESSAGES[TaskStatus.QUIT])
                     return
                 elif result == TaskStatus.DELETE_ALL:
-                    self.tasks.clear()
-                    print("\nAll tasks have been deleted.")
-                    return
+                    choice = (
+                        input("\nAre you sure you want to delete all tasks? (y/n): ")
+                        .strip()
+                        .lower()
+                    )
+                    if choice == "y":
+                        self.tasks.clear()
+                        print("\nAll tasks have been deleted.")
+                        return
+                    elif choice == "n":
+                        break
+                    else:
+                        print("\nInvalid input. Please enter 'y' or 'n'.")
                 elif result == TaskStatus.VIEW:
                     self.view_tasks()
                 else:
-                    print(SHELL_OUTPUTS[result])
+                    print(MESSAGES[result])
             elif isinstance(result, int):
                 self.tasks.pop(result - 1)
                 print("\nTask removed.")
@@ -146,12 +152,12 @@ class ToDoListApp:
 
             if isinstance(result, TaskStatus):
                 if result == TaskStatus.QUIT:
-                    print(SHELL_OUTPUTS[TaskStatus.QUIT])
+                    print(MESSAGES[TaskStatus.QUIT])
                     return
                 elif result == TaskStatus.VIEW:
                     self.view_tasks()
                 else:
-                    print(SHELL_OUTPUTS[result])
+                    print(MESSAGES[result])
             elif isinstance(result, int):
                 self.tasks[result - 1] = self._updated_task(result)
                 print("\nTask updated.")
@@ -165,17 +171,18 @@ class ToDoListApp:
             result = self.logic.validate_updated_task(updated_task)
 
             if isinstance(result, TaskStatus):
-                print(SHELL_OUTPUTS[result])
+                print(MESSAGES[result])
             elif isinstance(result, str):
                 return result
 
 
 # main method to run program
 def main():
+    from utils.python import project_path_finder
+
     task_file = project_path_finder(__file__, "docs", "Tasks.txt")
     ToDoListApp(task_file).run()
 
 
 if __name__ == "__main__":
     main()
-    ...
