@@ -15,73 +15,88 @@ class AppLogic:
     def __init__(self, tasks: list[str] | None = None):
         self.tasks = tasks or []
 
-    def validate_hub(self, user_input: str, actions: dict):
-        if not user_input.strip():
-            return TaskStatus.EMPTY
-        if user_input.lower() == "q":
-            return TaskStatus.QUIT
+    # ----------------------------
+    # Helper methods (NEW)
+    # ----------------------------
+
+    def _is_empty(self, value: str) -> bool:
+        return not value
+
+    def _is_quit(self, value: str) -> bool:
+        return value.lower() == "q"
+
+    def _is_delete_all(self, value: str) -> bool:
+        return value.lower() == "d"
+
+    def _is_view(self, value: str) -> bool:
+        return value.lower() == "v"
+
+    def _parse_index(self, value: str, methods: tuple | None = None):
         try:
-            index = int(user_input)
+            index = int(value)
+            if 1 <= index <= len(methods or self.tasks):
+                return index
+            return TaskStatus.OUT_OF_RANGE
         except ValueError:
             return TaskStatus.INVALID
-        if not 1 <= index <= len(actions):
-            return TaskStatus.OUT_OF_RANGE
-        return index
 
-    def _validate_input(
-        self,
-        user_input: str,
-        return_str=False,
-        allow_delete_all=False,
-        allow_view=False,
-    ):
-        """
-        Unified validation for add, remove, edit, update actions.
-        Parameters:
-        - return_str: if True, returns the inputted string (for add/updated)
-        - allow_delete_all: if True, allows 'd' for delete all (for remove)
-        - allow_view: if True, allows 'v' for view (for remove)
-        """
+    # ----------------------------
+    # Public validation methods
+    # ----------------------------
 
-        user_input = user_input.strip()
-
-        if not user_input:
+    def validate_hub(self, choice: str, methods: tuple):
+        if self._is_empty(choice):
             return TaskStatus.EMPTY
 
-        lowered = user_input.lower()
-
-        if lowered == "q":
+        if self._is_quit(choice):
             return TaskStatus.QUIT
 
-        if allow_delete_all and lowered == "d":
+        return self._parse_index(choice, methods)
+
+    def validate_add_tasks(self, choice: str):
+        if self._is_empty(choice):
+            return TaskStatus.EMPTY
+
+        if self._is_quit(choice):
+            return TaskStatus.QUIT
+
+        if choice in self.tasks:
+            return TaskStatus.EXISTS
+
+        return choice
+
+    def validate_remove_tasks(self, choice: str):
+        if self._is_empty(choice):
+            return TaskStatus.EMPTY
+
+        if self._is_quit(choice):
+            return TaskStatus.QUIT
+
+        if self._is_delete_all(choice):
             return TaskStatus.DELETE_ALL
 
-        if allow_view and lowered == "v":
+        if self._is_view(choice):
             return TaskStatus.VIEW
 
-        if return_str:
-            if user_input in self.tasks:
-                return TaskStatus.EXISTS
-            return user_input
+        return self._parse_index(choice)
 
-        # Try converting to index (for remove/edit)
-        try:
-            index = int(user_input)
-            if not 1 <= index <= len(self.tasks):
-                return TaskStatus.OUT_OF_RANGE
-            return index
-        except ValueError:
-            return TaskStatus.INVALID
+    def validate_edit_tasks(self, choice: str):
+        if self._is_empty(choice):
+            return TaskStatus.EMPTY
 
-    # Rewritten methods using the unified validator
-    def validate_add_tasks(self, user_input: str):
-        return self._validate_input(user_input, return_str=True)
+        if self._is_quit(choice):
+            return TaskStatus.QUIT
 
-    def validate_remove_tasks(self, user_input: str):
-        return self._validate_input(user_input, allow_delete_all=True, allow_view=True)
+        if self._is_view(choice):
+            return TaskStatus.VIEW
 
-    def validate_edit_tasks(self, user_input: str):
-        return self._validate_input(user_input, allow_view=True)
+        return self._parse_index(choice)
 
-    def validate_updated_task(self, user_input: str):
-        return self._validate_input(user_input, return_str=True)
+    def validate_updated_task(self, choice: str):
+        if self._is_empty(choice):
+            return TaskStatus.EMPTY
+
+        if choice in self.tasks:
+            return TaskStatus.EXISTS
+
+        return choice
