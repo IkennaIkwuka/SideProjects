@@ -1,8 +1,6 @@
 # TODOLIST APP
 
 from pathlib import Path
-import textwrap
-
 from prompt_toolkit import prompt
 from py_todolistApp.src.cli.logic import AppLogic, TaskStatus
 
@@ -15,65 +13,41 @@ MESSAGES = {
 }
 
 
-def read_file(file_path: Path):
-    with open(file_path, "r") as f:
-        yield from f
-
-
-def save_file(file_path: Path, tasks: list[str]):
-    with open(file_path, "w") as f:
-        for val in tasks:
-            f.write(f"{val}\n")
-
-
 class ToDoListApp:
-    def __init__(self, task_file: Path | str):
-        self.task_file = Path(task_file)
+    def __init__(self, file: Path | str, logic: AppLogic | None = None):
+        self.file = Path(file)
+        self.tasks = self._read(self.file)
+        self.logic = logic or AppLogic(self.tasks)
 
-        self.tasks = (
-            [line.strip() for line in read_file(Path(task_file))]
-            if self.task_file.exists()
-            else []
-        )
+    def _read(self, file: Path):
+        if file.exists():
+            return [line.strip() for line in file.read_text().splitlines()]
+        return []
 
-        self.logic = AppLogic(self.tasks)
+    def _save(self, file: Path, tasks: list[str]):
+        file.write_text("\n".join(tasks))
 
     def run(self):
-        actions = {
-            1: self.view_tasks,
-            2: self.add_tasks,
-            3: self.remove_tasks,
-            4: self.edit_tasks,
-        }
+        methods = (self.view_tasks, self.add_tasks, self.remove_tasks, self.edit_tasks)
+
         while True:
             print(
-                textwrap.dedent("""
-                ToDoList App ('q' to Quit)
-                
-                1. View Tasks
-                
-                2. Add Tasks
-                
-                3. Remove Tasks
-                
-                4. Edit Tasks
-                
-                """)
+                "\nToDoList App ('q' to Quit)\n1. View Tasks\n2. Add Tasks\n3. Remove Tasks\n4. Edit Tasks\n"
             )
 
-            user_input = input("> ").strip()
+            choice = input("> ").strip()
 
-            result = self.logic.validate_hub(user_input, actions)
+            result = self.logic.validate_hub(choice, methods)
+
+            if result == TaskStatus.QUIT:
+                print(MESSAGES[TaskStatus.QUIT])
+                return
 
             if isinstance(result, TaskStatus):
-                if result == TaskStatus.QUIT:
-                    print(MESSAGES[TaskStatus.QUIT])
-                    return
-                else:
-                    print(MESSAGES[result])
+                print(MESSAGES[result])
             else:
-                actions[result]()
-                save_file(self.task_file, self.tasks)
+                methods[result - 1]()
+                self._save(self.file, self.tasks)
 
     def view_tasks(self):
         if not self.tasks:
@@ -81,22 +55,25 @@ class ToDoListApp:
             return
 
         print("\nViewing tasks list...\n")
+
         for idx, task in enumerate(self.tasks, start=1):
-            print(f"{idx}. {task}\n")
+            print(f"{idx}. {task}")
 
     def add_tasks(self):
         while True:
-            user_input = input("\nTask to add ('q' to Quit)\n\n> ").strip()
+            print("\nTask to add ('q' to Quit)\n\n")
 
-            result = self.logic.validate_add_tasks(user_input)
+            choice = input("> ").strip()
+
+            result = self.logic.validate_add_tasks(choice)
+
+            if result == TaskStatus.QUIT:
+                print(MESSAGES[TaskStatus.QUIT])
+                return
 
             if isinstance(result, TaskStatus):
-                if result == TaskStatus.QUIT:
-                    print(MESSAGES[TaskStatus.QUIT])
-                    return
-                else:
-                    print(MESSAGES[result])
-            elif isinstance(result, str):
+                print(MESSAGES[result])
+            else:
                 self.tasks.append(result)
                 print("\nTask added")
 
@@ -106,35 +83,39 @@ class ToDoListApp:
             return
 
         while True:
-            user_input = input(
-                "\nIndex to remove ('d' delete all, 'v' view tasks, 'q' to Quit)\n\n>    "
-            ).strip()
+            print("\nIndex to remove ('d' delete all, 'v' view tasks, 'q' to Quit)\n\n")
 
-            result = self.logic.validate_remove_tasks(user_input)
+            choice = input("> ").strip()
+
+            result = self.logic.validate_remove_tasks(choice)
+
+            if result == TaskStatus.QUIT:
+                print(MESSAGES[TaskStatus.QUIT])
+                return
+
+            if result == TaskStatus.DELETE_ALL:
+                print("\nAre you sure you want to delete all tasks? (y/n)\n\n")
+
+                _choice = input("> ").strip().lower()
+
+                _result = self.logic.delete_all_confirmation(_choice)
+
+                if _result is True:
+                    self.tasks.clear()
+                    print("\nAll tasks have been deleted.")
+                    return
+                elif _result is False:
+                    break
+
+                print("\nInvalid input. Please enter 'y' or 'n'.")
+
+            if result == TaskStatus.VIEW:
+                self.view_tasks()
+                continue
 
             if isinstance(result, TaskStatus):
-                if result == TaskStatus.QUIT:
-                    print(MESSAGES[TaskStatus.QUIT])
-                    return
-                elif result == TaskStatus.DELETE_ALL:
-                    choice = (
-                        input("\nAre you sure you want to delete all tasks? (y/n): ")
-                        .strip()
-                        .lower()
-                    )
-                    if choice == "y":
-                        self.tasks.clear()
-                        print("\nAll tasks have been deleted.")
-                        return
-                    elif choice == "n":
-                        break
-                    else:
-                        print("\nInvalid input. Please enter 'y' or 'n'.")
-                elif result == TaskStatus.VIEW:
-                    self.view_tasks()
-                else:
-                    print(MESSAGES[result])
-            elif isinstance(result, int):
+                print(MESSAGES[result])
+            else:
                 self.tasks.pop(result - 1)
                 print("\nTask removed.")
 
@@ -144,35 +125,35 @@ class ToDoListApp:
             return
 
         while True:
-            user_input = input(
-                "\nIndex to edit ('v' view tasks, 'q' to Quit)\n\n>    "
-            ).strip()
+            print("\nIndex to edit ('v' view tasks, 'q' to Quit)\n\n")
 
-            result = self.logic.validate_edit_tasks(user_input)
+            choice = input("> ").strip()
+
+            result = self.logic.validate_edit_tasks(choice)
+
+            if result == TaskStatus.QUIT:
+                print(MESSAGES[TaskStatus.QUIT])
+                return
+
+            if result == TaskStatus.VIEW:
+                self.view_tasks()
+                continue
 
             if isinstance(result, TaskStatus):
-                if result == TaskStatus.QUIT:
-                    print(MESSAGES[TaskStatus.QUIT])
-                    return
-                elif result == TaskStatus.VIEW:
-                    self.view_tasks()
-                else:
-                    print(MESSAGES[result])
-            elif isinstance(result, int):
+                print(MESSAGES[result])
+            else:
                 self.tasks[result - 1] = self._updated_task(result)
                 print("\nTask updated.")
 
     def _updated_task(self, index: int):
         while True:
-            updated_task = prompt(
-                f"\nEditing Task {index}: ", default=self.tasks[index - 1]
-            )
+            updated_task = prompt("\nEditing: ", default=self.tasks[index - 1])
 
             result = self.logic.validate_updated_task(updated_task)
 
             if isinstance(result, TaskStatus):
                 print(MESSAGES[result])
-            elif isinstance(result, str):
+            else:
                 return result
 
 
@@ -180,8 +161,8 @@ class ToDoListApp:
 def main():
     from utils.python import project_path_finder
 
-    task_file = project_path_finder(__file__, "docs", "Tasks.txt")
-    ToDoListApp(task_file).run()
+    file = project_path_finder(__file__, "docs", "Tasks.txt")
+    ToDoListApp(file).run()
 
 
 if __name__ == "__main__":

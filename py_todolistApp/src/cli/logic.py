@@ -1,14 +1,14 @@
-from enum import Enum
+from enum import Enum, auto
 
 
 class TaskStatus(str, Enum):
-    EMPTY = "empty"
-    QUIT = "quit"
-    INVALID = "invalid"
-    OUT_OF_RANGE = "out of range"
-    EXISTS = "exists"
-    DELETE_ALL = "del"
-    VIEW = "view"
+    EMPTY = auto()
+    QUIT = auto()
+    INVALID = auto()
+    OUT_OF_RANGE = auto()
+    EXISTS = auto()
+    DELETE_ALL = auto()
+    VIEW = auto()
 
 
 class AppLogic:
@@ -79,6 +79,12 @@ class AppLogic:
             return TaskStatus.VIEW
 
         return self._parse_index(choice)
+
+    def delete_all_confirmation(self, choice: str) -> None | bool:
+        if choice.lower() == "y":
+            return True
+        if choice.lower() == "n":
+            return False
 
     def validate_edit_tasks(self, choice: str):
         if self._is_empty(choice):
