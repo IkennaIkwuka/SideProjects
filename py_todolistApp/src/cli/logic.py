@@ -1,7 +1,7 @@
 from enum import Enum, auto
 
 
-class TaskStatus(str, Enum):
+class TaskStatus(Enum):
     EMPTY = auto()
     QUIT = auto()
     INVALID = auto()
@@ -19,9 +19,6 @@ class AppLogic:
     # Helper methods (NEW)
     # ----------------------------
 
-    def _is_empty(self, value: str) -> bool:
-        return not value
-
     def _is_quit(self, value: str) -> bool:
         return value.lower() == "q"
 
@@ -31,10 +28,10 @@ class AppLogic:
     def _is_view(self, value: str) -> bool:
         return value.lower() == "v"
 
-    def _parse_index(self, value: str, methods: tuple | None = None):
+    def _parse_index(self, value: str, app_menu: tuple | None = None):
         try:
             index = int(value)
-            if 1 <= index <= len(methods or self.tasks):
+            if 1 <= index <= len(app_menu or self.tasks):
                 return index
             return TaskStatus.OUT_OF_RANGE
         except ValueError:
@@ -44,18 +41,16 @@ class AppLogic:
     # Public validation methods
     # ----------------------------
 
-    def validate_hub(self, choice: str, methods: tuple):
-        if self._is_empty(choice):
-            return TaskStatus.EMPTY
+    def run(self, choice: str, app_menu: tuple):
+        choice = choice.strip()
 
         if self._is_quit(choice):
             return TaskStatus.QUIT
 
-        return self._parse_index(choice, methods)
+        return self._parse_index(choice, app_menu)
 
-    def validate_add_tasks(self, choice: str):
-        if self._is_empty(choice):
-            return TaskStatus.EMPTY
+    def add_tasks(self, choice: str):
+        choice = choice.strip()
 
         if self._is_quit(choice):
             return TaskStatus.QUIT
@@ -63,11 +58,10 @@ class AppLogic:
         if choice in self.tasks:
             return TaskStatus.EXISTS
 
-        return choice
+        return choice or TaskStatus.INVALID
 
-    def validate_remove_tasks(self, choice: str):
-        if self._is_empty(choice):
-            return TaskStatus.EMPTY
+    def remove_tasks(self, choice: str):
+        choice = choice.strip()
 
         if self._is_quit(choice):
             return TaskStatus.QUIT
@@ -80,15 +74,17 @@ class AppLogic:
 
         return self._parse_index(choice)
 
-    def delete_all_confirmation(self, choice: str) -> None | bool:
+    def delete_all_confirmation(self, choice: str):
+        choice = choice.strip()
+
         if choice.lower() == "y":
             return True
         if choice.lower() == "n":
             return False
+        return TaskStatus.INVALID
 
-    def validate_edit_tasks(self, choice: str):
-        if self._is_empty(choice):
-            return TaskStatus.EMPTY
+    def edit_tasks(self, choice: str):
+        choice = choice.strip()
 
         if self._is_quit(choice):
             return TaskStatus.QUIT
@@ -98,11 +94,21 @@ class AppLogic:
 
         return self._parse_index(choice)
 
-    def validate_updated_task(self, choice: str):
-        if self._is_empty(choice):
-            return TaskStatus.EMPTY
+    def updated_task(self, choice: str):
+        choice = choice.strip()
 
         if choice in self.tasks:
             return TaskStatus.EXISTS
 
-        return choice
+        return choice or TaskStatus.INVALID
+
+    def get_message(self, status: TaskStatus) -> str:
+        match status:
+            case TaskStatus.OUT_OF_RANGE:
+                return "Out of range."
+            case TaskStatus.INVALID:
+                return "Invalid input."
+            case TaskStatus.EXISTS:
+                return "Task exists."
+            case _:
+                return ""
