@@ -56,13 +56,6 @@ def test_remove_tasks(test_logic, fake_tasks):
     assert test_logic.remove_tasks(str(len(fake_tasks))) == len(fake_tasks)
 
 
-def test_delete_all_confirmation(test_logic):
-    assert test_logic.delete_all_confirmation("other") == TaskStatus.INVALID
-    assert test_logic.delete_all_confirmation("3") == TaskStatus.INVALID
-    assert test_logic.delete_all_confirmation("y") is True
-    assert test_logic.delete_all_confirmation("n") is False
-
-
 def test_edit_tasks(test_logic, fake_tasks):
     assert test_logic.edit_tasks("q") == TaskStatus.QUIT
     assert test_logic.edit_tasks("v") == TaskStatus.VIEW
@@ -75,6 +68,13 @@ def test_update_task(test_logic):
     assert test_logic.updated_task("Task 1") == TaskStatus.EXISTS
     assert test_logic.updated_task("") == TaskStatus.INVALID
     assert test_logic.updated_task("Updated Task") == "Updated Task"
+
+
+def test_delete_all_confirmation(test_logic):
+    assert test_logic.delete_all_confirmation("other") == TaskStatus.INVALID
+    assert test_logic.delete_all_confirmation("3") == TaskStatus.INVALID
+    assert test_logic.delete_all_confirmation("y") is True
+    assert test_logic.delete_all_confirmation("n") is False
 
 
 def test_get_messages(test_logic):

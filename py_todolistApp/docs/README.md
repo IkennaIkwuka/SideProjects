@@ -5,4 +5,4 @@
 ## Setup
 
 1. Install dependencies: `pip install -r docs/requirements.txt`
-2. Run `python src/cli/main.py`
+2. Run `python3 scripts/run_cli.py`

@@ -67,15 +67,6 @@ class AppLogic:
 
         return self._parse_index(choice)
 
-    def delete_all_confirmation(self, choice: str):
-        choice = choice.strip()
-
-        if choice.lower() == "y":
-            return True
-        if choice.lower() == "n":
-            return False
-        return self.status.INVALID
-
     def edit_tasks(self, choice: str):
         choice = choice.strip()
 
@@ -94,6 +85,15 @@ class AppLogic:
             return self.status.EXISTS
 
         return choice or self.status.INVALID
+
+    def delete_all_confirmation(self, choice: str):
+        choice = choice.strip()
+
+        if choice.lower() == "y":
+            return True
+        if choice.lower() == "n":
+            return False
+        return self.status.INVALID
 
     def get_message(self, status: TaskStatus) -> str:
         match status:
