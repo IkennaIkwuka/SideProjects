@@ -1,7 +1,6 @@
 import pytest
 from py_todolistApp.src.cli.logic import AppLogic, TaskStatus
 
-
 # ------------------
 # Fixtures
 # ------------------
@@ -73,7 +72,8 @@ def test_delete_all_confirmation_invalid(test_logic):
 def test_edit_tasks(test_logic, tasks):
     assert test_logic.edit_tasks("q") == TaskStatus.QUIT
     assert test_logic.edit_tasks("v") == TaskStatus.VIEW
-    assert test_logic.edit_tasks(str(len(tasks))) == len(tasks)
+    assert test_logic.remove_tasks(str(len(tasks) + 1)) == TaskStatus.OUT_OF_RANGE
+    assert test_logic.remove_tasks(str(len(tasks))) == len(tasks)
 
 
 def test_edit_tasks_invalid(test_logic):
