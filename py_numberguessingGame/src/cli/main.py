@@ -1,4 +1,6 @@
-# Number Guessing Game CLI
+#
+# Number Guessing Game
+#
 
 import random
 from src.services.logic import GameLogic
@@ -113,5 +115,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
-    ...
+    ...  # for testing purposes

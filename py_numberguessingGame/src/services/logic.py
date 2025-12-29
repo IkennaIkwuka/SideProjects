@@ -29,3 +29,6 @@ class GameLogic:
             return "out of range"
         except ValueError:
             return "invalid input"
+
+if __name__ == "__main__":
+    ...  # for testing purposes
