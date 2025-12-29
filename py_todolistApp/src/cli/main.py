@@ -1,15 +1,22 @@
-# TODOLIST APP
+# ToDoList APP
 
 from pathlib import Path
 from prompt_toolkit import prompt
-from py_todolistApp.src.cli.logic import AppLogic, TaskStatus
+from src.cli.services.logic import AppLogic
+from src.cli.models.status import TaskStatus
 
 
 class ToDoListApp:
-    def __init__(self, file: Path | str, logic: AppLogic | None = None):
+    def __init__(
+        self,
+        file: Path | str,
+        logic: AppLogic | None = None,
+        status: TaskStatus | None = None,
+    ):
         self.file = Path(file)
         self.tasks = self._read(self.file)
         self.logic = logic or AppLogic(self.tasks)
+        self.status = status or TaskStatus
 
     def _read(self, file: Path):
         if file.exists():
@@ -19,8 +26,13 @@ class ToDoListApp:
     def _save(self, file: Path, tasks: list[str]):
         file.write_text("\n".join(tasks))
 
-    def run(self):
-        app_menu = (self.view_tasks, self.add_tasks, self.remove_tasks, self.edit_tasks)
+    def menu(self):
+        menu_options = (
+            self.view_tasks,
+            self.add_tasks,
+            self.remove_tasks,
+            self.edit_tasks,
+        )
 
         while True:
             print(
@@ -29,14 +41,14 @@ class ToDoListApp:
 
             choice = input("> ").strip()
 
-            result = self.logic.run(choice, app_menu)
+            result = self.logic.menu(choice, menu_options)
 
             if isinstance(result, int):
-                app_menu[result - 1]()
+                menu_options[result - 1]()
                 self._save(self.file, self.tasks)
                 continue
 
-            if result == TaskStatus.QUIT:
+            if result == self.status.QUIT:
                 print("\nExiting ToDoList App. Goodbye!\n")
                 return
 
@@ -65,10 +77,10 @@ class ToDoListApp:
                 print("\nTask added")
                 continue
 
-            if result == TaskStatus.QUIT:
+            if result == self.status.QUIT:
                 return
 
-            if result == TaskStatus.EXISTS:
+            if result == self.status.EXISTS:
                 print("\n" + self.logic.get_message(result))
                 continue
 
@@ -91,10 +103,10 @@ class ToDoListApp:
                 print("\nTask removed.")
                 continue
 
-            if result == TaskStatus.QUIT:
+            if result == self.status.QUIT:
                 return
 
-            if result == TaskStatus.DELETE_ALL:
+            if result == self.status.DELETE_ALL:
                 if self._delete_all_confirmation():
                     self.tasks.clear()
                     print("\nAll tasks have been deleted.")
@@ -102,7 +114,7 @@ class ToDoListApp:
                 else:
                     continue
 
-            if result == TaskStatus.VIEW:
+            if result == self.status.VIEW:
                 self.view_tasks()
                 continue
 
@@ -116,7 +128,7 @@ class ToDoListApp:
 
             _result = self.logic.delete_all_confirmation(_choice)
 
-            if _result == TaskStatus.INVALID:
+            if _result == self.status.INVALID:
                 print("\nInvalid input. Please enter 'y' or 'n'.")
                 continue
 
@@ -142,10 +154,10 @@ class ToDoListApp:
                 print("\nTask updated.")
                 continue
 
-            if result == TaskStatus.QUIT:
+            if result == self.status.QUIT:
                 return
 
-            if result == TaskStatus.VIEW:
+            if result == self.status.VIEW:
                 self.view_tasks()
                 continue
 
@@ -165,11 +177,8 @@ class ToDoListApp:
 
 # main method to run program
 def main():
-    from utils.python import project_path_finder
-
-    file = project_path_finder(__file__, "docs", "Tasks.txt")
-    ToDoListApp(file).run()
+    ToDoListApp("docs/Tasks.txt").menu()
 
 
 if __name__ == "__main__":
-    main()
+    main()  # For quick testing
