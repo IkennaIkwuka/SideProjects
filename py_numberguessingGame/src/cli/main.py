@@ -1,93 +1,117 @@
-#
+# Number Guessing Game CLI
 
 import random
-
-print("Hi!, Welcome to the Number Guessing Game.")
+from src.services.logic import GameLogic
 
 
 class Game:
-    def __init__(self):
-        print("What game difficulty would you like?:\n  ")
+    def __init__(self, logic: GameLogic | None = None):
+        self.levels = {1: 10, 2: 50, 3: 100}
 
-        self.levels = {"easy": 10, "hard": 50, "insane": 100}
+        self.logic = logic or GameLogic(self.levels)
 
-        for idx, (k, v) in enumerate(self.levels.items(), start=1):
-            print(f"Level {idx}: {k.title()} (1 ~ {v})\n")
+        self.min_number = 1
+        self.max_number = 100
 
-        game_level = self.get_game_level()
+    def run_game(self):
+        print("\nWelcome to my Number Guessing Game.")
 
-        if game_level == "q":
-            print("Closing game...")
-        else:
-            computer_input = self.get_computer_number(game_level)
-
-            while True:
-                user_input = self.get_user_number(game_level)
-
-                if self.game_logic(user_input, computer_input, game_level):
-                    break
-
-    def get_game_level(self):
-        # Convert the values and keys to lists for indexing
-        levels = list(self.levels.values())
         while True:
-            prompt_input = input(
-                "Please choose a game difficulty number ('q' to Quit)\n\n>    "
-            ).strip()
+            difficulty = self.game_difficulty()
 
-            if prompt_input.lower() == "q":
+            if difficulty == "q":
+                print("Closing game...")
+                return
+
+            self.max_number = difficulty
+
+            computer_choice = self.computer_number(difficulty)
+
+            user_choice = self.user_number(difficulty)
+
+            if user_choice == self.min_number:
+                print(f"The correct number is {self.min_number}.")
+                return
+
+            self.game_logic(user_choice, computer_choice)
+
+            print("\nDo you want to play again? (y/n)\n")
+            again = input("> ").lower()
+            if again != "y":
+                break
+
+    def game_difficulty(self):
+        while True:
+            print("\nChoose your difficulty(q to Quit)\n1. Easy\n2. Hard\n3. Insane\n")
+            choice = input("> ").strip()
+
+            result = self.logic.game_difficulty(choice)
+
+            if result == "q":
                 return "q"
 
-            try:
-                user_input = int(prompt_input)
-            except ValueError:
-                print(f"'{prompt_input}' is not a number")
+            if result == "out of Range":
+                print("Out of range.")
                 continue
 
-            if user_input not in range(1, len(self.levels.values()) + 1):
-                print(f"'{prompt_input}' is not a valid difficulty number.")
-            else:
-                return levels[user_input - 1]
+            if result == "invalid Input":
+                print("Invalid. Please enter a number")
+                continue
 
-    def get_computer_number(self, game_level: int) -> int:
-        return random.randint(1, game_level)
+            return self.levels[result]
 
-    def get_user_number(self, game_level):
+    def computer_number(self, difficulty: int) -> int:
+        return random.randint(1, difficulty)
+
+    def user_number(self, difficulty: int):
+        # If only one number remains, reveal it immediately
+        if self.min_number == self.max_number:
+            return self.min_number
+
+        self.min_number = 1
+
         while True:
-            try:
-                user_input = int(
-                    input(
-                        f"\nA number has been generated between 1 and {game_level}. Guess what it is!\n\n>    "
-                    )
-                )
-            except ValueError:
-                print("Not a number")
+            print(
+                f"\nGuess a number between {self.min_number} and {self.max_number}.\n"
+            )
+            choice = input("> ").strip()
+
+            result = self.logic.user_number(choice, difficulty)
+
+            if result == "out of range":
+                print("\nOut of range.")
                 continue
 
-            if user_input not in range(1, game_level + 1):
-                print(f"'{user_input}' is outside the range of 1 ~ {game_level}.")
+            if result == "invalid input":
+                print("\nInvalid. Please enter a number")
+                continue
+
+            return result
+
+    def game_logic(self, user_choice: int, computer_choice: int):
+        while True:
+            if user_choice == computer_choice:
+                print(f"\nCongratulations!! {user_choice} was the right answer.")
+                return
+
+            if user_choice > computer_choice:
+                self.max_number = user_choice - 1
+                print(
+                    f"\nYou're above. The correct value is between {self.min_number} and {self.max_number}"
+                )
             else:
-                return user_input
-
-    def game_logic(self, user_input, computer_input, game_level):
-        if user_input == computer_input:
-            print(f"Congratulations!! {user_input} was the right answer.")
-            return True
-
-        if user_input > computer_input:
-            print(f"You're above. The correct value is between 1 and {user_input}")
-        else:
-            print(
-                f"You're below. The correct value is between {user_input} and {game_level}"
-            )
-
-        return False
+                self.min_number = user_choice + 1
+                print(
+                    f"\nYou're below. The correct value is between {self.min_number} and {self.max_number}"
+                )
+            # Ask for another guess
+            user_choice = self.user_number(self.max_number)
 
 
 def main():
-    Game()
+    Game().run_game()
 
 
 if __name__ == "__main__":
-    # main()
+    main()
     ...
