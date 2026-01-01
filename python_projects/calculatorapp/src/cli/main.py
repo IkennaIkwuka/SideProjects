@@ -3,9 +3,28 @@
 # TODO -- add a loop functionality that allows the user to write another expression to calculate or type 'q' to quit.
 
 # ---Libs---
-from utils.python import type_writer_effect as twe_
 import textwrap  # ---lib to remove whitespace before each printed line---
 from decimal import Decimal  # noqa: F401
+import sys
+import time
+
+def _twe(text: str, delay=0.005):
+    """
+    Display text with a typewriter effect by printing characters one at a time.
+
+    Args:
+        text (str): The text to display with the typewriter effect.
+        delay (float, optional): The delay in seconds between each character. Defaults to 0.005.
+
+    Returns:
+        None
+    """
+
+    for char in text:
+        sys.stdout.write(char)
+        sys.stdout.flush()
+        time.sleep(delay)
+    print()
 
 
 class calc_app:
@@ -33,7 +52,7 @@ class calc_app:
         
         Letters are absolutely not allowed. Enjoy!!
         """
-        twe_(textwrap.dedent(_), 0.0005)
+        _twe(textwrap.dedent(_), 0.0005)
 
         prompt = "What do you want to calculate?\n:  "
 
@@ -49,13 +68,13 @@ class calc_app:
         expr = self.validate_str(user_input)
 
         try:
-            twe_(f"\nUser's expression:\n{expr}")
-            twe_("\nEvaluating...")
+            _twe(f"\nUser's expression:\n{expr}")
+            _twe("\nEvaluating...")
 
             result = eval(expr)
 
-            twe_(self.SUCCESS_MSG)
-            twe_(f"\nResult = {result}", 0.05)
+            _twe(self.SUCCESS_MSG)
+            _twe(f"\nResult = {result}", 0.05)
         except OverflowError:
             self.fix_str(expr)
 
@@ -70,9 +89,9 @@ class calc_app:
         
         The program will now 'fix' your expression.
         """
-        twe_(textwrap.dedent(error_msg))
+        _twe(textwrap.dedent(error_msg))
 
-        twe_("Wrapping operands in 'Decimal()'...", 0.05)
+        _twe("Wrapping operands in 'Decimal()'...", 0.05)
 
         values = expr.split()
 
@@ -80,17 +99,17 @@ class calc_app:
             # ---adds Decimal() wrap to operands to prevent overflow---
             values[i] = f"Decimal({values[i]})"
 
-        twe_(self.SUCCESS_MSG)
+        _twe(self.SUCCESS_MSG)
 
         expr = " ".join(values)
 
-        twe_(f"\nUser's fixed expression:\n{expr}")
-        twe_("\nEvaluating...")
+        _twe(f"\nUser's fixed expression:\n{expr}")
+        _twe("\nEvaluating...")
 
         result = eval(expr)
 
-        twe_("\n...Success")
-        twe_(f"\nResult = {result}", 0.05)
+        _twe("\n...Success")
+        _twe(f"\nResult = {result}", 0.05)
 
     def check_operator(self, operator: str):
         standalone = {"+", "*", "-", "/"}
