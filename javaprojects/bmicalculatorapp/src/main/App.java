@@ -1,5 +1,4 @@
-package com.cli;
-
+package main;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -21,12 +20,12 @@ import java.util.Scanner;
  * Overweight: 25 - 29.9
  * Obese: ≥ 30
  */
-public class Main {
+public class App {
 
     private static final Scanner userInput = new Scanner(System.in);
 
     public static void main(String[] args) {
-        Main app = new Main();
+        App app = new App();
 
         System.out.println("Hi!, this is a Body Mass Index (BMI) Calculator");
 

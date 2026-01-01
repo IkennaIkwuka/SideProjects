@@ -1,4 +1,4 @@
-package com.gui;
+package main.gui;
 
 import java.awt.*;
 import java.util.Random;
