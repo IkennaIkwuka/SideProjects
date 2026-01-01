@@ -3,7 +3,7 @@
 #
 
 import random
-from src.services.logic import GameLogic
+from src.cli.logic import GameLogic
 
 
 class Game:
