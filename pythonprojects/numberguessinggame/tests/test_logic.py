@@ -1,15 +1,17 @@
-from src.services.logic import GameLogic
+from src.cli.logic import GameLogic
 import pytest
+
+
+@pytest.fixture
+def logic(levels: dict[int, int]):
+    return GameLogic(levels)
 
 
 @pytest.fixture
 def levels():
     return {1: 10, 2: 50, 3: 100}
 
-
-@pytest.fixture
-def logic(levels: dict[int, int]):
-    return GameLogic(levels)
+def test_get_dei
 
 
 def test_game_difficulty(logic):

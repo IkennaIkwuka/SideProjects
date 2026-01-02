@@ -7,28 +7,35 @@ class GameLogic:
     def __init__(self, levels: dict[int, int]):
         self.levels = levels
 
-    def game_difficulty(self, choice: str):
+    def get_level(self, choice: str):
         choice = choice.strip()
 
         if choice.lower() == "q":
             return "q"
 
         try:
-            difficulty_number = int(choice)
-            if 1 <= difficulty_number <= len(self.levels):
-                return difficulty_number
-            return "out of Range"
+            level = int(choice)
+            if not 1 <= level <= len(self.levels):
+                print("Error: Please pick between a valid level")
+                return
+            return level
         except ValueError:
-            return "invalid Input"
+            print("Error: Please provide a number")
+            return
 
-    def user_number(self, choice: str, difficulty: int):
+    def get_user_guess(self, choice: str, current_min: int, current_max: int):
         try:
             value = int(choice)
-            if 1 <= value <= difficulty:
-                return value
-            return "out of range"
+            if value < current_min or value > current_max:
+                print(
+                    f"Error: Please make a valid guess between {current_min} and {current_max}"
+                )
+                return
+            return value
         except ValueError:
-            return "invalid input"
+            print("Error: Please provide a number")
+            return
+
 
 if __name__ == "__main__":
     ...  # for testing purposes
