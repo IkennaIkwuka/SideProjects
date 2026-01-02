@@ -1,6 +1,6 @@
 # Full Basic Calculator App Project
 
-# TODO -- add a loop functionality that allows the user to write another expression to calculate or type 'q' to quit.
+# TODO -- add a loop functionality that allows the user to write another expression to calculate or type 'q' to quit. status: added
 
 # ---Libs---
 import textwrap  # ---lib to remove whitespace before each printed line---
