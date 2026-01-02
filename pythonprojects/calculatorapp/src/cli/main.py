@@ -30,9 +30,6 @@ class CalcApp:
 
     def run(self):
         print("What do you want to calculate?\n")
-        self.get_expr()
-
-    def get_expr(self):
         while True:
             expression = input("(`q` to quit)\n\n> ").strip()
 
