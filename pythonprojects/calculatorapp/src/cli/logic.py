@@ -18,9 +18,7 @@ class CalcLogic:
 
         operands = [val for i, val in enumerate(values) if i % 2 == 0]
 
-        operators = [
-            val.replace("^", "**") for i, val in enumerate(values) if i % 2 != 0
-        ]
+        operators = [val for i, val in enumerate(values) if i % 2 != 0]
 
         return self._build_expr(operands, operators)
 
