@@ -5,7 +5,7 @@ class CalcLogic:
     # ---validates user input---
     def get_expr(self, expression: str) -> None | str:
         if not expression:
-            print("Error: Missing input")
+            print("\nError: Missing input\n")
             return
 
         if expression.strip().lower() == "q":
@@ -37,15 +37,15 @@ class CalcLogic:
         for i, val in enumerate(values):
             if i % 2 == 0:
                 if not self._check_operand(val):
-                    print(f"Error: {val} is not a valid operand")
+                    print(f"\nError: {val} is not a valid operand\n")
                     return False
             else:
                 if not self._check_operator(val):
-                    print(f"Error: {val} is not a valid operator")
+                    print(f"\nError: {val} is not a valid operator\n")
                     return False
 
         if len(values) % 2 == 0:
-            print("Error: The last value must be an operand")
+            print("\nError: The last value must be an operand\n")
             return False
 
         return True
