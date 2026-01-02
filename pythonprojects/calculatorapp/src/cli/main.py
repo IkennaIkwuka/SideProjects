@@ -25,15 +25,17 @@ class CalcApp:
         # while True:
         # TODO do that here
         while True:
-            expression = input("> ").strip()
+            expression = input("(`q` to quit)> ").strip()
 
             # if expression == "q":
             expr = ""
             #     return False
 
             result = self.logic.get_expr(expression)
-            if result == "error":
+
+            if not result or result == "q":
                 break
+
             print(result)  # ---debug---
 
         # try:
