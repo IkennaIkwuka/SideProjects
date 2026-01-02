@@ -3,80 +3,49 @@
 # TODO -- add a loop functionality that allows the user to write another expression to calculate or type 'q' to quit.
 
 # ---Libs---
+import re
 import textwrap  # ---lib to remove whitespace before each printed line---
 from decimal import Decimal  # noqa: F401
-import sys
-import time
-
-def _twe(text: str, delay=0.005):
-    """
-    Display text with a typewriter effect by printing characters one at a time.
-
-    Args:
-        text (str): The text to display with the typewriter effect.
-        delay (float, optional): The delay in seconds between each character. Defaults to 0.005.
-
-    Returns:
-        None
-    """
-
-    for char in text:
-        sys.stdout.write(char)
-        sys.stdout.flush()
-        time.sleep(delay)
-    print()
+from src.cli.logic import CalcLogic
+from src.cli.utils.helpers import _twe
 
 
-class calc_app:
+class CalcApp:
     SUCCESS_MSG = "\n...Success"
 
-    def __init__(self) -> None:
-        _ = """
-        App Starts...
-        
-        Welcome to the Basic Calculator Terminal App...
-        
-        Apart from the accepted symbols; fractions and decimals are allowed and must be written in together e.g 12/4, 34.22.
+    def __init__(self, logic: CalcLogic | None = None):
+        menu = "App Starts...\n\nWelcome to the Basic Calculator Terminal App...\n\nApart from the accepted symbols; fractions and decimals are allowed and must be written in together e.g 12/4, 34.22.\n\nAccepted symbols:-\nAddition        >   +\nSubtraction     >   -\nMultiplication  >   *\nDivision        >   /\nExponentiation  >   ^\nModulus         >   %\n\nThe user's expression must follow the order of operand | operator | operand | operator...\n\nwhere '|' is the space in between.\n\nLetters are absolutely not allowed. Enjoy!!"
+        _twe(menu, 0.0005)
 
-        Accepted symbols:-
-        Addition        >   +
-        Subtraction     >   -
-        Multiplication  >   *
-        Division        >   /
-        Exponentiation  >   ^
-        Modulus         >   %
-        
-        The user's expression must follow the order of operand | operator | operand | operator...
-        
-        where '|' is the space in between.
-        
-        Letters are absolutely not allowed. Enjoy!!
-        """
-        _twe(textwrap.dedent(_), 0.0005)
+        self.logic = logic if logic is not None else CalcLogic()
 
-        prompt = "What do you want to calculate?\n:  "
-
-        expr = ""
+    def run(self):
+        print("What do you want to calculate?\n")
 
         # while True:
         # TODO do that here
-        user_input = input(prompt).strip().lower()
+        while True:
+            expression = input("> ").strip()
 
-        # if user_input == "q":
-        #     return False
+            # if expression == "q":
+            expr = ""
+            #     return False
 
-        expr = self.validate_str(user_input)
+            result = self.logic.get_expr(expression)
+            if result == "error":
+                break
+            print(result)  # ---debug---
 
-        try:
-            _twe(f"\nUser's expression:\n{expr}")
-            _twe("\nEvaluating...")
+        # try:
+        #     _twe(f"\nUser's expression:\n{expr}")
+        #     _twe("\nEvaluating...")
 
-            result = eval(expr)
+        #     result = eval(expr)
 
-            _twe(self.SUCCESS_MSG)
-            _twe(f"\nResult = {result}", 0.05)
-        except OverflowError:
-            self.fix_str(expr)
+        #     _twe(self.SUCCESS_MSG)
+        #     _twe(f"\nResult = {result}", 0.05)
+        # except OverflowError:
+        #     self.fix_str(expr)
 
     # ---method to fix overflowError---
     def fix_str(self, expr: str):
@@ -111,79 +80,11 @@ class calc_app:
         _twe("\n...Success")
         _twe(f"\nResult = {result}", 0.05)
 
-    def check_operator(self, operator: str):
-        standalone = {"+", "*", "-", "/"}
 
-        for sep in standalone:
-            if operator == sep:
-                return True
-
-        return False
-
-    def check_operand(self, operand: str):
-        if operand.isdigit():
-            return True
-
-        if operand == "/":
-            return False  # ---fix for duplicate last value error---
-
-        inner_sep = {".", "%", "^", "/"}
-
-        for sep in inner_sep:
-            if sep == operand:
-                return False
-            if sep in operand:
-                left, right = operand.split(sep, 1)
-                if left.isdigit() and right.isdigit():
-                    return True
-                return False
-        return False
-
-    # ---validates user input---
-    def validate_str(self, user_input: str):
-        values = user_input.split()
-        operands: list[str] = []
-        operators: list[str] = []
-        expr = ""
-
-        # ---checks whether last value is not an operand or not---
-        if not self.check_operand(values[-1]):
-            raise ValueError(
-                f"Input: {values}\n\tError: You cannot end with '{values[-1]}'"
-            )
-
-        # ---checks the order of values inputted alternating operands/operator by order of operand | operator | operand | operator | etc---
-        for i, val in enumerate(values):
-            if i % 2 == 0:
-                if not self.check_operand(val):
-                    raise ValueError(
-                        f"Input: {values}\n\tError: Value number {i}. {values[i]} is invalid."
-                        "Expected an operand."
-                    )
-                operands.append(val)
-            else:
-                if not self.check_operator(val):
-                    raise ValueError(
-                        f"Input: {values}\n\tError: Value number {i}. {values[i]} is invalid."
-                        "Expected an operator."
-                    )
-                operators.append(val)
-
-        for ops, opt in zip(operands, operators):
-            expr += ops + " " + opt + " "
-
-        expr += f"{operands[-1]}"
-
-        # ---converts "^" to "**" for eval() to work with "^" in python---
-        expr = expr.replace("^", "**")
-
-        return expr
-
-
-def run():
-    calc_app()
+def main():
+    CalcApp().run()
 
 
 if __name__ == "__main__":
-    # run()
+    main()
     ...
