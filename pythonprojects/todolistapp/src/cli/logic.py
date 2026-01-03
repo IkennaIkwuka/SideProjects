@@ -1,6 +1,7 @@
 class AppLogic:
     ERROR_NOT_A_NUMBER = "Error: Not a number."
     ERROR_OUT_OF_RANGE = "Error: Out of range."
+    ERROR_MISSING_INPUT = "Error: Missing input."
 
     def __init__(self, tasks: list[str] | None = None):
         self.tasks = tasks or []
@@ -22,6 +23,10 @@ class AppLogic:
             return False
 
     def menu(self, choice: str):
+        if not choice:
+            print(self.ERROR_MISSING_INPUT)
+            return
+
         choice = choice.strip()
 
         if self._is_quit(choice):
@@ -38,6 +43,10 @@ class AppLogic:
         return int(choice)
 
     def add_tasks(self, choice: str):
+        if not choice:
+            print(self.ERROR_MISSING_INPUT)
+            return
+
         choice = choice.strip()
 
         if self._is_quit(choice):
@@ -50,6 +59,10 @@ class AppLogic:
         return choice
 
     def remove_tasks(self, choice: str):
+        if not choice:
+            print(self.ERROR_MISSING_INPUT)
+            return
+
         choice = choice.strip()
 
         if self._is_quit(choice):
@@ -72,6 +85,10 @@ class AppLogic:
         return int(choice)
 
     def edit_tasks(self, choice: str):
+        if not choice:
+            print(self.ERROR_MISSING_INPUT)
+            return
+
         choice = choice.strip()
 
         if self._is_quit(choice):
@@ -91,6 +108,10 @@ class AppLogic:
         return int(choice)
 
     def updated_task(self, choice: str):
+        if not choice:
+            print(self.ERROR_MISSING_INPUT)
+            return
+
         choice = choice.strip()
 
         if choice in self.tasks:

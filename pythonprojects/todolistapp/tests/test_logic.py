@@ -1,5 +1,5 @@
 import pytest
-from cli.logic import AppLogic
+from src.cli.logic import AppLogic
 
 # ------------------
 # Fixtures
@@ -7,60 +7,82 @@ from cli.logic import AppLogic
 
 
 @pytest.fixture
-def test_logic(fake_tasks):
-    return AppLogic(fake_tasks)
+def logic(tasks):
+    return AppLogic(tasks)
 
 
 @pytest.fixture
-def fake_tasks():
+def tasks():
     return ["Task 1", "Task 2", "Task 3"]
 
 
-@pytest.fixture
-def fake_menu_options():
-    return ("save", "view", "add", "remove")
+# Tests for menu
 
 
-# -------------------
-# Tests
-# -------------------
+@pytest.mark.parametrize(
+    "input_str,expected",
+    [("2", 2), ("Q", "q")],
+)
+def test_menu_valid(logic: AppLogic, input_str: str, expected: str):
+    assert logic.menu(input_str) == expected
 
 
-def test_menu(test_logic, fake_menu_options):
-    assert test_logic.menu("q", fake_menu_options) == "q"
-    assert test_logic.menu("abc", fake_menu_options) is None
-    assert test_logic.menu("", fake_menu_options) is None
-    assert test_logic.menu(str(len(fake_menu_options) + 1), fake_menu_options) is None
-    assert test_logic.menu(str(len(fake_menu_options)), fake_menu_options) == len(
-        fake_menu_options
-    )
+@pytest.mark.parametrize("input_str", [("abc"), ("123"), ("-123"), ("")])
+def test_menu_invalid(logic: AppLogic, input_str: str):
+    assert logic.menu(input_str) is None
 
 
-def test_add_tasks(test_logic):
-    assert test_logic.add_tasks("q") == "q"
-    assert test_logic.add_tasks("Task 1") is None
-    assert test_logic.add_tasks("") is None
-    assert test_logic.add_tasks("New Task") == "New Task"
+# Tests for add_tasks
 
 
-def test_remove_tasks(test_logic, fake_tasks):
-    assert test_logic.remove_tasks("q") == "q"
-    assert test_logic.remove_tasks("d") == "d"
-    assert test_logic.remove_tasks("v") == "v"
-    assert test_logic.remove_tasks("abc") is None
-    assert test_logic.remove_tasks(str(len(fake_tasks) + 1)) is None
-    assert test_logic.remove_tasks(str(len(fake_tasks))) == len(fake_tasks)
+@pytest.mark.parametrize("input_str,expected", [("New Task", "New Task"), ("Q", "q")])
+def test_add_tasks_valid(logic: AppLogic, input_str: str, expected: str):
+    assert logic.add_tasks(input_str) == expected
 
 
-def test_edit_tasks(test_logic, fake_tasks):
-    assert test_logic.edit_tasks("q") == "q"
-    assert test_logic.edit_tasks("v") == "v"
-    assert test_logic.edit_tasks("abc") is None
-    assert test_logic.remove_tasks(str(len(fake_tasks) + 1)) is None
-    assert test_logic.remove_tasks(str(len(fake_tasks))) == len(fake_tasks)
+@pytest.mark.parametrize("input_str", [(""), ("Task 1")])
+def test_add_tasks_invalid(logic: AppLogic, input_str: str):
+    assert logic.add_tasks(input_str) is None
 
 
-def test_update_task(test_logic):
-    assert test_logic.updated_task("Task 1") is None
-    assert test_logic.updated_task("") is None
-    assert test_logic.updated_task("Updated Task") == "Updated Task"
+# Test for remove_tasks
+
+
+@pytest.mark.parametrize(
+    "input_str,expected",
+    [("D", "d"), ("Q", "q"), ("V", "v"), ("2", 2)],
+)
+def test_remove_tasks_valid(logic: AppLogic, input_str: str, expected: str):
+    assert logic.remove_tasks(input_str) == expected
+
+
+@pytest.mark.parametrize("input_str", [(""), ("abc"), ("123"), ("-123")])
+def test_remove_tasks_invalid(logic: AppLogic, input_str: str):
+    assert logic.remove_tasks(input_str) is None
+
+
+# Test for edit_tasks
+
+
+@pytest.mark.parametrize(
+    "input_str,expected",
+    [("Q", "q"), ("V", "v"), ("2", 2)],
+)
+def test_edit_tasks_valid(logic: AppLogic, input_str: str, expected: str):
+    assert logic.edit_tasks(input_str) == expected
+
+
+@pytest.mark.parametrize("input_str", [(""), ("abc"), ("123"), ("-123")])
+def test_edit_tasks_invalid(logic: AppLogic, input_str: str):
+    assert logic.edit_tasks(input_str) is None
+
+
+# Test for update_tasks
+@pytest.mark.parametrize("input_str,expected", [("updated task", "updated task")])
+def test_update_task_valid(logic: AppLogic, input_str: str, expected: str):
+    assert logic.updated_task(input_str) == expected
+
+
+@pytest.mark.parametrize("input_str", [("Task 1"), ("")])
+def test_update_task_invalid(logic: AppLogic, input_str: str):
+    assert logic.updated_task(input_str) is None
