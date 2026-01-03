@@ -1,16 +1,9 @@
-from src.cli.models.status import TaskStatus
-
-
 class AppLogic:
-    def __init__(
-        self, tasks: list[str] | None = None, status: TaskStatus | None = None
-    ):
-        self.tasks = tasks or []
-        self.status = status or TaskStatus
+    ERROR_NOT_A_NUMBER = "Error: Not a number."
+    ERROR_OUT_OF_RANGE = "Error: Out of range."
 
-    # ----------------------------
-    # Helper methods (NEW)
-    # ----------------------------
+    def __init__(self, tasks: list[str] | None = None):
+        self.tasks = tasks or []
 
     def _is_quit(self, value: str) -> bool:
         return value.lower() == "q"
@@ -21,90 +14,90 @@ class AppLogic:
     def _is_view(self, value: str) -> bool:
         return value.lower() == "v"
 
-    def _parse_index(self, value: str, menu_options: tuple | None = None):
+    def _is_number(self, input_str: str) -> bool:
         try:
-            index = int(value)
-            if 1 <= index <= len(menu_options or self.tasks):
-                return index
-            return self.status.OUT_OF_RANGE
+            int(input_str)
+            return True
         except ValueError:
-            return self.status.INVALID
+            return False
 
-    # ----------------------------
-    # Public validation methods
-    # ----------------------------
-
-    def menu(self, choice: str, menu_options: tuple):
+    def menu(self, choice: str):
         choice = choice.strip()
 
         if self._is_quit(choice):
-            return self.status.QUIT
+            return "q"
 
-        return self._parse_index(choice, menu_options)
+        if not self._is_number(choice):
+            print(self.ERROR_NOT_A_NUMBER)
+            return
+
+        if not 1 <= int(choice) <= 4:
+            print(self.ERROR_OUT_OF_RANGE)
+            return
+
+        return int(choice)
 
     def add_tasks(self, choice: str):
         choice = choice.strip()
 
         if self._is_quit(choice):
-            return self.status.QUIT
+            return "q"
 
         if choice in self.tasks:
-            return self.status.EXISTS
+            print("Task exists")
+            return
 
-        return choice or self.status.INVALID
+        return choice
 
     def remove_tasks(self, choice: str):
         choice = choice.strip()
 
         if self._is_quit(choice):
-            return self.status.QUIT
+            return "q"
 
         if self._is_delete_all(choice):
-            return self.status.DELETE_ALL
+            return "d"
 
         if self._is_view(choice):
-            return self.status.VIEW
+            return "v"
 
-        return self._parse_index(choice)
+        if not self._is_number(choice):
+            print(self.ERROR_NOT_A_NUMBER)
+            return
+
+        if not 1 <= int(choice) <= len(self.tasks):
+            print(self.ERROR_OUT_OF_RANGE)
+            return
+
+        return int(choice)
 
     def edit_tasks(self, choice: str):
         choice = choice.strip()
 
         if self._is_quit(choice):
-            return self.status.QUIT
+            return "q"
 
         if self._is_view(choice):
-            return self.status.VIEW
+            return "v"
 
-        return self._parse_index(choice)
+        if not self._is_number(choice):
+            print(self.ERROR_NOT_A_NUMBER)
+            return
+
+        if not 1 <= int(choice) <= len(self.tasks):
+            print(self.ERROR_OUT_OF_RANGE)
+            return
+
+        return int(choice)
 
     def updated_task(self, choice: str):
         choice = choice.strip()
 
         if choice in self.tasks:
-            return self.status.EXISTS
+            print("Task exists")
+            return
 
-        return choice or self.status.INVALID
-
-    def delete_all_confirmation(self, choice: str):
-        choice = choice.strip()
-
-        if choice.lower() == "y":
-            return True
-        if choice.lower() == "n":
-            return False
-        return self.status.INVALID
-
-    def get_message(self, status: TaskStatus) -> str:
-        match status:
-            case self.status.OUT_OF_RANGE:
-                return "Out of range."
-            case self.status.INVALID:
-                return "Invalid input."
-            case self.status.EXISTS:
-                return "Task exists."
-            case _:
-                return ""
+        return choice
 
 
 if __name__ == "__main__":
