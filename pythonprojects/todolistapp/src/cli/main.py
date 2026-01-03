@@ -2,7 +2,7 @@
 
 from pathlib import Path
 from prompt_toolkit import prompt
-from src.cli.services.logic import AppLogic
+from cli.logic import AppLogic
 
 
 class ToDoListApp:
