@@ -78,6 +78,8 @@ def test_edit_tasks_invalid(logic: AppLogic, input_str: str):
 
 
 # Test for update_tasks
+
+
 @pytest.mark.parametrize("input_str,expected", [("updated task", "updated task")])
 def test_update_task_valid(logic: AppLogic, input_str: str, expected: str):
     assert logic.updated_task(input_str) == expected
@@ -86,3 +88,28 @@ def test_update_task_valid(logic: AppLogic, input_str: str, expected: str):
 @pytest.mark.parametrize("input_str", [("Task 1"), ("")])
 def test_update_task_invalid(logic: AppLogic, input_str: str):
     assert logic.updated_task(input_str) is None
+
+
+# Test for internal methods
+
+
+@pytest.mark.parametrize("input_str,expected", [("q", True), ("other", False)])
+def test_is_quit(logic: AppLogic, input_str: str, expected: bool):
+    assert logic._is_quit(input_str) == expected
+
+
+@pytest.mark.parametrize("input_str,expected", [("d", True), ("other", False)])
+def test_is_delete_all(logic: AppLogic, input_str: str, expected: bool):
+    assert logic._is_delete_all(input_str) == expected
+
+
+@pytest.mark.parametrize("input_str,expected", [("v", True), ("other", False)])
+def test_is_view(logic: AppLogic, input_str: str, expected: bool):
+    assert logic._is_view(input_str) == expected
+    assert logic._is_view("v") is True
+    assert logic._is_view("other") is False
+
+
+@pytest.mark.parametrize("input_str,expected", [("123", True), ("abc", False)])
+def test_is_number(logic: AppLogic, input_str: str, expected: bool):
+    assert logic._is_number(input_str) == expected
