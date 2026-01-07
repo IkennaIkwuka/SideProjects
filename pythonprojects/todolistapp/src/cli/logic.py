@@ -1,3 +1,6 @@
+from random import choice
+
+
 class AppLogic:
     ERROR_NOT_A_NUMBER = "Error: Not a number."
     ERROR_OUT_OF_RANGE = "Error: Out of range."
@@ -22,41 +25,41 @@ class AppLogic:
         except ValueError:
             return False
 
-    def menu(self, choice: str):
-        if not choice:
+    def menu(self, _input: str):
+        if not _input:
             print(self.ERROR_MISSING_INPUT)
             return
 
-        choice = choice.strip()
+        action = _input.strip()
 
-        if self._is_quit(choice):
+        if self._is_quit(action):
             return "q"
 
-        if not self._is_number(choice):
+        if not self._is_number(action):
             print(self.ERROR_NOT_A_NUMBER)
             return
 
-        if not 1 <= int(choice) <= 4:
+        if not 1 <= int(action) <= 4:
             print(self.ERROR_OUT_OF_RANGE)
             return
 
-        return int(choice)
+        return int(action)
 
-    def add_tasks(self, choice: str):
-        if not choice:
+    def create_tasks(self, _input: str):
+        if not _input:
             print(self.ERROR_MISSING_INPUT)
             return
 
-        choice = choice.strip()
+        task = _input.strip()
 
-        if self._is_quit(choice):
+        if self._is_quit(task):
             return "q"
 
-        if choice in self.tasks:
+        if task in self.tasks:
             print("Task exists")
             return
 
-        return choice
+        return task
 
     def remove_tasks(self, choice: str):
         if not choice:

@@ -3,88 +3,79 @@
 from pathlib import Path
 from prompt_toolkit import prompt
 from src.cli.logic import AppLogic
+from src.cli.io import TodoIO
 
 
 class ToDoListApp:
-    def __init__(self, file: Path | str, logic: AppLogic | None = None):
-        self.file = Path(file)
-        self.tasks = self._read(self.file)
-        self.logic = logic or AppLogic(self.tasks)
-
-    def _read(self, file: Path):
-        if file.exists():
-            return [line.strip() for line in file.read_text().splitlines()]
-        return []
-
-    def _save(self, file: Path, tasks: list[str]):
-        file.write_text("\n".join(tasks))
+    def __init__(self, file: Path | str):
+        self.io = TodoIO(file)
+        self.logic = AppLogic()
 
     def run(self):
         self.menu()
-        self._save(self.file, self.tasks)
+        self.io.save()
 
     def menu(self):
         while True:
             print(
-                "\nToDoList App ('q' to Quit)\n1. View Tasks\n2. Add Tasks\n3. Remove Tasks\n4. Edit Tasks\n"
+                "\nToDoList App ('q' to Quit)\n1. Create Tasks\n2. View Tasks\n3. Remove Tasks\n4. Edit Tasks\n"
             )
 
-            choice = input("> ").strip()
+            input_ = input("> ").strip()
 
-            result = self.logic.menu(choice)
+            action = self.logic.menu(input_)
 
-            if not result:
+            if not action:
                 continue
 
-            if result == "q":
+            if action == "q":
                 print("\nExiting ToDoList App. Goodbye!\n")
                 break
 
-            match result:
-                case 1:
-                    self.view_tasks()
-                case 2:
-                    self.add_tasks()
-                case 3:
-                    self.remove_tasks()
-                case 4:
-                    self.edit_tasks()
+            if isinstance(action, int):
+                match action:
+                    case 1:
+                        self.create_task()
+                    case 2:
+                        self.view_tasks()
+                    case 3:
+                        self.remove_tasks()
+                    case 4:
+                        self.edit_tasks()
+                    case _:
+                        pass  #
 
     def view_tasks(self):
-        if not self.tasks:
-            print("\nNo tasks to view.\n")
-            return
+        if not self.io.display_tasks():
+            print("\nError: No tasks.\n")
+            return None
 
-        print("\nViewing tasks list...\n")
-
-        for idx, task in enumerate(self.tasks, start=1):
-            print(f"{idx}. {task}")
-
-    def add_tasks(self):
+    def create_task(self):
         while True:
             print("\nTask to add ('q' for menu)\n")
 
-            choice = input("> ").strip()
+            _input = input("> ").strip()
 
-            result = self.logic.add_tasks(choice)
+            task = self.logic.create_tasks(_input)
 
-            if not result:
+            if not task:
                 continue
 
-            if result == "q":
+            if task == "q":
                 break
 
-            self.tasks.append(result)
-
-            print("\nTask added")
+            if isinstance(task, str):
+                self.io.task_stored(task)
 
     def remove_tasks(self):
-        if not self.tasks:
+        if not self.io.tasks:
             print("\nNo tasks to remove.\n")
-            return
+            return None
 
         while True:
-            print("\nIndex to remove ('d' delete all, 'v' view tasks, 'q' for Menu)\n\n")
+            print(
+                "\nIndex to remove ('d' delete all, 'v' view tasks, 'q' for Menu)\n\n"
+            )
 
             choice = input("> ").strip()
 
@@ -117,9 +108,7 @@ class ToDoListApp:
             if confirm not in ["y", "n"]:
                 print("\nInvalid input\n")
                 continue
-            if confirm == "y":
-                return True
-            return False
+            return confirm == "y"
 
     def edit_tasks(self):
         if not self.tasks:
