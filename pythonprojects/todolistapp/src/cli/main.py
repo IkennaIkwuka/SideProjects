@@ -25,7 +25,7 @@ class ToDoListApp:
 
             action = self.logic.menu(input_)
 
-            if not action:
+            if action is None:
                 continue
 
             if action == "q":
@@ -35,7 +35,7 @@ class ToDoListApp:
             if isinstance(action, int):
                 match action:
                     case 1:
-                        self.create_task()
+                        self.create_tasks()
                     case 2:
                         self.view_tasks()
                     case 3:
@@ -46,62 +46,60 @@ class ToDoListApp:
                         pass  #
 
     def view_tasks(self):
-        if not self.io.display_tasks():
+        if not self.io.is_tasks():
             print("\nError: No tasks.\n")
             return None
+        print("\nViewing tasks list...\n")
+        self.io.display_tasks()
 
-    def create_task(self):
+    def create_tasks(self):
         while True:
-            print("\nTask to add ('q' for menu)\n")
+            print("\nTask to add ('q' menu)\n")
 
             _input = input("> ").strip()
 
             task = self.logic.create_tasks(_input)
 
-            if not task:
+            if task is None:
                 continue
 
             if task == "q":
                 break
 
             if isinstance(task, str):
-                self.io.task_stored(task)
+                self.io.store_task(task)
 
     def remove_tasks(self):
-        if not self.io.tasks:
-            print("\nNo tasks to remove.\n")
+        if not self.io.is_tasks():
+            print("\nError: No tasks.\n")
             return None
 
         while True:
-            print(
-                "\nIndex to remove ('d' delete all, 'v' view tasks, 'q' for Menu)\n\n"
-            )
+            print("\nIndex to remove ('d' delete all, 'v' view tasks, 'q' Menu)\n\n")
 
             choice = input("> ").strip()
 
             index = self.logic.remove_tasks(choice)
 
-            if not index:
+            if index is None:
                 continue
 
             if index == "q":
                 break
 
-            if index == "d":
-                if self._delete_all_confirmation():
-                    self.tasks.clear()
+            elif index == "d":
+                if self._confirm_del() and self.io.clear_all():
                     print("\nAll tasks have been deleted.")
                 break
 
-            if index == "v":
+            elif index == "v":
                 self.view_tasks()
                 continue
 
-            self.tasks.pop(index - 1)
+            if isinstance(index, int):
+                self.io.delete_task(index)
 
-            print("\nTask removed.")
-
-    def _delete_all_confirmation(self) -> bool:
+    def _confirm_del(self):
         while True:
             confirm = input("\nAre you sure?(y/n)\n> ").strip().lower()
 

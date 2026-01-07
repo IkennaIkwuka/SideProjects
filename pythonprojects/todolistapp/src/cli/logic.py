@@ -1,6 +1,3 @@
-from random import choice
-
-
 class AppLogic:
     ERROR_NOT_A_NUMBER = "Error: Not a number."
     ERROR_OUT_OF_RANGE = "Error: Out of range."
@@ -48,7 +45,7 @@ class AppLogic:
     def create_tasks(self, _input: str):
         if not _input:
             print(self.ERROR_MISSING_INPUT)
-            return
+            return None
 
         task = _input.strip()
 
@@ -57,7 +54,7 @@ class AppLogic:
 
         if task in self.tasks:
             print("Task exists")
-            return
+            return None
 
         return task
 
