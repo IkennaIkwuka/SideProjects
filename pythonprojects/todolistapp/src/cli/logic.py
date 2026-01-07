@@ -3,42 +3,39 @@ class AppLogic:
     ERROR_OUT_OF_RANGE = "Error: Out of range."
     ERROR_MISSING_INPUT = "Error: Missing input."
 
-    def __init__(self, tasks: list[str] | None = None):
-        self.tasks = tasks or []
-
-    def _is_quit(self, value: str) -> bool:
+    def __is_quit(self, value: str) -> bool:
         return value.lower() == "q"
 
-    def _is_delete_all(self, value: str) -> bool:
+    def __is_delete_all(self, value: str) -> bool:
         return value.lower() == "d"
 
-    def _is_view(self, value: str) -> bool:
+    def __is_view(self, value: str) -> bool:
         return value.lower() == "v"
 
-    def _is_number(self, input_str: str) -> bool:
+    def __is_number(self, input_str: str) -> bool:
         try:
             int(input_str)
             return True
         except ValueError:
             return False
 
-    def menu(self, _input: str):
+    def app_menu(self, _input: str, number_of_actions: int):
         if not _input:
             print(self.ERROR_MISSING_INPUT)
-            return
+            return None
 
         action = _input.strip()
 
-        if self._is_quit(action):
+        if self.__is_quit(action):
             return "q"
 
-        if not self._is_number(action):
+        if not self.__is_number(action):
             print(self.ERROR_NOT_A_NUMBER)
-            return
+            return None
 
-        if not 1 <= int(action) <= 4:
+        if not 1 <= int(action) <= number_of_actions:
             print(self.ERROR_OUT_OF_RANGE)
-            return
+            return None
 
         return int(action)
 
@@ -49,12 +46,8 @@ class AppLogic:
 
         task = _input.strip()
 
-        if self._is_quit(task):
+        if self.__is_quit(task):
             return "q"
-
-        if task in self.tasks:
-            print("Task exists")
-            return None
 
         return task
 
@@ -65,21 +58,17 @@ class AppLogic:
 
         choice = choice.strip()
 
-        if self._is_quit(choice):
+        if self.__is_quit(choice):
             return "q"
 
-        if self._is_delete_all(choice):
+        if self.__is_delete_all(choice):
             return "d"
 
-        if self._is_view(choice):
+        if self.__is_view(choice):
             return "v"
 
-        if not self._is_number(choice):
+        if not self.__is_number(choice):
             print(self.ERROR_NOT_A_NUMBER)
-            return
-
-        if not 1 <= int(choice) <= len(self.tasks):
-            print(self.ERROR_OUT_OF_RANGE)
             return
 
         return int(choice)
@@ -91,34 +80,17 @@ class AppLogic:
 
         choice = choice.strip()
 
-        if self._is_quit(choice):
+        if self.__is_quit(choice):
             return "q"
 
-        if self._is_view(choice):
+        if self.__is_view(choice):
             return "v"
 
-        if not self._is_number(choice):
+        if not self.__is_number(choice):
             print(self.ERROR_NOT_A_NUMBER)
             return
 
-        if not 1 <= int(choice) <= len(self.tasks):
-            print(self.ERROR_OUT_OF_RANGE)
-            return
-
         return int(choice)
-
-    def updated_task(self, choice: str):
-        if not choice:
-            print(self.ERROR_MISSING_INPUT)
-            return
-
-        choice = choice.strip()
-
-        if choice in self.tasks:
-            print("Task exists")
-            return
-
-        return choice
 
 
 if __name__ == "__main__":

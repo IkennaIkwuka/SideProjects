@@ -7,15 +7,17 @@ from src.cli.io import TodoIO
 
 
 class ToDoListApp:
+    ERROR_NO_TASKS = "\nError: No tasks.\n"
+
     def __init__(self, file: Path | str):
         self.io = TodoIO(file)
         self.logic = AppLogic()
 
     def run(self):
-        self.menu()
+        self.app_menu()
         self.io.save()
 
-    def menu(self):
+    def app_menu(self):
         while True:
             print(
                 "\nToDoList App ('q' to Quit)\n1. Create Tasks\n2. View Tasks\n3. Remove Tasks\n4. Edit Tasks\n"
@@ -23,7 +25,7 @@ class ToDoListApp:
 
             input_ = input("> ").strip()
 
-            action = self.logic.menu(input_)
+            action = self.logic.app_menu(input_, 4)
 
             if action is None:
                 continue
@@ -46,15 +48,15 @@ class ToDoListApp:
                         pass  #
 
     def view_tasks(self):
-        if not self.io.is_tasks():
-            print("\nError: No tasks.\n")
+        if not self.io.get_tasks():
+            print(self.ERROR_NO_TASKS)
             return None
         print("\nViewing tasks list...\n")
         self.io.display_tasks()
 
     def create_tasks(self):
         while True:
-            print("\nTask to add ('q' menu)\n")
+            print("\nTask to add ('q' app_menu)\n")
 
             _input = input("> ").strip()
 
@@ -70,8 +72,8 @@ class ToDoListApp:
                 self.io.store_task(task)
 
     def remove_tasks(self):
-        if not self.io.is_tasks():
-            print("\nError: No tasks.\n")
+        if not self.io.get_tasks():
+            print(self.ERROR_NO_TASKS)
             return None
 
         while True:
@@ -109,41 +111,41 @@ class ToDoListApp:
             return confirm == "y"
 
     def edit_tasks(self):
-        if not self.tasks:
-            print("\nNo tasks to edit.\n")
-            return
+        if not self.io.get_tasks():
+            print(self.ERROR_NO_TASKS)
+            return None
 
         while True:
-            print("\nIndex to edit ('v' view tasks, 'q' to Menu)\n\n")
+            print("\nIndex to edit ('v' view tasks, 'q' Menu)\n\n")
 
             choice = input("> ").strip()
 
             index = self.logic.edit_tasks(choice)
 
-            if not index:
+            if index is None:
                 continue
 
             if index == "q":
                 break
 
-            if index == "v":
+            elif index == "v":
                 self.view_tasks()
                 continue
 
-            self.tasks[index - 1] = self._updated_task(index)
+            if isinstance(index, int):
+                self.io.edit_task_content(index, self._get_new_task(index))
 
-            print("\nTask updated.")
-
-    def _updated_task(self, index: int) -> str:
+    def _get_new_task(self, index):
         while True:
-            updated_task = prompt("\nEditing: ", default=self.tasks[index - 1])
+            updated_task = prompt(
+                "\nEditing: ", default=self.io.get_tasks()[index - 1]
+            ).strip()
 
-            _result = self.logic.updated_task(updated_task)
-
-            if not _result:
+            if not updated_task:
+                print("Error: Missing input.")
                 continue
 
-            return _result
+            return updated_task
 
 
 # main method to run program
