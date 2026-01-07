@@ -2,7 +2,7 @@
 
 from pathlib import Path
 from prompt_toolkit import prompt
-from cli.logic import AppLogic
+from src.cli.logic import AppLogic
 
 
 class ToDoListApp:
@@ -84,7 +84,7 @@ class ToDoListApp:
             return
 
         while True:
-            print("\nIndex to remove ('d' delete all, 'v' view tasks, 'q' to Quit)\n\n")
+            print("\nIndex to remove ('d' delete all, 'v' view tasks, 'q' for Menu)\n\n")
 
             choice = input("> ").strip()
 
@@ -127,7 +127,7 @@ class ToDoListApp:
             return
 
         while True:
-            print("\nIndex to edit ('v' view tasks, 'q' to Quit)\n\n")
+            print("\nIndex to edit ('v' view tasks, 'q' to Menu)\n\n")
 
             choice = input("> ").strip()
 
