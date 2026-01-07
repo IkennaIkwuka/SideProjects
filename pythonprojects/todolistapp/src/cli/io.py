@@ -9,7 +9,8 @@ class TodoIO:
     def read(self):
         if self.file.exists():
             return [line.strip() for line in self.file.read_text().splitlines()]
-        return []
+        else:
+            return []
 
     def save(self):
         self.file.write_text("\n".join(self.tasks))

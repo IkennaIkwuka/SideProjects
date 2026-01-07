@@ -133,9 +133,9 @@ class ToDoListApp:
                 continue
 
             if isinstance(index, int):
-                self.io.edit_task_content(index, self._get_new_task(index))
+                self.io.edit_task_content(index, self.__get_new_task(index))
 
-    def _get_new_task(self, index):
+    def __get_new_task(self, index):
         while True:
             updated_task = prompt(
                 "\nEditing: ", default=self.io.get_tasks()[index - 1]
