@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-class TodoIO:
+class TodoModel:
     def __init__(self, file: str | Path):
         self.file = Path(file)
         self.tasks = self.read()
