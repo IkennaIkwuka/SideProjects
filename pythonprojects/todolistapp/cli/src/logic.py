@@ -1,4 +1,11 @@
-class AppLogic:
+from cli.src.console import TodoView
+
+
+class TodoLogic:
+    def __init__(self, tasks: list[str]) -> None:
+        self.cons = TodoView()
+        self.tasks = tasks
+
     def __is_quit(self, value: str) -> bool:
         return value.lower() == "q"
 
@@ -8,44 +15,57 @@ class AppLogic:
     def __is_view(self, value: str) -> bool:
         return value.lower() == "v"
 
-    def __is_input_missing(self, value: str):
-        if not value:
-            print("Error: Missing input.")
+    def __is_task_index_invalid(self, index: int):
+        if index <= 0 or index > len(self.tasks):
+            print("Error: Invalid task index.")
             return True
-        return False
-
-    def __is_number(self, input_str: str) -> bool:
-        try:
-            int(input_str)
-            return True
-        except ValueError:
-            print("Error: Not a number.")
+        else:
             return False
 
-    def app_menu(self, value: str, number_of_actions: int):
-        if self.__is_input_missing(value):
+    def __is_input_missing(self, value: str):
+        if not value:
+            self.cons.warning("Warning: Missing input.")
+            return True
+        else:
+            return False
+
+    def __is_not_number(self, input_str: str) -> bool:
+        try:
+            int(input_str)
+            return False
+        except ValueError:
+            self.cons.warning("Warning: Not a number.")
+            return True
+
+    def __does_task_exist(self, task: str):
+        if task in self.tasks:
+            print("Error: Task already exist.")
+            return True
+        else:
+            return False
+
+    def app_menu(self, action: str):
+        NUMBER_OF_ACTIONS = 4
+
+        if self.__is_input_missing(action):
             return None
-
-        action = value.strip()
-
         if self.__is_quit(action):
             return "q"
-
-        if not self.__is_number(action):
+        if self.__is_not_number(action):
             return None
 
-        if not 1 <= int(action) <= number_of_actions:
-            print("Error: Out of range.")
+        act = int(action)
+        if not 1 <= act <= NUMBER_OF_ACTIONS:
+            self.cons.warning("Warning: Out of range.")
             return None
 
-        return int(action)
+        return act
 
-    def create_tasks(self, value: str):
-        if self.__is_input_missing(value):
+    def create_tasks(self, task: str):
+        if self.__is_input_missing(task):
             return None
-
-        task = value.strip()
-
+        if self.__does_task_exist(task):
+            return None
         if self.__is_quit(task):
             return "q"
 
@@ -54,39 +74,43 @@ class AppLogic:
     def remove_tasks(self, choice: str):
         if self.__is_input_missing(choice):
             return None
-
-        choice = choice.strip()
-
         if self.__is_quit(choice):
             return "q"
-
         if self.__is_delete_all(choice):
             return "d"
-
         if self.__is_view(choice):
             return "v"
-
-        if not self.__is_number(choice):
+        if self.__is_not_number(choice):
             return
 
-        return int(choice)
+        index = int(choice)
+        if self.__is_task_index_invalid(index):
+            return None
+
+        return index
 
     def edit_tasks(self, choice: str):
         if self.__is_input_missing(choice):
             return None
-
-        choice = choice.strip()
-
         if self.__is_quit(choice):
             return "q"
-
         if self.__is_view(choice):
             return "v"
-
-        if not self.__is_number(choice):
+        if self.__is_not_number(choice):
             return None
 
-        return int(choice)
+        index = int(choice)
+        if self.__is_task_index_invalid(index):
+            return None
+
+        return index
+
+    def get_updated_task(self, task: str):
+        if self.__is_input_missing(task):
+            return None
+        if self.__does_task_exist(task):
+            return None
+        return task
 
 
 if __name__ == "__main__":
