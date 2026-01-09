@@ -1,8 +1,4 @@
 class AppLogic:
-    ERROR_NOT_A_NUMBER = "Error: Not a number."
-    ERROR_OUT_OF_RANGE = "Error: Out of range."
-    ERROR_MISSING_INPUT = "Error: Missing input."
-
     def __is_quit(self, value: str) -> bool:
         return value.lower() == "q"
 
@@ -12,39 +8,43 @@ class AppLogic:
     def __is_view(self, value: str) -> bool:
         return value.lower() == "v"
 
+    def __is_input_missing(self, value: str):
+        if not value:
+            print("Error: Missing input.")
+            return True
+        return False
+
     def __is_number(self, input_str: str) -> bool:
         try:
             int(input_str)
             return True
         except ValueError:
+            print("Error: Not a number.")
             return False
 
-    def app_menu(self, _input: str, number_of_actions: int):
-        if not _input:
-            print(self.ERROR_MISSING_INPUT)
+    def app_menu(self, value: str, number_of_actions: int):
+        if self.__is_input_missing(value):
             return None
 
-        action = _input.strip()
+        action = value.strip()
 
         if self.__is_quit(action):
             return "q"
 
         if not self.__is_number(action):
-            print(self.ERROR_NOT_A_NUMBER)
             return None
 
         if not 1 <= int(action) <= number_of_actions:
-            print(self.ERROR_OUT_OF_RANGE)
+            print("Error: Out of range.")
             return None
 
         return int(action)
 
-    def create_tasks(self, _input: str):
-        if not _input:
-            print(self.ERROR_MISSING_INPUT)
+    def create_tasks(self, value: str):
+        if self.__is_input_missing(value):
             return None
 
-        task = _input.strip()
+        task = value.strip()
 
         if self.__is_quit(task):
             return "q"
@@ -52,9 +52,8 @@ class AppLogic:
         return task
 
     def remove_tasks(self, choice: str):
-        if not choice:
-            print(self.ERROR_MISSING_INPUT)
-            return
+        if self.__is_input_missing(choice):
+            return None
 
         choice = choice.strip()
 
@@ -68,15 +67,13 @@ class AppLogic:
             return "v"
 
         if not self.__is_number(choice):
-            print(self.ERROR_NOT_A_NUMBER)
             return
 
         return int(choice)
 
     def edit_tasks(self, choice: str):
-        if not choice:
-            print(self.ERROR_MISSING_INPUT)
-            return
+        if self.__is_input_missing(choice):
+            return None
 
         choice = choice.strip()
 
@@ -87,8 +84,7 @@ class AppLogic:
             return "v"
 
         if not self.__is_number(choice):
-            print(self.ERROR_NOT_A_NUMBER)
-            return
+            return None
 
         return int(choice)
 
