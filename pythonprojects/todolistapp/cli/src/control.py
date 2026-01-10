@@ -1,7 +1,7 @@
 from cli.src.view import TodoView
 
 
-class TodoLogic:
+class TodoControl:
     def __init__(self) -> None:
         self.view = TodoView()
 

@@ -1,5 +1,5 @@
 import pytest
-from src.io import TodoIO
+from cli.src import TodoIO
 
 
 @pytest.fixture
@@ -39,3 +39,7 @@ def test_edit_task_content_duplicate_prevention(io, capsys):
     captured = capsys.readouterr()
     assert "Error: Task already exist." in captured.out
     assert io.get_tasks()[1] == "Banana"  # Should not have changed
+
+
+if __name__ == "__main__":
+    ...  # For quick testing

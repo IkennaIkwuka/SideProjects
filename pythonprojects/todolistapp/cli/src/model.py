@@ -13,7 +13,7 @@ class TodoModel:
         self.file.write_text("\n".join(self.tasks))
 
     def get_tasks(self):
-        return self.tasks
+        return self.tasks   
 
     def store_task(self, task: str):
         self.tasks.append(task)

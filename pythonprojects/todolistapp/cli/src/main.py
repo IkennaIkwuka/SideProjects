@@ -2,7 +2,7 @@
 
 from pathlib import Path
 from prompt_toolkit import prompt
-from cli.src.logic import TodoLogic
+from cli.src.control import TodoControl
 from cli.src.model import TodoModel
 from cli.src.view import TodoView
 
@@ -12,7 +12,7 @@ class ToDoListApp:
 
     def __init__(self, file: Path | str):
         self.model = TodoModel(file)
-        self.logic = TodoLogic()
+        self.logic = TodoControl()
         self.view = TodoView()
 
     def run(self):
