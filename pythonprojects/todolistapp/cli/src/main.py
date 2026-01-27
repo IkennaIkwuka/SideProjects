@@ -118,7 +118,7 @@ class ToDoListApp:
 
 # main method to run program
 def main():
-    ToDoListApp("docs/Tasks.txt").run()
+    ToDoListApp("db/tasks.sqlite").run()
 
 
 if __name__ == "__main__":

@@ -1,44 +1,59 @@
+import sqlite3
 from pathlib import Path
 
 
 class TodoModel:
-    def __init__(self, file: str | Path):
-        self.file = Path(file)
-        # Create directory if it doesn't exist
-        self.file.parent.mkdir(parents=True, exist_ok=True)
+    def __init__(self, db_file: str | Path):
+        self.db_file = Path(db_file)
+        self.db_file.parent.mkdir(parents=True, exist_ok=True)
 
-        # Create file if it doesn't exist to prevent read error
-        if not self.file.exists():
-            self.file.touch()
+        self.conn = sqlite3.connect(self.db_file)
+        self.conn.row_factory = sqlite3.Row
+        self._create_table()
 
-        self.tasks = self.read()
+    def _create_table(self):
+        self.conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS tasks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                content TEXT UNIQUE NOT NULL
+            )
+            """
+        )
+        self.conn.commit()
 
-    def read(self):
-        return [
-            line.strip()
-            for line in self.file.read_text().splitlines()
-            if line.strip()
-            # 'if line.strip' to prevent external modification with empty line of tasks
-        ]
-
-    def save(self):
-        self.file.write_text("\n".join(self.tasks))
-
-    def get_tasks(self):
-        return self.tasks.copy()  # returns copy instead
+    def get_tasks(self) -> list[str]:
+        cursor = self.conn.execute("SELECT content FROM tasks ORDER BY id")
+        return [row["content"] for row in cursor.fetchall()]
 
     def store_task(self, task: str):
-        self.tasks.append(task)
-        self.save()
-
-    def clear_all(self):
-        self.tasks.clear()
-        self.save()
+        self.conn.execute(
+            "INSERT INTO tasks (content) VALUES (?)",
+            (task,),
+        )
+        self.conn.commit()
 
     def delete_task(self, index: int):
-        self.tasks.pop(index - 1)
-        self.save()
+        task_id = self._index_to_id(index)
+        self.conn.execute(
+            "DELETE FROM tasks WHERE id = ?",
+            (task_id,),
+        )
+        self.conn.commit()
 
     def edit_task_content(self, index: int, new_task: str):
-        self.tasks[index - 1] = new_task
-        self.save()
+        task_id = self._index_to_id(index)
+        self.conn.execute(
+            "UPDATE tasks SET content = ? WHERE id = ?",
+            (new_task, task_id),
+        )
+        self.conn.commit()
+
+    def clear_all(self):
+        self.conn.execute("DELETE FROM tasks")
+        self.conn.commit()
+
+    def _index_to_id(self, index: int) -> int:
+        cursor = self.conn.execute("SELECT id FROM tasks ORDER BY id")
+        rows = cursor.fetchall()
+        return rows[index - 1]["id"]
