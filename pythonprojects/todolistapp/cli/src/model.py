@@ -4,16 +4,28 @@ from pathlib import Path
 class TodoModel:
     def __init__(self, file: str | Path):
         self.file = Path(file)
+        # Create directory if it doesn't exist
+        self.file.parent.mkdir(parents=True, exist_ok=True)
+
+        # Create file if it doesn't exist to prevent read error
+        if not self.file.exists():
+            self.file.touch()
+
         self.tasks = self.read()
 
     def read(self):
-        return [line.strip() for line in self.file.read_text().splitlines()]
+        return [
+            line.strip()
+            for line in self.file.read_text().splitlines()
+            if line.strip()
+            # 'if line.strip' to prevent external modification with empty line of tasks
+        ]
 
     def save(self):
         self.file.write_text("\n".join(self.tasks))
 
     def get_tasks(self):
-        return self.tasks   
+        return self.tasks.copy()  # returns copy instead
 
     def store_task(self, task: str):
         self.tasks.append(task)
