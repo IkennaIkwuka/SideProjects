@@ -2,19 +2,17 @@ from cli.src.view import TodoView
 
 
 class TodoControl:
-    def __init__(self) -> None:
-        self.view = TodoView()
+    def __init__(self, view: TodoView) -> None:
+        self.view = view
 
-    def app_menu(self, action: str):
-        if not action:
+    def app_menu(self, uinput: str):
+        if not uinput:
             self.view.warning("Missing input.")
             return None
-
-        if action == "q":
+        if uinput.lower() == "q":
             return "q"
-
         try:
-            idx = int(action)
+            idx = int(uinput)
             if 1 <= idx <= 4:
                 return idx
             else:
@@ -23,29 +21,25 @@ class TodoControl:
             self.view.warning("Not a number.")
         return None
 
-    def validate_task_str(self, task: str, current_tasks: list[str]):
-        if not task:
+    def validate_task_str(self, uinput: str, current_tasks: list[str]):
+        if not uinput:
             self.view.warning("Missing input.")
             return None
-        if task.lower() == "q":
+        if uinput.strip().lower() == "q":
             return "q"
-        if task in current_tasks:
+        if uinput in current_tasks:
             self.view.error("Task already exists.")
             return None
-        return task
+        return uinput
 
-    def validate_task_index(self, choice: str, current_tasks: list[str]):
-        if not choice:
+    def validate_task_index(self, uinput: str, current_tasks: list[str]):
+        if not uinput:
             return None
-        if choice.lower() == "q":
-            return "q"
-        if choice.lower() == "d":
-            return "d"
-        if choice.lower() == "v":
-            return "v"
-
+        cmds = ["q", "d", "v"]
+        if uinput.strip().lower() in cmds:
+            return uinput
         try:
-            idx = int(choice)
+            idx = int(uinput)
             if 1 <= idx <= len(current_tasks):
                 return idx
             else:
