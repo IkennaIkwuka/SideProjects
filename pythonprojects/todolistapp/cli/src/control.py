@@ -35,9 +35,9 @@ class TodoControl:
     def validate_task_index(self, uinput: str, current_tasks: list[str]):
         if not uinput:
             return None
-        cmds = ["q", "d", "v"]
+        cmds = ["q", "d", "v", "t"]
         if uinput.strip().lower() in cmds:
-            return uinput
+            return uinput.strip().lower()
         try:
             idx = int(uinput)
             if 1 <= idx <= len(current_tasks):
