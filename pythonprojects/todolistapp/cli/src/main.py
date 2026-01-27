@@ -8,48 +8,37 @@ from cli.src.view import TodoView
 
 
 class ToDoListApp:
-    ERROR_NO_TASKS = "\nError: No tasks.\n"
+    ERROR_NO_TASKS = "No tasks."
 
     def __init__(self, file: Path | str):
         self.model = TodoModel(file)
-        self.logic = TodoControl()
         self.view = TodoView()
+        self.control = TodoControl(self.view)
 
     def run(self):
-        self.app_menu()
-
-    def app_menu(self):
+        menu_action = {
+            1: self.create_tasks,
+            2: self.view_tasks,
+            3: self.remove_tasks,
+            4: self.edit_tasks,
+        }
         while True:
             self.view.menu()
-            input_ = prompt("> ").strip()
-            action = self.logic.app_menu(input_)
+            action = self.control.app_menu(prompt("> ").strip())
 
             if action == "q":
                 print("\nExiting ToDoList App. Goodbye!\n")
                 break
 
-            if action and isinstance(action, int):
-                match action:
-                    case 1:
-                        self.create_tasks()
-                    case 2:
-                        self.view_tasks()
-                    case 3:
-                        self.remove_tasks()
-                    case 4:
-                        self.edit_tasks()
-                    case _:
-                        pass  #
+            if action and isinstance(action, int) and action in menu_action:
+                menu_action[action]()
 
     def create_tasks(self):
         while True:
-            self.view.console.print(
-                "\nTask to add ('q' app_menu)\n", style="bold white on magenta"
-            )
+            self.view.action("Task to add ('q' app_menu)")
 
-            str_input = input("> ").strip()
             tasks: list[str] = self.model.get_tasks()
-            task = self.logic.validate_task_str(str_input, tasks)
+            task = self.control.validate_task_str(prompt("> ").strip(), tasks)
 
             if task == "q":
                 break
@@ -61,7 +50,7 @@ class ToDoListApp:
     def view_tasks(self):
         tasks: list[str] = self.model.get_tasks()
         if not tasks:
-            print(self.ERROR_NO_TASKS)
+            self.view.warning(self.ERROR_NO_TASKS)
             return None
         self.view.show_tasks(tasks)
 
@@ -69,35 +58,36 @@ class ToDoListApp:
         while True:
             tasks: list[str] = self.model.get_tasks()
             if not tasks:
-                print(self.ERROR_NO_TASKS)
+                self.view.warning(self.ERROR_NO_TASKS)
                 return None
 
-            print("\nIndex to remove ('d' delete all, 'v' view tasks, 'q' Menu)\n\n")
+            self.view.action(
+                "Index to remove ('d' delete all, 'v' view tasks, 'q' Menu)"
+            )
 
-            choice = input("> ").strip()
-            index = self.logic.validate_task_index(choice, tasks)
+            index = self.control.validate_task_index(prompt("> ").strip(), tasks)
 
             if index == "q":
                 break
             elif index == "d":
                 if self._confirm_del():
                     self.model.clear_all()
-                    print("\nAll tasks have been deleted.")
+                    self.view.success("All tasks have been deleted!")
                 break
             elif index == "v":
                 self.view_tasks()
                 continue
 
-            if isinstance(index, int):
+            if index and isinstance(index, int):
                 self.model.delete_task(index)
-                print("\nTask deleted.")
+                self.view.success("Task deleted!")
 
-    def _confirm_del(self):
+    def _confirm_del(self) -> bool:
         while True:
-            confirm = input("\nAre you sure?(y/n)\n> ").strip().lower()
+            confirm = prompt("\nAre you sure?(y/n)\n> ").strip().lower()
 
             if confirm not in ["y", "n"]:
-                print("\nInvalid input\n")
+                self.view.warning("Invalid prompt")
                 continue
             return confirm == "y"
 
@@ -105,13 +95,12 @@ class ToDoListApp:
         while True:
             tasks: list[str] = self.model.get_tasks()
             if not tasks:
-                print(self.ERROR_NO_TASKS)
+                self.view.warning(self.ERROR_NO_TASKS)
                 return None
 
-            print("\nIndex to edit ('v' view tasks, 'q' Menu)\n\n")
+            self.view.action("Index to edit ('v' view tasks, 'q' Menu)")
 
-            choice = input("> ").strip()
-            index = self.logic.validate_task_index(choice, tasks)
+            index = self.control.validate_task_index(prompt("> ").strip(), tasks)
             if index == "q":
                 break
             if index == "v":
@@ -120,11 +109,11 @@ class ToDoListApp:
 
             if isinstance(index, int):
                 updated_task = prompt("\nEditing: ", default=tasks[index - 1]).strip()
-                task = self.logic.validate_task_str(updated_task, tasks)
+                task = self.control.validate_task_str(updated_task, tasks)
 
                 if isinstance(task, str) and task != "q":
                     self.model.edit_task_content(index, updated_task)
-                    print("\nTask updated.")
+                    self.view.success("Task updated!")
 
 
 # main method to run program
