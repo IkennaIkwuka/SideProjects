@@ -46,8 +46,19 @@ class ToDoListApp:
             if task == "q":
                 break
 
-            if task:
-                self.model.store_task(task)
+            priority = (
+                prompt("Priority (LOW / MEDIUM / HIGH) [MEDIUM]: ").strip().upper()
+                or "MEDIUM"
+            )
+
+            if priority not in TodoModel.PRIORITIES:
+                self.view.warning("Invalid priority.")
+                continue
+
+            due_date = prompt("Due date (YYYY-MM-DD) [optional]: ").strip() or None
+
+            if isinstance(task, str):
+                self.model.store_task(task, priority, due_date)
                 self.view.success("Task added!")
 
     # ---------------- VIEW ---------------- #
@@ -129,7 +140,7 @@ class ToDoListApp:
                 validated = self.control.validate_task_str(updated_task, existing_tasks)
 
                 if isinstance(validated, str):
-                    self.model.edit_task_content(index, updated_task)
+                    self.model.update_task(index, content=updated_task)
                     self.view.success("Task updated!")
 
     # ---------------- HELPERS ---------------- #

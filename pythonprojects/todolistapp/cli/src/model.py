@@ -1,8 +1,11 @@
 import sqlite3
 from pathlib import Path
+from datetime import date
 
 
 class TodoModel:
+    PRIORITIES = ("LOW", "MEDIUM", "HIGH")
+
     def __init__(self, db_file: str | Path):
         self.db_file = Path(db_file)
         self.db_file.parent.mkdir(parents=True, exist_ok=True)
@@ -17,44 +20,79 @@ class TodoModel:
             CREATE TABLE IF NOT EXISTS tasks (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 content TEXT UNIQUE NOT NULL,
-                completed INTEGER NOT NULL DEFAULT 0
+                completed INTEGER NOT NULL DEFAULT 0,
+                priority TEXT NOT NULL DEFAULT 'MEDIUM',
+                due_date TEXT
             )
             """
         )
         self.conn.commit()
 
-    def get_tasks(self, include_completed=True):
-        if include_completed:
-            cursor = self.conn.execute(
-                "SELECT content, completed FROM tasks ORDER BY id"
-            )
-        else:
-            cursor = self.conn.execute(
-                "SELECT content, completed FROM tasks WHERE completed = 0 ORDER BY id"
-            )
+    # ---------- CRUD ---------- #
 
-        return [(row["content"], bool(row["completed"])) for row in cursor.fetchall()]
-
-    def store_task(self, task: str):
-        try:
-            self.conn.execute(
-                "INSERT INTO tasks (content) VALUES (?)",
-                (task,),
+    def get_tasks(self):
+        cursor = self.conn.execute(
+            """
+            SELECT content, completed, priority, due_date
+            FROM tasks
+            ORDER BY
+                completed ASC,
+                CASE priority
+                    WHEN 'HIGH' THEN 1
+                    WHEN 'MEDIUM' THEN 2
+                    WHEN 'LOW' THEN 3
+                END,
+                due_date IS NULL,
+                due_date
+            """
+        )
+        return [
+            (
+                row["content"],
+                bool(row["completed"]),
+                row["priority"],
+                row["due_date"],
             )
-            self.conn.commit()
-        except sqlite3.IntegrityError:
-            raise ValueError("Task already exists.")
+            for row in cursor.fetchall()
+        ]
+
+    def store_task(self, task: str, priority="MEDIUM", due_date=None):
+        self.conn.execute(
+            """
+            INSERT INTO tasks (content, priority, due_date)
+            VALUES (?, ?, ?)
+            """,
+            (task, priority, due_date),
+        )
+        self.conn.commit()
 
     def toggle_complete(self, index: int):
         task_id = self._index_to_id(index)
         self.conn.execute(
-            """
-            UPDATE tasks
-            SET completed = NOT completed
-            WHERE id = ?
-            """,
+            "UPDATE tasks SET completed = NOT completed WHERE id = ?",
             (task_id,),
         )
+        self.conn.commit()
+
+    def update_task(self, index: int, content=None, priority=None, due_date=None):
+        task_id = self._index_to_id(index)
+
+        if content is not None:
+            self.conn.execute(
+                "UPDATE tasks SET content = ? WHERE id = ?",
+                (content, task_id),
+            )
+        if priority is not None:
+            self.conn.execute(
+                "UPDATE tasks SET priority = ? WHERE id = ?",
+                (priority, task_id),
+            )
+        if due_date is not None:
+            self.conn.execute(
+                "UPDATE tasks SET due_date = ? WHERE id = ?",
+                (due_date, task_id),
+            )
+
         self.conn.commit()
 
     def delete_task(self, index: int):
@@ -62,23 +100,13 @@ class TodoModel:
         self.conn.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
         self.conn.commit()
 
-    def edit_task_content(self, index: int, new_task: str):
-        task_id = self._index_to_id(index)
-        self.conn.execute(
-            "UPDATE tasks SET content = ? WHERE id = ?",
-            (new_task, task_id),
-        )
-        self.conn.commit()
-
     def clear_all(self):
         self.conn.execute("DELETE FROM tasks")
         self.conn.commit()
+
+    # ---------- helpers ---------- #
 
     def _index_to_id(self, index: int) -> int:
         cursor = self.conn.execute("SELECT id FROM tasks ORDER BY id")
         rows = cursor.fetchall()
         return rows[index - 1]["id"]
-
-
-if __name__ == "__main__":
-    ...

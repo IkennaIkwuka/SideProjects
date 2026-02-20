@@ -26,19 +26,22 @@ class TodoView:
     def success(self, msg: str):
         self.console.print(f"\n{msg}\n", style="green")
 
-    def show_tasks(self, tasks: list[tuple[str, bool]]):
+    def show_tasks(self, tasks):
         if not tasks:
             self.warning("No tasks available.")
             return
 
-        table = Table(title="Current Tasks", box=box.SIMPLE)
+        table = Table(title="Tasks", box=box.SIMPLE)
         table.add_column("#", justify="right", style="yellow")
-        table.add_column("Status", justify="center")
-        table.add_column("Task Description", style="cyan")
+        table.add_column("✓", justify="center")
+        table.add_column("Priority", justify="center")
+        table.add_column("Due", justify="center")
+        table.add_column("Task", style="cyan")
 
-        for i, (task, completed) in enumerate(tasks, start=1):
-            status = "[green]✓[/green]" if completed else "[red]•[/red]"
-            table.add_row(str(i), status, task)
+        for i, (task, done, priority, due_date) in enumerate(tasks, start=1):
+            status = "[green]✓[/green]" if done else ""
+            due = due_date if due_date else "-"
+            table.add_row(str(i), status, priority, due, task)
 
         self.console.print(table)
 
