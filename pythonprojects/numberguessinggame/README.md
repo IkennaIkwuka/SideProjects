@@ -1,20 +1,24 @@
 # Number Guessing Game
 
-### Welcome to the Number Guessing Game! This is a simple command-line game where the player tries to guess a randomly generated number within a certain range.
+Command-line number guessing game. Pick a difficulty (Easy 1-10, Hard 1-50, Insane 1-100), and try to guess the randomly generated number — each guess narrows the valid range until you find it or quit.
 
 ## How to Play
 
-1. The game will generate a random number between 1 and 100.
-2. The player will have a limited number of attempts to guess the number.
-3. After each guess, the game will provide feedback indicating whether the guess was too high, too low, or correct.
-4. The game ends when the player guesses the number correctly or runs out of attempts.
+1. Choose a difficulty level (or `q` to quit).
+2. Guess a number within the current range.
+3. After each guess, you're told whether to go higher or lower, and the range narrows accordingly.
+4. Keep guessing until you find the number, then choose whether to play again.
 
-## Running the Game
+## Run
 
-To run the game, follow these steps:
+```bash
+python3 scripts/game.py
+```
 
-1. Ensure you have Python installed on your machine.
-2. Download the game script from the repository.
-3. Open a terminal and navigate to the directory where the script is located.
-4. Run the script using the command (Linux): `python3 scripts/game.py`
-5. Follow the on-screen prompts to play the game.
+## Structure
+
+```
+scripts/game.py     # entry point
+src/cli/main.py      # game loop
+src/cli/logic.py      # input validation
+```

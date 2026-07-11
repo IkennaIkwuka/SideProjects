@@ -1,8 +1,35 @@
-# To-Do List Application:
+# To-Do List Application
 
-### A simple command-line to-do list application where users can add, remove, and mark tasks as done.
+Command-line to-do list app backed by SQLite. Add, remove, edit, and mark tasks as done.
 
 ## Setup
 
-1. Install dependencies: `pip install -r requirements.txt`
-2. Run `python3 scripts/run_cli.py`
+```bash
+pip install -r requirements.txt
+```
+
+## Run
+
+```bash
+python3 scripts/run_cli.py
+```
+
+## Test
+
+```bash
+./run_tests.sh
+```
+
+## Structure
+
+```
+scripts/run_cli.py   # entry point
+src/cli/main.py        # CLI loop
+src/cli/model.py        # SQLite-backed task storage
+src/cli/view.py         # terminal output (rich)
+src/cli/control.py      # ties model/view together
+tests/                    # unit tests
+db/                       # local SQLite db (gitignored, created at runtime)
+docs/app.todo             # task list
+CHANGELOG.md
+```
