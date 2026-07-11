@@ -4,5 +4,5 @@
 
 ## Setup
 
-1. Install dependencies: `pip install -r docs/requirements.txt`
+1. Install dependencies: `pip install -r requirements.txt`
 2. Run `python3 scripts/run_cli.py`

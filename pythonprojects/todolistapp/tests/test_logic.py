@@ -1,5 +1,5 @@
 import pytest
-from cli.src import TodoLogic
+from src.cli import TodoLogic
 
 # ------------------
 # Fixtures

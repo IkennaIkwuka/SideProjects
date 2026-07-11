@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.coverage
+venv/
+.venv/
+*.egg-info/
+
+# Java
+*.class
+target/
+build/
+
+# Databases (runtime data, not source)
+*.sqlite
+*.sqlite3
+*.db
+
+# Editors/OS
+.vscode/
+.idea/
+.DS_Store

@@ -2,9 +2,9 @@
 
 from pathlib import Path
 from prompt_toolkit import prompt
-from cli.src.control import TodoControl
-from cli.src.model import TodoModel
-from cli.src.view import TodoView
+from src.cli.control import TodoControl
+from src.cli.model import TodoModel
+from src.cli.view import TodoView
 
 
 class ToDoListApp:

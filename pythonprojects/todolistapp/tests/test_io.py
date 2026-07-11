@@ -1,5 +1,5 @@
 import pytest
-from cli.src import TodoIO
+from src.cli import TodoIO
 
 
 @pytest.fixture

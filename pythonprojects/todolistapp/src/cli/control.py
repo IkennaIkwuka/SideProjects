@@ -1,4 +1,4 @@
-from cli.src.view import TodoView
+from src.cli.view import TodoView
 
 
 class TodoControl:
